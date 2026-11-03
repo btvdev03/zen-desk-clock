@@ -8,8 +8,9 @@
 </p>
 
 <p align="center">
-  <b>The Ultimate Aesthetic Productivity Desk Clock & Pomodoro Workspace for Secondary Screens, Tablets & Battlestations.</b><br>
-  Built with pure modern web standards. Zero build steps, zero node_modules. Fork and deploy to GitHub Pages in 10 seconds.
+  <b>Bàn Làm Việc Đồng Hồ & Không Gian Tập Trung Pomodoro Thẩm Mỹ Dành Cho Màn Hình Phụ, iPad & Góc Làm Việc.</b><br>
+  <i>The Ultimate Aesthetic Productivity Desk Clock & Pomodoro Workspace for Secondary Screens, Tablets & Battlestations.</i><br>
+  Được xây dựng 100% bằng chuẩn Web hiện đại. Không cần cài đặt node_modules, không cần build. Mở là chạy ngay hoặc Fork lên GitHub Pages trong 10 giây!
 </p>
 
 ---

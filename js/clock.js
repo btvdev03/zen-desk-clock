@@ -80,9 +80,12 @@ class ClockEngine {
     // ISO Week Number
     const isoWeek = this.getISOWeek(date);
 
-    // Formatting date
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    // Formatting date in Vietnamese
+    const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    const monthNames = [
+      'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
+      'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
+    ];
 
     const dayName = dayNames[date.getDay()];
     const monthName = monthNames[date.getMonth()];
@@ -102,7 +105,7 @@ class ClockEngine {
       dayProgressPercent,
       yearProgressPercent,
       isoWeek,
-      dateFormatted: `${dayName}, ${monthName} ${dateNum}, ${year}`,
+      dateFormatted: `${dayName}, ${dateNum} ${monthName}, ${year}`,
       dateShort: `${pad(dateNum)}/${pad(date.getMonth() + 1)}/${year}`
     };
   }

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="ZenDesk Clock - Aesthetic Retro Flip Clock, OLED Minimalist, Swiss Analog & Deep Work Pomodoro Desk Station.">
+  <meta name="description" content="ZenDesk Clock - Bàn làm việc đồng hồ lật 3D retro, OLED tối giản, đồng hồ kim Thụy Sĩ & Pomodoro tập trung sâu.">
   <meta name="theme-color" content="#0d0f12">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <title>ZenDesk Clock - Aesthetic Productivity Desk Station</title>
+  <title>ZenDesk Clock - Bàn Làm Việc Đồng Hồ & Pomodoro Tinh Tế</title>
 
   <!-- Web App Manifest for PWA Offline Install -->
   <link rel="manifest" href="manifest.json">
@@ -19,11 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=7">
-  <link rel="stylesheet" href="css/flip.css?v=7">
-  <link rel="stylesheet" href="css/analog.css?v=7">
-  <link rel="stylesheet" href="css/themes.css?v=7">
-  <link rel="stylesheet" href="css/scenery.css?v=7">
+  <link rel="stylesheet" href="css/main.css?v=8">
+  <link rel="stylesheet" href="css/flip.css?v=8">
+  <link rel="stylesheet" href="css/analog.css?v=8">
+  <link rel="stylesheet" href="css/themes.css?v=8">
+  <link rel="stylesheet" href="css/scenery.css?v=8">
 </head>
 <body class="theme-flip">
 
@@ -49,24 +49,24 @@
     <header class="top-bar">
       <div class="top-bar-left">
         <div class="top-bar-chip">
-          <span class="date-text" id="topDateDisplay">Monday, Nov 3, 2026</span>
+          <span class="date-text" id="topDateDisplay">Thứ Ba, 3 tháng 11, 2026</span>
         </div>
         <div class="top-bar-chip">
-          <span id="topWeekDisplay">Week 45</span>
+          <span id="topWeekDisplay">Tuần 45</span>
         </div>
-        <button class="top-bar-chip event-countdown-chip" id="eventCountdownChip" title="Click to view & add special countdown events (Tết, Noel, Birthday, Launch...)">
-          <span id="eventCountdownText">🧧 Tết: Loading...</span>
+        <button class="top-bar-chip event-countdown-chip" id="eventCountdownChip" title="Xem và thêm sự kiện đếm ngược (Tết, Noel, Sinh nhật, Deadline...)">
+          <span id="eventCountdownText">🧧 Tết: Đang tải...</span>
         </button>
       </div>
 
       <div class="top-bar-right">
-        <button class="top-bar-chip" id="wakeLockBtn" title="Screen Wake Lock (Prevents display from sleeping)">
+        <button class="top-bar-chip" id="wakeLockBtn" title="Giữ màn hình luôn sáng (Không để màn hình tắt khi làm việc)">
           <span class="chip-status-dot" id="wakeLockDot"></span>
-          <span id="wakeLockText">Screen Awake</span>
+          <span id="wakeLockText">Màn hình luôn sáng</span>
         </button>
-        <button class="top-bar-chip" id="fullscreenTopBtn" title="Toggle Fullscreen (F)">
+        <button class="top-bar-chip" id="fullscreenTopBtn" title="Bật / Thoát toàn màn hình (F)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-          <span>Fullscreen</span>
+          <span>Toàn màn hình</span>
         </button>
       </div>
     </header>
@@ -75,7 +75,7 @@
     <main class="main-stage" id="mainStage">
 
       <!-- 1. RETRO 3D SPLIT-FLAP CLOCK VIEW (Default) -->
-      <section class="flip-clock-container" id="flipClockView" aria-label="Flip Clock">
+      <section class="flip-clock-container" id="flipClockView" aria-label="Đồng hồ lật số">
         <div class="flip-card-unit" id="flipHours"></div>
         <div class="flip-separator">:</div>
         <div class="flip-card-unit" id="flipMinutes"></div>
@@ -84,7 +84,7 @@
       </section>
 
       <!-- 2. MINIMALIST OLED & MATRIX DIGITAL CLOCK VIEW -->
-      <section class="clock-display-digital hidden" id="digitalClockView" aria-label="Digital Clock">
+      <section class="clock-display-digital hidden" id="digitalClockView" aria-label="Đồng hồ điện tử">
         <span class="digital-hours" id="digitalHours">00</span>
         <span class="digital-colon">:</span>
         <span class="digital-minutes" id="digitalMinutes">00</span>
@@ -93,21 +93,21 @@
       </section>
 
       <!-- 3. BAUHAUS / SWISS MODERN ANALOG CLOCK VIEW -->
-      <section class="analog-clock-container hidden" id="analogClockView" aria-label="Analog Clock">
+      <section class="analog-clock-container hidden" id="analogClockView" aria-label="Đồng hồ kim Thụy Sĩ">
         <!-- Rendered by AnalogRenderer -->
       </section>
 
       <!-- 4. POMODORO FOCUS TIMER VIEW -->
-      <section class="pomodoro-container hidden" id="pomodoroView" aria-label="Pomodoro Focus Timer">
+      <section class="pomodoro-container hidden" id="pomodoroView" aria-label="Đồng hồ Pomodoro">
         <div class="pomodoro-ring-wrapper">
           <svg class="pomodoro-svg" viewBox="0 0 200 200">
             <circle class="ring-bg" cx="100" cy="100" r="88" />
             <circle class="ring-progress" id="pomodoroProgressRing" cx="100" cy="100" r="88" stroke-dasharray="552.92" stroke-dashoffset="0" />
           </svg>
           <div class="pomodoro-center-content">
-            <div class="pomodoro-mode-badge" id="pomoModeBadge">Deep Focus</div>
+            <div class="pomodoro-mode-badge" id="pomoModeBadge">Tập Trung Sâu</div>
             <div class="pomodoro-time-text" id="pomoTimeDisplay">25:00</div>
-            <div class="pomodoro-session-count" id="pomoSessionDisplay">Completed: 0 sessions</div>
+            <div class="pomodoro-session-count" id="pomoSessionDisplay">Đã hoàn thành: 0 phiên</div>
           </div>
         </div>
       </section>
@@ -117,15 +117,15 @@
     <!-- BOTTOM CONTROLS & STATUS DOCK AREA -->
     <div class="bottom-area" id="bottomArea">
       <!-- QUOTES & MEMENTO MORI TIME TRACKERS -->
-      <div class="quotes-bar" id="quotesBar" title="Click for new inspiration">
-        <p class="quote-text" id="quoteText">"Deep work is the ability to focus without distraction on a cognitively demanding task."</p>
+      <div class="quotes-bar" id="quotesBar" title="Nhấp để đổi câu nói truyền cảm hứng mới">
+        <p class="quote-text" id="quoteText">"Tập trung sâu là khả năng làm việc không xao nhãng trên những nhiệm vụ đòi hỏi trí tuệ cao nhất."</p>
         <p class="quote-author" id="quoteAuthor">— Cal Newport</p>
       </div>
 
       <div class="progress-trackers" id="progressTrackers">
         <div class="progress-item">
           <div class="progress-header">
-            <span>Day Progress</span>
+            <span>Tiến độ ngày</span>
             <span id="dayProgressPercent">0%</span>
           </div>
           <div class="progress-bar-bg">
@@ -134,7 +134,7 @@
         </div>
         <div class="progress-item">
           <div class="progress-header">
-            <span>Year Progress</span>
+            <span>Tiến độ năm</span>
             <span id="yearProgressPercent">0%</span>
           </div>
           <div class="progress-bar-bg">
@@ -144,41 +144,41 @@
       </div>
 
       <!-- BOTTOM DOCK: CONTROLS & SHORTCUTS -->
-      <nav class="bottom-dock" aria-label="Controls Dock">
+      <nav class="bottom-dock" aria-label="Thanh điều khiển">
         <!-- Mode Toggle: Clock vs Pomodoro -->
-        <button class="control-btn active" id="modeClockBtn" title="Clock Mode">
+        <button class="control-btn active" id="modeClockBtn" title="Chế độ Đồng hồ">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-          <span>Clock</span>
+          <span>Đồng hồ</span>
         </button>
-        <button class="control-btn" id="modePomoBtn" title="Pomodoro Focus Timer (Space)">
+        <button class="control-btn" id="modePomoBtn" title="Đồng hồ Pomodoro tập trung (Phím Space)">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <span>Focus</span>
+          <span>Tập trung</span>
         </button>
 
         <div class="dock-separator"></div>
 
         <!-- Theme Switcher -->
-        <button class="control-btn" id="themeSwitchBtn" title="Switch Theme (T)">
+        <button class="control-btn" id="themeSwitchBtn" title="Đổi giao diện chủ đề (Phím T)">
           <svg viewBox="0 0 24 24"><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <span id="themeNameLabel">Flip</span>
+          <span id="themeNameLabel">Lật Số</span>
         </button>
 
         <!-- Ambient Soundscapes -->
-        <button class="control-btn" id="ambientSoundBtn" title="Ambient Sound Generator (M)">
+        <button class="control-btn" id="ambientSoundBtn" title="Âm thanh thiên nhiên thư giãn (Phím M)">
           <svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-          <span id="soundLabel">Rain</span>
+          <span id="soundLabel">Mưa rơi</span>
         </button>
 
         <!-- Picture-in-Picture Floating Mini Widget -->
-        <button class="control-btn" id="pipBtn" title="Picture-in-Picture Mini Widget (P)">
+        <button class="control-btn" id="pipBtn" title="Cửa sổ nổi thu nhỏ Picture-in-Picture (Phím P)">
           <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="11" y="9" width="9" height="6" rx="1" fill="currentColor"/></svg>
-          <span>PiP</span>
+          <span>Cửa sổ nổi</span>
         </button>
 
         <div class="dock-separator"></div>
 
         <!-- Settings & Shortcuts Modal -->
-        <button class="control-btn" id="settingsBtn" title="Settings & Shortcuts (S)">
+        <button class="control-btn" id="settingsBtn" title="Cài đặt & Phím tắt (Phím S)">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
         </button>
       </nav>
@@ -204,8 +204,8 @@
 
         <div class="setting-row">
           <div class="setting-info">
-            <div class="setting-label">Định dạng 24 Giờ <span class="setting-sub">(24-Hour Clock)</span></div>
-            <div class="setting-desc">Chuyển đổi giữa chế độ 12h (AM/PM) và 24h</div>
+            <div class="setting-label">Định dạng 24 Giờ <span class="setting-sub">(Chế độ 24 Giờ)</span></div>
+            <div class="setting-desc">Chuyển đổi giữa định dạng 12 giờ (Sáng / Chiều) và 24 giờ</div>
           </div>
           <label class="switch-toggle">
             <input type="checkbox" id="format24Toggle" checked>
@@ -215,7 +215,7 @@
 
         <div class="setting-row">
           <div class="setting-info">
-            <div class="setting-label">Hiển thị đếm giây <span class="setting-sub">(Show Seconds)</span></div>
+            <div class="setting-label">Hiển thị đếm giây <span class="setting-sub">(Kim Giây)</span></div>
             <div class="setting-desc">Bật hoặc tắt hiển thị số giây trên mặt đồng hồ</div>
           </div>
           <label class="switch-toggle">
@@ -226,14 +226,14 @@
 
         <div class="setting-row">
           <div class="setting-info">
-            <div class="setting-label">Thời lượng tập trung <span class="setting-sub">(Focus Duration)</span></div>
-            <div class="setting-desc">Thời gian một phiên Pomodoro Deep Work</div>
+            <div class="setting-label">Thời lượng tập trung <span class="setting-sub">(Pomodoro)</span></div>
+            <div class="setting-desc">Thời gian một phiên Pomodoro tập trung sâu (Deep Work)</div>
           </div>
           <select id="focusDurationSelect" class="setting-select-compact">
             <option value="15">15 phút</option>
-            <option value="25" selected>25 phút (Classic)</option>
+            <option value="25" selected>25 phút (Tiêu chuẩn)</option>
             <option value="45">45 phút</option>
-            <option value="50">50 phút (Deep Work)</option>
+            <option value="50">50 phút (Tập trung sâu)</option>
             <option value="60">60 phút</option>
           </select>
         </div>
@@ -244,18 +244,18 @@
         <!-- Kiểu hình nền (Full width select) -->
         <div class="setting-block">
           <div class="setting-block-header">
-            <div class="setting-label">Kiểu hình nền <span class="setting-sub">(Wallpaper Style)</span></div>
-            <div class="setting-desc">Bộ sưu tập ảnh chụp thật 4K Unsplash theo mùa, tranh Vector hoặc ảnh cá nhân</div>
+            <div class="setting-label">Kiểu hình nền <span class="setting-sub">(Hình Nền 4K)</span></div>
+            <div class="setting-desc">Bộ sưu tập ảnh chụp thật 4K Unsplash theo mùa, tranh nghệ thuật hoặc ảnh cá nhân</div>
           </div>
           <div class="setting-control-full">
             <select id="wallpaperSelect" class="setting-select">
-              <option value="auto_photo" selected>📸 Ảnh chụp thật 4K tự đổi theo mùa (Real Photo)</option>
+              <option value="auto_photo" selected>📸 Ảnh chụp thật 4K tự đổi theo mùa</option>
               <option value="winter_photo">❄️ Mùa đông: Căn nhà gỗ tuyết phủ Emerald Lake</option>
-              <option value="spring_photo">🌸 Mùa xuân: Cành đào hồng khoe sắc (Peach Blossom)</option>
-              <option value="spring_mai_photo">🧧 Ngày Tết: Cành mai vàng đón Tết (Golden Mai)</option>
-              <option value="summer_photo">🌊 Mùa hạ: Hoàng hôn biển nhiệt đới (Sunset Beach)</option>
-              <option value="autumn_photo">🍁 Mùa thu: Rừng phong đỏ Kyoto (Autumn Maple)</option>
-              <option value="cafe_photo">☕ Không gian: Quán cafe sách ấm cúng (Cozy Study Cafe)</option>
+              <option value="spring_photo">🌸 Mùa xuân: Cành đào hồng khoe sắc</option>
+              <option value="spring_mai_photo">🧧 Ngày Tết: Cành mai vàng đón Tết</option>
+              <option value="summer_photo">🌊 Mùa hạ: Hoàng hôn biển nhiệt đới</option>
+              <option value="autumn_photo">🍁 Mùa thu: Rừng phong đỏ Kyoto</option>
+              <option value="cafe_photo">☕ Không gian: Quán cafe sách ấm cúng</option>
               <option value="vector">🎨 Tranh nghệ thuật Vector Parallax</option>
               <option value="custom" id="customWallpaperOption" disabled>🖼️ Ảnh cá nhân của bạn (Chưa tải lên)</option>
             </select>
@@ -265,18 +265,18 @@
         <!-- Tải ảnh nền từ máy (Action Card) -->
         <div class="setting-block custom-upload-box">
           <div class="setting-block-header">
-            <div class="setting-label">Tải ảnh nền từ máy tính <span class="setting-sub">(Custom Wallpaper)</span></div>
-            <div class="setting-desc">Lưu trực tiếp an toàn vào trình duyệt qua IndexedDB — Không mất ảnh khi F5 hoặc tắt máy</div>
+            <div class="setting-label">Tải ảnh nền từ máy tính <span class="setting-sub">(Ảnh Cá Nhân)</span></div>
+            <div class="setting-desc">Lưu trực tiếp an toàn vào trình duyệt qua IndexedDB — Tự động lưu giữ khi F5 hoặc mở lại</div>
           </div>
           <div class="upload-actions-row">
             <input type="file" id="customWallpaperInput" accept="image/*" style="display: none;">
             <button type="button" id="uploadWallpaperBtn" class="setting-btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-              <span>Chọn ảnh từ máy tính</span>
+              <span>Chọn ảnh từ máy</span>
             </button>
             <button type="button" id="clearWallpaperBtn" class="setting-btn-danger" style="display: none;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              <span>Xóa ảnh</span>
+              <span>Xóa ảnh đã tải</span>
             </button>
           </div>
         </div>
@@ -284,18 +284,18 @@
         <!-- Hiệu ứng mùa (Full width select) -->
         <div class="setting-block">
           <div class="setting-block-header">
-            <div class="setting-label">Hiệu ứng hạt theo mùa <span class="setting-sub">(Atmospheric Particles)</span></div>
+            <div class="setting-label">Hiệu ứng hạt theo mùa <span class="setting-sub">(Hiệu Ứng Hạt)</span></div>
             <div class="setting-desc">Mô phỏng 3D quang học chiều sâu: bông tuyết 6 cánh, cánh đào, mai vàng, lá phong, đom đóm</div>
           </div>
           <div class="setting-control-full">
             <select id="particleSelect" class="setting-select">
-              <option value="auto" selected>✨ Tự động theo mùa (Auto Season)</option>
-              <option value="snow">❄️ Mùa đông: Tuyết rơi tinh thể 6 cánh (Winter Snow)</option>
-              <option value="sakura">🌸 Mùa xuân: Cánh hoa đào hồng bay nhẹ (Peach Petals)</option>
-              <option value="mai">🧧 Tết Nguyên Đán: Cánh hoa mai vàng (Golden Mai Petals)</option>
-              <option value="maple">🍁 Mùa thu: Lá phong đỏ 5 thùy chao nghiêng (Maple Leaves)</option>
-              <option value="fireflies">✨ Mùa hạ: Đom đóm đêm lập lòe (Summer Fireflies)</option>
-              <option value="none">🚫 Tắt hiệu ứng hạt (None)</option>
+              <option value="auto" selected>✨ Tự động thay đổi theo mùa</option>
+              <option value="snow">❄️ Mùa đông: Tuyết rơi tinh thể 6 cánh</option>
+              <option value="sakura">🌸 Mùa xuân: Cánh hoa đào hồng bay nhẹ</option>
+              <option value="mai">🧧 Tết Nguyên Đán: Cánh hoa mai vàng</option>
+              <option value="maple">🍁 Mùa thu: Lá phong đỏ 5 thùy chao nghiêng</option>
+              <option value="fireflies">✨ Mùa hạ: Đom đóm đêm lập lòe</option>
+              <option value="none">🚫 Tắt hiệu ứng hạt</option>
             </select>
           </div>
         </div>
@@ -303,7 +303,7 @@
         <!-- Dimmer slider -->
         <div class="setting-row">
           <div class="setting-info">
-            <div class="setting-label">Độ tối khung cảnh <span class="setting-sub">(Background Dimmer)</span></div>
+            <div class="setting-label">Độ tối khung cảnh <span class="setting-sub">(Độ Tối)</span></div>
             <div class="setting-desc">Làm tối nền nhẹ để chữ số đồng hồ hiển thị sắc nét nhất</div>
           </div>
           <div class="setting-slider-group">
@@ -315,8 +315,8 @@
         <!-- Blur slider -->
         <div class="setting-row">
           <div class="setting-info">
-            <div class="setting-label">Độ mờ nghệ thuật <span class="setting-sub">(Soft Bokeh Blur)</span></div>
-            <div class="setting-desc">Làm mờ hậu cảnh để tập trung làm việc tối đa</div>
+            <div class="setting-label">Độ mờ nghệ thuật <span class="setting-sub">(Làm Mờ Hậu Cảnh)</span></div>
+            <div class="setting-desc">Làm mờ ảnh nền phong cảnh để tập trung làm việc tối đa</div>
           </div>
           <div class="setting-slider-group">
             <input type="range" id="bgBlurSlider" min="0" max="25" step="1" value="0" class="styled-range">
@@ -329,7 +329,7 @@
 
         <div class="setting-row">
           <div class="setting-info">
-            <div class="setting-label">Âm lượng thiên nhiên <span class="setting-sub">(Ambient Volume)</span></div>
+            <div class="setting-label">Âm lượng thiên nhiên <span class="setting-sub">(Âm Lượng)</span></div>
             <div class="setting-desc">Âm thanh sóng biển, mưa rơi, lò sưởi, chim hót 100% Web Audio</div>
           </div>
           <div class="setting-slider-group">
@@ -347,14 +347,14 @@
         <div class="setting-group-header">⌨️ Phím Tắt Tiện Ích</div>
 
         <div class="shortcuts-grid">
-          <div class="shortcut-item"><span class="kbd-badge">Space</span> Bật / Dừng Timer</div>
+          <div class="shortcut-item"><span class="kbd-badge">Space</span> Bật / Dừng đếm giờ</div>
           <div class="shortcut-item"><span class="kbd-badge">F</span> Toàn màn hình</div>
           <div class="shortcut-item"><span class="kbd-badge">T</span> Đổi giao diện theme</div>
           <div class="shortcut-item"><span class="kbd-badge">M</span> Đổi tiếng thiên nhiên</div>
-          <div class="shortcut-item"><span class="kbd-badge">P</span> Thu nhỏ Picture-in-Picture</div>
-          <div class="shortcut-item"><span class="kbd-badge">H</span> Ẩn nhanh UI (Zen Mode)</div>
+          <div class="shortcut-item"><span class="kbd-badge">P</span> Thu nhỏ cửa sổ PiP</div>
+          <div class="shortcut-item"><span class="kbd-badge">H</span> Chế độ Zen (Ẩn toàn bộ)</div>
           <div class="shortcut-item"><span class="kbd-badge">S</span> Mở bảng cài đặt này</div>
-          <div class="shortcut-item"><span class="kbd-badge">Esc</span> Đóng hộp thoại</div>
+          <div class="shortcut-item"><span class="kbd-badge">Esc</span> Đóng mọi hộp thoại</div>
         </div>
 
       </div>
@@ -404,7 +404,7 @@
   </div>
 
   <!-- Main ES Module Script -->
-  <script type="module" src="js/app.js?v=7"></script>
+  <script type="module" src="js/app.js?v=8"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>

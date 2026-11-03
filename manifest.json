@@ -1,7 +1,7 @@
 {
-  "name": "ZenDesk Clock - Aesthetic Desk Screen",
-  "short_name": "ZenDesk",
-  "description": "Aesthetic Retro Flip Clock, OLED Minimalist, Swiss Analog & Pomodoro Station",
+  "name": "ZenDesk Clock - Trạm Đồng Hồ & Pomodoro Làm Việc",
+  "short_name": "ZenDesk Clock",
+  "description": "Bàn làm việc đồng hồ lật 3D retro, OLED tối giản, đồng hồ kim Thụy Sĩ & Pomodoro tập trung sâu.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0d0f12",

@@ -1,22 +1,23 @@
 /**
- * ZenDesk Clock - Curated Deep Work & Stoic Quotes
+ * ZenDesk Clock - Tuyển tập những câu nói truyền cảm hứng, Stoic & Deep Work (Tiếng Việt)
  */
 export const quotes = [
-  { text: "We suffer more often in imagination than in reality.", author: "Seneca" },
-  { text: "Do not act as if you were going to live ten thousand years. Death hangs over you.", author: "Marcus Aurelius" },
-  { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
-  { text: "Deep work is the ability to focus without distraction on a cognitively demanding task.", author: "Cal Newport" },
-  { text: "The impediment to action advances action. What stands in the way becomes the way.", author: "Marcus Aurelius" },
-  { text: "Focus is a muscle. The more you practice, the stronger it gets.", author: "Zen Wisdom" },
-  { text: "Time you enjoy wasting is not wasted time.", author: "Bertrand Russell" },
-  { text: "Make each day your masterpiece.", author: "John Wooden" },
-  { text: "You have power over your mind - not outside events. Realize this, and you will find strength.", author: "Marcus Aurelius" },
-  { text: "It is not that we have a short time to live, but that we waste a lot of it.", author: "Seneca" },
-  { text: "Do less, but do it with complete presence.", author: "Zen Proverb" },
-  { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-  { text: "Small deeds done are better than great deeds planned.", author: "Peter Marshall" },
-  { text: "Breath in clarity, breathe out distraction.", author: "Mindfulness" },
-  { text: "Order and simplification are the first steps toward the mastery of a subject.", author: "Thomas Mann" }
+  { text: "Chúng ta chịu đau khổ trong tưởng tượng nhiều hơn trong thực tế.", author: "Seneca" },
+  { text: "Đừng sống như thể bạn còn vạn năm phía trước. Hãy trân trọng từng phút giây.", author: "Marcus Aurelius" },
+  { text: "Sự giản đơn chính là đỉnh cao của sự tinh tế.", author: "Leonardo da Vinci" },
+  { text: "Tập trung sâu là khả năng làm việc không xao nhãng trên những nhiệm vụ đòi hỏi trí tuệ cao nhất.", author: "Cal Newport" },
+  { text: "Chướng ngại trên con đường sẽ trở thành con đường đưa ta tiến bước.", author: "Marcus Aurelius" },
+  { text: "Sự tập trung là một nhóm cơ bắp. Càng rèn luyện, bạn sẽ càng mạnh mẽ.", author: "Triết Lý Zen" },
+  { text: "Thời gian bạn cảm thấy hạnh phúc khi tận hưởng không bao giờ là lãng phí.", author: "Bertrand Russell" },
+  { text: "Hãy biến mỗi ngày trôi qua thành một kiệt tác của cuộc đời bạn.", author: "John Wooden" },
+  { text: "Bạn có toàn quyền kiểm soát tâm trí mình, chứ không phải các biến cố bên ngoài.", author: "Marcus Aurelius" },
+  { text: "Vấn đề không phải là đời người quá ngắn, mà là chúng ta đã lãng phí quá nhiều.", author: "Seneca" },
+  { text: "Làm ít việc hơn, nhưng hãy làm với sự hiện diện và chú tâm trọn vẹn.", author: "Thiền Ngữ" },
+  { text: "Bí mật của việc tiến lên phía trước là hãy bắt đầu ngay từ bây giờ.", author: "Mark Twain" },
+  { text: "Hít vào sự sáng suốt, thở ra mọi muộn phiền và xao nhãng.", author: "Chánh Niệm" },
+  { text: "Trật tự và tinh giản là những bước đầu tiên để làm chủ mọi kỹ năng.", author: "Thomas Mann" },
+  { text: "Hành trình vạn dặm luôn khởi đầu từ một bước chân vững chãi.", author: "Lão Tử" },
+  { text: "Biết đủ là giàu, biết dừng là thoát.", author: "Cổ Nhân" }
 ];
 
 export function getRandomQuote() {

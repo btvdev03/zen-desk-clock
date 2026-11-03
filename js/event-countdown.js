@@ -146,7 +146,7 @@ export class EventCountdownManager {
       return {
         event: evt,
         isReached: true,
-        formatted: `${evt.icon} ${evt.title}: Đã đến! 🎉`,
+        formatted: `${evt.icon} ${evt.title}: Đã đến rồi! 🎉`,
         shortFormatted: `${evt.icon} Hôm nay!`
       };
     }
@@ -160,9 +160,9 @@ export class EventCountdownManager {
 
     let formatted = '';
     if (days > 0) {
-      formatted = `${evt.icon} ${evt.title}: ${days}d ${pad(hours)}h ${pad(minutes)}m`;
+      formatted = `${evt.icon} ${evt.title}: còn ${days} ngày ${pad(hours)} giờ ${pad(minutes)} phút`;
     } else {
-      formatted = `${evt.icon} ${evt.title}: ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      formatted = `${evt.icon} ${evt.title}: còn ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     }
 
     return {
@@ -173,7 +173,7 @@ export class EventCountdownManager {
       minutes,
       seconds,
       formatted,
-      shortFormatted: `${evt.icon} ${days > 0 ? days + 'd ' : ''}${pad(hours)}:${pad(minutes)}`
+      shortFormatted: `${evt.icon} ${days > 0 ? days + ' ngày ' : ''}${pad(hours)}:${pad(minutes)}`
     };
   }
 

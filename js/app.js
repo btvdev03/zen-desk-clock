@@ -33,15 +33,15 @@ class ZenApp {
       'theme-autumn'
     ];
     this.themeLabels = {
-      'theme-flip': 'Flip Clock',
-      'theme-oled': 'OLED Dark',
+      'theme-flip': 'Đồng Hồ Lật',
+      'theme-oled': 'OLED Đen',
       'theme-matrix': 'Matrix CRT',
-      'theme-aura': 'Sunset Aura',
-      'theme-swiss': 'Swiss Analog',
-      'theme-winter': '❄️ Winter Noel',
-      'theme-spring': '🌸 Spring Tết',
-      'theme-summer': '🌊 Summer Coast',
-      'theme-autumn': '🍁 Autumn Amber'
+      'theme-aura': 'Hoàng Hôn Aura',
+      'theme-swiss': 'Kim Thụy Sĩ',
+      'theme-winter': '❄️ Mùa Đông',
+      'theme-spring': '🌸 Mùa Xuân',
+      'theme-summer': '🌊 Mùa Hạ',
+      'theme-autumn': '🍁 Mùa Thu'
     };
 
     this.activeMode = 'clock'; // 'clock' | 'pomodoro'
@@ -185,15 +185,15 @@ class ZenApp {
   _initPomodoro() {
     pomodoroEngine.onUpdate((data) => {
       this.pomoTimeDisplay.textContent = data.formattedTime;
-      this.pomoSessionDisplay.textContent = `Completed: ${data.completedSessions} sessions`;
+      this.pomoSessionDisplay.textContent = `Đã hoàn thành: ${data.completedSessions} phiên`;
 
       const modeNames = {
-        focus: 'Deep Focus',
-        shortBreak: 'Short Break',
-        longBreak: 'Long Break',
-        flow: 'Flow Mode'
+        focus: 'Tập Trung Sâu',
+        shortBreak: 'Nghỉ Ngắn',
+        longBreak: 'Nghỉ Dài',
+        flow: 'Dòng Chảy Tự Do'
       };
-      this.pomoModeBadge.textContent = modeNames[data.mode] || 'Focus';
+      this.pomoModeBadge.textContent = modeNames[data.mode] || 'Tập Trung';
 
       const circumference = 552.92;
       const offset = circumference - (data.progress * circumference);
@@ -215,7 +215,7 @@ class ZenApp {
 
       if (isNewSecond) {
         this.topDateDisplay.textContent = timeData.dateFormatted;
-        this.topWeekDisplay.textContent = `Week ${timeData.isoWeek}`;
+        this.topWeekDisplay.textContent = `Tuần ${timeData.isoWeek}`;
         this.dayProgressBar.style.width = `${timeData.dayProgressPercent}%`;
         this.dayProgressPercent.textContent = `${timeData.dayProgressPercent}%`;
         this.yearProgressBar.style.width = `${timeData.yearProgressPercent}%`;
@@ -256,7 +256,13 @@ class ZenApp {
     pipController.setStateGetter(() => {
       const timeData = clockEngine.getTimeData();
       const pomoFormatted = pomodoroEngine.getFormattedTime();
-      const pomoMode = pomodoroEngine.mode.toUpperCase();
+      const pomoModeLabels = {
+        focus: 'TẬP TRUNG',
+        shortBreak: 'NGHỈ NGẮN',
+        longBreak: 'NGHỈ DÀI',
+        flow: 'TỰ DO'
+      };
+      const pomoMode = pomoModeLabels[pomodoroEngine.mode] || 'TẬP TRUNG';
       return {
         timeStr: `${timeData.hoursStr}:${timeData.minutesStr}:${timeData.secondsStr}`,
         pomoStr: `${pomoMode} ${pomoFormatted}`
@@ -268,10 +274,10 @@ class ZenApp {
     wakeLockManager.onStatusChange((active) => {
       if (active) {
         this.wakeLockDot.classList.remove('inactive');
-        this.wakeLockText.textContent = 'Screen Awake';
+        this.wakeLockText.textContent = 'Màn hình luôn sáng';
       } else {
         this.wakeLockDot.classList.add('inactive');
-        this.wakeLockText.textContent = 'Sleep Allowed';
+        this.wakeLockText.textContent = 'Chế độ nghỉ tự nhiên';
       }
     });
 
@@ -643,18 +649,18 @@ class ZenApp {
     soundEngine.playAmbient(sound);
 
     const labels = {
-      none: 'Mute',
-      rain: '🌧️ Rain',
-      fire: '🔥 Fireplace',
-      ocean: '🌊 Ocean Waves',
-      crickets: '🦗 Crickets',
-      birds: '🐦 Spring Birds',
-      brown: '🪵 Brown Noise',
-      pink: '🍃 Pink Noise',
-      white: '💨 White Noise'
+      none: 'Tắt âm',
+      rain: '🌧️ Mưa rơi',
+      fire: '🔥 Lò sưởi',
+      ocean: '🌊 Sóng biển',
+      crickets: '🦗 Tiếng dế',
+      birds: '🐦 Chim hót',
+      brown: '🪵 Nhiễu nâu',
+      pink: '🍃 Nhiễu hồng',
+      white: '💨 Nhiễu trắng'
     };
 
-    this.soundLabel.textContent = labels[sound] || 'Sound';
+    this.soundLabel.textContent = labels[sound] || 'Âm thanh';
     this.ambientSoundBtn.classList.toggle('active', sound !== 'none');
   }
 

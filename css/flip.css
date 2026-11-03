@@ -1,0 +1,160 @@
+/**
+ * ZenDesk Clock - 3D Mechanical Split-Flap Animations (Fliqlo Style)
+ */
+
+:root {
+  --flip-w: clamp(100px, 17vw, 190px);
+  --flip-h: clamp(140px, 24vw, 260px);
+  --flip-font-size: clamp(80px, 15vw, 160px);
+}
+
+.flip-clock-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  perspective: 1200px;
+}
+
+.flip-separator {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.75), 0 2px 8px rgba(0, 0, 0, 0.9);
+  animation: blink 1.2s infinite ease-in-out;
+  user-select: none;
+  line-height: 1;
+  margin-top: -0.5rem;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.2; }
+}
+
+.flip-card-unit {
+  position: relative;
+  width: var(--flip-w);
+  height: var(--flip-h);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.3);
+  perspective: 1000px;
+  user-select: none;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.card-face, .card-flap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: var(--flip-bg);
+  color: var(--flip-text);
+  font-family: 'Bebas Neue', 'Oswald', 'Impact', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: var(--flip-font-size);
+  font-weight: 800;
+  text-align: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* Upper half */
+.card-face.upper, .card-flap.top-flap {
+  top: 0;
+  height: 50%;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  transform-origin: bottom center;
+}
+
+.card-face.upper .digit, .card-flap.top-flap .digit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--flip-h);
+  line-height: var(--flip-h);
+  display: block;
+}
+
+/* Lower half */
+.card-face.lower, .card-flap.bottom-flap {
+  top: 50%;
+  height: 50%;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  transform-origin: top center;
+}
+
+.card-face.lower .digit, .card-flap.bottom-flap .digit {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--flip-h);
+  line-height: var(--flip-h);
+  display: block;
+}
+
+/* Horizontal hairline groove divider */
+.flip-divider {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-50%);
+  background: #000;
+  z-index: 10;
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Flap 3D animations */
+.card-flap.top-flap {
+  z-index: 4;
+  transform: rotateX(0deg);
+}
+
+.card-flap.bottom-flap {
+  z-index: 3;
+  transform: rotateX(90deg);
+}
+
+.card-flap.top-flap.flip-top {
+  animation: flipTopAnim 0.35s cubic-bezier(0.37, 0, 0.63, 1) forwards;
+}
+
+.card-flap.bottom-flap.flip-bottom {
+  animation: flipBottomAnim 0.35s cubic-bezier(0.37, 0, 0.63, 1) 0.175s forwards;
+}
+
+@keyframes flipTopAnim {
+  0% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+  100% {
+    transform: rotateX(-90deg);
+    filter: brightness(0.65);
+  }
+}
+
+@keyframes flipBottomAnim {
+  0% {
+    transform: rotateX(90deg);
+    filter: brightness(0.6);
+  }
+  100% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}

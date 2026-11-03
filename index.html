@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="ZenDesk Clock - Aesthetic Retro Flip Clock, OLED Minimalist, Swiss Analog & Deep Work Pomodoro Desk Station.">
+  <meta name="theme-color" content="#0d0f12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>ZenDesk Clock - Aesthetic Productivity Desk Station</title>
+
+  <!-- Web App Manifest for PWA Offline Install -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Curated Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/main.css?v=6">
+  <link rel="stylesheet" href="css/flip.css?v=6">
+  <link rel="stylesheet" href="css/analog.css?v=6">
+  <link rel="stylesheet" href="css/themes.css?v=6">
+  <link rel="stylesheet" href="css/scenery.css?v=6">
+</head>
+<body class="theme-flip">
+
+  <!-- Realistic Multi-Layer Seasonal Scenery Vector Parallax Container -->
+  <div id="sceneryContainer" class="scenery-container"></div>
+
+  <!-- User Background Dimmer & Soft Bokeh Blur Overlay -->
+  <div id="sceneryDimmerOverlay" class="scenery-dimmer-overlay"></div>
+
+  <!-- Ambient 2D Particle Canvas for Seasons (Snow, Sakura, Maple, Fireflies) -->
+  <canvas id="ambientCanvas" class="ambient-canvas"></canvas>
+
+  <!-- Aura Ambient Animated Mesh (Active in Aura Theme) -->
+  <div class="aura-container" aria-hidden="true">
+    <div class="aura-blob aura-blob-1"></div>
+    <div class="aura-blob aura-blob-2"></div>
+    <div class="aura-blob aura-blob-3"></div>
+  </div>
+
+  <div class="app-wrapper">
+
+    <!-- TOP BAR: DATE, ISO WEEK, MEMENTO MORI, WAKE LOCK -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <div class="top-bar-chip">
+          <span class="date-text" id="topDateDisplay">Monday, Nov 3, 2026</span>
+        </div>
+        <div class="top-bar-chip">
+          <span id="topWeekDisplay">Week 45</span>
+        </div>
+        <button class="top-bar-chip event-countdown-chip" id="eventCountdownChip" title="Click to view & add special countdown events (Tết, Noel, Birthday, Launch...)">
+          <span id="eventCountdownText">🧧 Tết: Loading...</span>
+        </button>
+      </div>
+
+      <div class="top-bar-right">
+        <button class="top-bar-chip" id="wakeLockBtn" title="Screen Wake Lock (Prevents display from sleeping)">
+          <span class="chip-status-dot" id="wakeLockDot"></span>
+          <span id="wakeLockText">Screen Awake</span>
+        </button>
+        <button class="top-bar-chip" id="fullscreenTopBtn" title="Toggle Fullscreen (F)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          <span>Fullscreen</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN CLOCK / POMODORO DISPLAY STAGE -->
+    <main class="main-stage" id="mainStage">
+
+      <!-- 1. RETRO 3D SPLIT-FLAP CLOCK VIEW (Default) -->
+      <section class="flip-clock-container" id="flipClockView" aria-label="Flip Clock">
+        <div class="flip-card-unit" id="flipHours"></div>
+        <div class="flip-separator">:</div>
+        <div class="flip-card-unit" id="flipMinutes"></div>
+        <div class="flip-separator" id="flipSecSep">:</div>
+        <div class="flip-card-unit" id="flipSeconds"></div>
+      </section>
+
+      <!-- 2. MINIMALIST OLED & MATRIX DIGITAL CLOCK VIEW -->
+      <section class="clock-display-digital hidden" id="digitalClockView" aria-label="Digital Clock">
+        <span class="digital-hours" id="digitalHours">00</span>
+        <span class="digital-colon">:</span>
+        <span class="digital-minutes" id="digitalMinutes">00</span>
+        <span class="digital-seconds-badge" id="digitalSeconds">00</span>
+        <span class="digital-ampm" id="digitalAmpm"></span>
+      </section>
+
+      <!-- 3. BAUHAUS / SWISS MODERN ANALOG CLOCK VIEW -->
+      <section class="analog-clock-container hidden" id="analogClockView" aria-label="Analog Clock">
+        <!-- Rendered by AnalogRenderer -->
+      </section>
+
+      <!-- 4. POMODORO FOCUS TIMER VIEW -->
+      <section class="pomodoro-container hidden" id="pomodoroView" aria-label="Pomodoro Focus Timer">
+        <div class="pomodoro-ring-wrapper">
+          <svg class="pomodoro-svg" viewBox="0 0 200 200">
+            <circle class="ring-bg" cx="100" cy="100" r="88" />
+            <circle class="ring-progress" id="pomodoroProgressRing" cx="100" cy="100" r="88" stroke-dasharray="552.92" stroke-dashoffset="0" />
+          </svg>
+          <div class="pomodoro-center-content">
+            <div class="pomodoro-mode-badge" id="pomoModeBadge">Deep Focus</div>
+            <div class="pomodoro-time-text" id="pomoTimeDisplay">25:00</div>
+            <div class="pomodoro-session-count" id="pomoSessionDisplay">Completed: 0 sessions</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM CONTROLS & STATUS DOCK AREA -->
+    <div class="bottom-area" id="bottomArea">
+      <!-- QUOTES & MEMENTO MORI TIME TRACKERS -->
+      <div class="quotes-bar" id="quotesBar" title="Click for new inspiration">
+        <p class="quote-text" id="quoteText">"Deep work is the ability to focus without distraction on a cognitively demanding task."</p>
+        <p class="quote-author" id="quoteAuthor">— Cal Newport</p>
+      </div>
+
+      <div class="progress-trackers" id="progressTrackers">
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>Day Progress</span>
+            <span id="dayProgressPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="dayProgressBar" style="width: 0%;"></div>
+          </div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>Year Progress</span>
+            <span id="yearProgressPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="yearProgressBar" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM DOCK: CONTROLS & SHORTCUTS -->
+      <nav class="bottom-dock" aria-label="Controls Dock">
+        <!-- Mode Toggle: Clock vs Pomodoro -->
+        <button class="control-btn active" id="modeClockBtn" title="Clock Mode">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          <span>Clock</span>
+        </button>
+        <button class="control-btn" id="modePomoBtn" title="Pomodoro Focus Timer (Space)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Focus</span>
+        </button>
+
+        <div class="dock-separator"></div>
+
+        <!-- Theme Switcher -->
+        <button class="control-btn" id="themeSwitchBtn" title="Switch Theme (T)">
+          <svg viewBox="0 0 24 24"><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span id="themeNameLabel">Flip</span>
+        </button>
+
+        <!-- Ambient Soundscapes -->
+        <button class="control-btn" id="ambientSoundBtn" title="Ambient Sound Generator (M)">
+          <svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+          <span id="soundLabel">Rain</span>
+        </button>
+
+        <!-- Picture-in-Picture Floating Mini Widget -->
+        <button class="control-btn" id="pipBtn" title="Picture-in-Picture Mini Widget (P)">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="11" y="9" width="9" height="6" rx="1" fill="currentColor"/></svg>
+          <span>PiP</span>
+        </button>
+
+        <div class="dock-separator"></div>
+
+        <!-- Settings & Shortcuts Modal -->
+        <button class="control-btn" id="settingsBtn" title="Settings & Shortcuts (S)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        </button>
+      </nav>
+    </div>
+
+  </div>
+
+  <!-- SETTINGS & KEYBOARD SHORTCUTS MODAL -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Settings & Preferences</h2>
+        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Clock Format (24-Hour)</div>
+          <div class="setting-desc">Toggle between 12-hour AM/PM and 24-hour display</div>
+        </div>
+        <input type="checkbox" id="format24Toggle" checked style="width: 20px; height: 20px; cursor: pointer;">
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Show Seconds</div>
+          <div class="setting-desc">Display seconds counter in clock views</div>
+        </div>
+        <input type="checkbox" id="showSecondsToggle" checked style="width: 20px; height: 20px; cursor: pointer;">
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Ambient Sound Volume</div>
+          <div class="setting-desc">Adjust sound generator output level</div>
+        </div>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.5">
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Focus Duration</div>
+          <div class="setting-desc">Pomodoro focus duration in minutes</div>
+        </div>
+        <select id="focusDurationSelect" style="background: #232730; color: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+          <option value="15">15 mins</option>
+          <option value="25" selected>25 mins (Classic)</option>
+          <option value="45">45 mins</option>
+          <option value="50">50 mins (Deep Work)</option>
+          <option value="60">60 mins</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Wallpaper Style (Kiểu hình nền)</div>
+          <div class="setting-desc">Ảnh chụp thật 4K theo mùa, tranh Vector hoặc ảnh cá nhân</div>
+        </div>
+        <select id="wallpaperSelect" style="background: #232730; color: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+          <option value="auto_photo" selected>📸 Ảnh chụp thật 4K theo mùa (Real Photo)</option>
+          <option value="winter_photo">❄️ Ảnh thật: Căn nhà gỗ tuyết phủ (Winter Cabin)</option>
+          <option value="spring_photo">🌸 Ảnh thật: Cành đào hồng ngày xuân (Peach Blossom)</option>
+          <option value="spring_mai_photo">🧧 Ảnh thật: Cành mai vàng đón Tết (Golden Blossom)</option>
+          <option value="summer_photo">🌊 Ảnh thật: Hoàng hôn biển nhiệt đới (Sunset Beach)</option>
+          <option value="autumn_photo">🍁 Ảnh thật: Rừng phong đỏ Kyoto (Autumn Maple)</option>
+          <option value="cafe_photo">☕ Ảnh thật: Quán cafe ấm cúng (Cozy Cafe)</option>
+          <option value="vector">🎨 Tranh nghệ thuật Vector Parallax</option>
+          <option value="custom" id="customWallpaperOption" disabled>🖼️ Ảnh cá nhân của bạn (Chưa tải lên)</option>
+        </select>
+      </div>
+
+      <div class="setting-row" style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 0.8rem;">
+        <div>
+          <div class="setting-label">Tải Ảnh Nền Từ Máy Bạn (Custom Wallpaper)</div>
+          <div class="setting-desc">Lưu trực tiếp vào trình duyệt qua IndexedDB, không mất khi refresh</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <input type="file" id="customWallpaperInput" accept="image/*" style="display: none;">
+          <button type="button" id="uploadWallpaperBtn" class="control-btn active" style="padding: 6px 12px; font-size: 0.82rem; border-radius: 8px;">
+            📁 Chọn Ảnh
+          </button>
+          <button type="button" id="clearWallpaperBtn" class="control-btn" style="padding: 6px 10px; font-size: 0.82rem; border-radius: 8px; display: none;" title="Xóa ảnh cá nhân">
+            🗑️ Xóa
+          </button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Atmospheric Season (Hiệu ứng mùa)</div>
+          <div class="setting-desc">Tuyết rơi, hoa mai đào, lá phong hoặc đom đóm</div>
+        </div>
+        <select id="particleSelect" style="background: #232730; color: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+          <option value="auto" selected>Auto Season (Theo mùa)</option>
+          <option value="snow">Winter Snow (Tuyết rơi tinh thể 6 cánh)</option>
+          <option value="sakura">Spring Peach Blossom (Hoa đào hồng)</option>
+          <option value="mai">Spring Golden Mai (Hoa mai vàng Tết)</option>
+          <option value="maple">Autumn Maple Leaves (Lá phong 5 thùy)</option>
+          <option value="fireflies">Summer Fireflies (Đom đóm)</option>
+          <option value="none">None (Tắt hiệu ứng)</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Background Dimmer (Độ tối khung cảnh)</div>
+          <div class="setting-desc">Tăng độ tương phản để dễ đọc đồng hồ (0% - 90%)</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="range" id="bgDimmerSlider" min="0" max="0.9" step="0.05" value="0.30" class="volume-slider">
+          <span id="bgDimmerValue" style="font-size: 0.8rem; min-width: 35px; color: var(--accent-color);">30%</span>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Background Soft Blur (Độ mờ nghệ thuật)</div>
+          <div class="setting-desc">Làm mờ phong cảnh thành tranh Bokeh để tập trung làm việc</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="range" id="bgBlurSlider" min="0" max="25" step="1" value="0" class="volume-slider">
+          <span id="bgBlurValue" style="font-size: 0.8rem; min-width: 35px; color: var(--accent-color);">0px</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <button id="manageEventsBtn" class="control-btn active" style="width: 100%; justify-content: center; padding: 0.7rem; border-radius: 10px;">
+          🎯 Quản Lý Sự Kiện & Đếm Ngược (Milestones)
+        </button>
+      </div>
+
+      <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <h3 style="font-size: 0.95rem; margin-bottom: 0.8rem; color: var(--accent-color);">Keyboard Shortcuts</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; font-size: 0.82rem;">
+          <div><span class="kbd-badge">Space</span> Start / Pause Timer</div>
+          <div><span class="kbd-badge">F</span> Toggle Fullscreen</div>
+          <div><span class="kbd-badge">T</span> Switch Theme</div>
+          <div><span class="kbd-badge">M</span> Toggle Soundscape</div>
+          <div><span class="kbd-badge">P</span> Picture-in-Picture</div>
+          <div><span class="kbd-badge">H</span> Zen Mode (Hide UI)</div>
+          <div><span class="kbd-badge">S</span> Open Settings</div>
+          <div><span class="kbd-badge">Esc</span> Close Modal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENT COUNTDOWN & MILESTONES MODAL -->
+  <div class="modal-overlay" id="eventModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">🎯 Countdown & Milestones</h2>
+        <button class="modal-close-btn" id="eventModalCloseBtn">&times;</button>
+      </div>
+
+      <div class="event-list" id="eventList">
+        <!-- Dynamically populated -->
+      </div>
+
+      <form class="event-add-form" id="eventAddForm">
+        <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-color);">+ Thêm Sự Kiện Của Bạn</div>
+        <div class="event-input-row">
+          <input type="text" id="eventTitleInput" class="event-input" placeholder="Tên sự kiện (Sinh nhật, Deadline, Launch...)" required>
+          <select id="eventIconInput" class="event-input" style="flex: 0 0 65px; text-align: center;">
+            <option value="🎯">🎯</option>
+            <option value="🎂">🎂</option>
+            <option value="🚀">🚀</option>
+            <option value="🎓">🎓</option>
+            <option value="💍">💍</option>
+            <option value="✈️">✈️</option>
+            <option value="🧧">🧧</option>
+            <option value="🎄">🎄</option>
+          </select>
+        </div>
+        <div class="event-input-row">
+          <input type="datetime-local" id="eventDateInput" class="event-input" required>
+          <button type="submit" class="event-add-btn">+ Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main ES Module Script -->
+  <script type="module" src="js/app.js?v=6"></script>
+
+  <!-- Service Worker Registration for PWA Offline Functionality -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('ZenDesk Clock ServiceWorker registered: ', reg.scope))
+          .catch(err => console.log('ServiceWorker registration failed: ', err));
+      });
+    }
+  </script>
+</body>
+</html>

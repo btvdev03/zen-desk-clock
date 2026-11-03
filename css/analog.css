@@ -1,0 +1,119 @@
+/**
+ * ZenDesk Clock - Bauhaus / Swiss Modern Analog Clock
+ */
+
+.analog-clock-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(260px, 45vw, 420px);
+  height: clamp(260px, 45vw, 420px);
+  position: relative;
+}
+
+.analog-dial {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--analog-bg, #ffffff);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), inset 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: clamp(8px, 1.5vw, 14px) solid var(--analog-border, #1a1a1e);
+  position: relative;
+  overflow: hidden;
+}
+
+.analog-ticks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: 50% 50%;
+  width: 2px;
+  height: 100%;
+  pointer-events: none;
+}
+
+.tick::before {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  background: var(--analog-tick, #1c1c1e);
+}
+
+.tick-major::before {
+  width: 4px;
+  height: clamp(14px, 2.8vw, 24px);
+  border-radius: 2px;
+}
+
+.tick-minor::before {
+  width: 2px;
+  height: clamp(8px, 1.5vw, 12px);
+  opacity: 0.4;
+}
+
+.analog-hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: bottom center;
+  border-radius: 4px;
+  transition: none; /* continuous requestAnimationFrame handles smoothing */
+}
+
+.hour-hand {
+  width: clamp(5px, 1vw, 8px);
+  height: 28%;
+  margin-left: calc(-1 * clamp(5px, 1vw, 8px) / 2);
+  background: var(--analog-hands, #111114);
+  z-index: 3;
+}
+
+.minute-hand {
+  width: clamp(4px, 0.8vw, 6px);
+  height: 42%;
+  margin-left: calc(-1 * clamp(4px, 0.8vw, 6px) / 2);
+  background: var(--analog-hands, #111114);
+  z-index: 4;
+}
+
+.second-hand {
+  width: 2px;
+  height: 46%;
+  margin-left: -1px;
+  background: #e11d48; /* Iconic Swiss railway red */
+  z-index: 5;
+}
+
+/* Swiss Railway iconic circle dot */
+.swiss-dot {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(12px, 2.2vw, 18px);
+  height: clamp(12px, 2.2vw, 18px);
+  background: #e11d48;
+  border-radius: 50%;
+}
+
+/* Center pin */
+.analog-cap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(12px, 2vw, 16px);
+  height: clamp(12px, 2vw, 16px);
+  background: #e11d48;
+  border-radius: 50%;
+  z-index: 6;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}

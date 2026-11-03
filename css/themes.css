@@ -1,0 +1,293 @@
+/**
+ * ZenDesk Clock - 5 Curated Aesthetic Themes
+ */
+
+/* ========================================================
+   THEME 1: RETRO FLIP CLOCK (FLIQLO STYLE)
+   ======================================================== */
+body.theme-flip {
+  --bg-color: #0d0f12;
+  --text-main: #f8fafc;
+  --text-dim: #64748b;
+  --flip-bg: #1c1f24;
+  --flip-text: #f1f5f9;
+  --accent-color: #38bdf8;
+  --dock-bg: rgba(22, 27, 34, 0.75);
+  --dock-border: rgba(255, 255, 255, 0.08);
+}
+
+/* ========================================================
+   THEME 2: MINIMALIST OLED (TRUE BLACK / APPLE STANDBY)
+   ======================================================== */
+body.theme-oled {
+  --bg-color: #000000;
+  --text-main: #ffffff;
+  --text-dim: #52525b;
+  --accent-color: #a1a1aa;
+  --dock-bg: rgba(18, 18, 18, 0.85);
+  --dock-border: rgba(255, 255, 255, 0.06);
+}
+
+body.theme-oled .clock-display-digital {
+  animation: oledAntiBurnIn 900s infinite alternate ease-in-out;
+}
+
+@keyframes oledAntiBurnIn {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(3px, -2px); }
+  50% { transform: translate(-2px, 3px); }
+  75% { transform: translate(-3px, -2px); }
+  100% { transform: translate(2px, 2px); }
+}
+
+/* ========================================================
+   THEME 3: CYBERPUNK MATRIX / CRT TERMINAL
+   ======================================================== */
+body.theme-matrix {
+  --bg-color: #020a05;
+  --text-main: #00ff66;
+  --text-dim: #008f39;
+  --accent-color: #00ff88;
+  --dock-bg: rgba(2, 20, 10, 0.85);
+  --dock-border: rgba(0, 255, 102, 0.25);
+  font-family: 'Courier New', Courier, 'JetBrains Mono', monospace;
+}
+
+body.theme-matrix .clock-display-digital,
+body.theme-matrix .digital-colon,
+body.theme-matrix .pomodoro-time-text {
+  text-shadow: 0 0 10px rgba(0, 255, 102, 0.8), 0 0 25px rgba(0, 255, 102, 0.4);
+}
+
+/* CRT Scanline overlay */
+body.theme-matrix::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 99;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* Vignette shadow */
+body.theme-matrix::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
+  pointer-events: none;
+  z-index: 98;
+}
+
+/* ========================================================
+   THEME 4: AURA SUNSET GRADIENT (LOFI / SCANDINAVIAN)
+   ======================================================== */
+body.theme-aura {
+  --bg-color: #090a16;
+  --text-main: #ffffff;
+  --text-dim: #94a3b8;
+  --accent-color: #f43f5e;
+  --dock-bg: rgba(30, 27, 75, 0.5);
+  --dock-border: rgba(255, 255, 255, 0.15);
+}
+
+/* Dynamic Aura Mesh Blobs */
+.aura-container {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body.theme-aura .aura-container {
+  display: block;
+}
+
+.aura-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  animation: floatAura 20s infinite alternate ease-in-out;
+}
+
+.aura-blob-1 {
+  width: 500px;
+  height: 500px;
+  background: #f43f5e;
+  top: 15%;
+  left: 20%;
+}
+
+.aura-blob-2 {
+  width: 600px;
+  height: 600px;
+  background: #8b5cf6;
+  bottom: 10%;
+  right: 15%;
+  animation-delay: -5s;
+}
+
+.aura-blob-3 {
+  width: 450px;
+  height: 450px;
+  background: #fb923c;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -10s;
+}
+
+@keyframes floatAura {
+  0% { transform: scale(1) translate(0px, 0px); }
+  50% { transform: scale(1.15) translate(40px, -30px); }
+  100% { transform: scale(0.9) translate(-30px, 40px); }
+}
+
+/* ========================================================
+   THEME 5: BAUHAUS / SWISS MODERN ANALOG
+   ======================================================== */
+body.theme-swiss {
+  --bg-color: #f1f3f5;
+  --text-main: #0f172a;
+  --text-dim: #64748b;
+  --accent-color: #e11d48;
+  --dock-bg: rgba(255, 255, 255, 0.85);
+  --dock-border: rgba(0, 0, 0, 0.08);
+  --analog-bg: #ffffff;
+  --analog-border: #18181b;
+  --analog-hands: #18181b;
+  --analog-tick: #18181b;
+}
+
+body.theme-swiss .top-bar-chip,
+body.theme-swiss .control-pill {
+  color: #0f172a !important;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  text-shadow: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+body.theme-swiss .date-text {
+  color: #0f172a !important;
+  text-shadow: none;
+}
+
+body.theme-swiss #topWeekDisplay {
+  color: #e11d48;
+  text-shadow: none;
+}
+
+body.theme-swiss .quotes-bar {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+body.theme-swiss .quote-text {
+  color: #1e293b;
+  text-shadow: none;
+}
+
+body.theme-swiss .progress-trackers {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+body.theme-swiss .progress-header {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+body.theme-swiss .progress-bar-bg {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.theme-swiss .bottom-dock {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+body.theme-swiss .control-btn {
+  color: #1e293b;
+  text-shadow: none;
+}
+
+body.theme-swiss .control-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #e11d48;
+}
+
+body.theme-swiss .control-btn.active {
+  background: #e11d48;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(225, 29, 72, 0.5);
+}
+
+/* ========================================================
+   THEME 6: MÙA ĐÔNG / GIÁNG SINH NOEL (WINTER NOEL)
+   ======================================================== */
+body.theme-winter {
+  --bg-color: #070d18;
+  --text-main: #f1f5f9;
+  --text-dim: #94a3b8;
+  --accent-color: #ef4444; /* Holiday Cranberry */
+  --secondary-accent: #38bdf8; /* Frost Cyan */
+  --flip-bg: #111e33;
+  --flip-text: #f8fafc;
+  --dock-bg: rgba(15, 23, 42, 0.8);
+  --dock-border: rgba(56, 189, 248, 0.25);
+}
+
+/* ========================================================
+   THEME 7: MÙA XUÂN / TẾT NGUYÊN ĐÁN (LUNAR NEW YEAR)
+   ======================================================== */
+body.theme-spring {
+  --bg-color: #1a0507; /* Imperial Maroon */
+  --text-main: #fffbeb;
+  --text-dim: #d4a373;
+  --accent-color: #f59e0b; /* Imperial Gold */
+  --secondary-accent: #e11d48; /* Lucky Ruby */
+  --flip-bg: #2b0b10;
+  --flip-text: #fef08a;
+  --dock-bg: rgba(43, 8, 14, 0.85);
+  --dock-border: rgba(245, 158, 11, 0.3);
+}
+
+/* ========================================================
+   THEME 8: MÙA HẠ (SUMMER BREEZE / COASTAL SUNSET)
+   ======================================================== */
+body.theme-summer {
+  --bg-color: #05141e;
+  --text-main: #f0fdf4;
+  --text-dim: #64748b;
+  --accent-color: #14b8a6; /* Ocean Aqua */
+  --secondary-accent: #f97316; /* Sunset Orange */
+  --flip-bg: #0c2538;
+  --flip-text: #e0f2fe;
+  --dock-bg: rgba(7, 29, 43, 0.8);
+  --dock-border: rgba(20, 184, 166, 0.25);
+}
+
+/* ========================================================
+   THEME 9: MÙA THU (AUTUMN MAPLE / COZY AMBER)
+   ======================================================== */
+body.theme-autumn {
+  --bg-color: #120b06;
+  --text-main: #fef3c7;
+  --text-dim: #a8a29e;
+  --accent-color: #f97316; /* Amber Maple */
+  --secondary-accent: #eab308; /* Golden Foliage */
+  --flip-bg: #27140a;
+  --flip-text: #fed7aa;
+  --dock-bg: rgba(35, 19, 10, 0.85);
+  --dock-border: rgba(249, 115, 22, 0.3);
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e242d"/>
+      <stop offset="100%" stop-color="#0a0c0f"/>
+    </linearGradient>
+    <linearGradient id="accentGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Card -->
+  <rect x="24" y="24" width="464" height="464" rx="110" fill="url(#bgGrad512)" stroke="rgba(255,255,255,0.12)" stroke-width="8"/>
+  <!-- Clock Flap Card 1 -->
+  <rect x="76" y="120" width="160" height="270" rx="26" fill="#15181e" stroke="rgba(255,255,255,0.06)" stroke-width="4"/>
+  <line x1="76" y1="255" x2="236" y2="255" stroke="#000000" stroke-width="6"/>
+  <text x="156" y="298" font-family="-apple-system, sans-serif" font-weight="900" font-size="140" fill="#ffffff" text-anchor="middle">10</text>
+  <!-- Clock Flap Card 2 -->
+  <rect x="276" y="120" width="160" height="270" rx="26" fill="#15181e" stroke="rgba(255,255,255,0.06)" stroke-width="4"/>
+  <line x1="276" y1="255" x2="436" y2="255" stroke="#000000" stroke-width="6"/>
+  <text x="356" y="298" font-family="-apple-system, sans-serif" font-weight="900" font-size="140" fill="url(#accentGrad512)" text-anchor="middle">24</text>
+  <!-- Indicator dot -->
+  <circle cx="256" cy="225" r="9" fill="#38bdf8"/>
+  <circle cx="256" cy="285" r="9" fill="#38bdf8"/>
+</svg>

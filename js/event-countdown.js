@@ -147,7 +147,8 @@ export class EventCountdownManager {
         event: evt,
         isReached: true,
         formatted: `${evt.icon} ${evt.title}: Đã đến rồi! 🎉`,
-        shortFormatted: `${evt.icon} Hôm nay!`
+        shortFormatted: `${evt.icon} Hôm nay!`,
+        compactFormatted: `${evt.icon} Hôm nay`
       };
     }
 
@@ -173,7 +174,8 @@ export class EventCountdownManager {
       minutes,
       seconds,
       formatted,
-      shortFormatted: `${evt.icon} ${days > 0 ? days + ' ngày ' : ''}${pad(hours)}:${pad(minutes)}`
+      shortFormatted: `${evt.icon} ${days > 0 ? days + ' ngày ' : ''}${pad(hours)}:${pad(minutes)}`,
+      compactFormatted: `${evt.icon} ${days > 0 ? days + 'n' : pad(hours) + ':' + pad(minutes)}`
     };
   }
 

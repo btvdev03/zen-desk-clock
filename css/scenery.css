@@ -17,6 +17,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
@@ -63,6 +64,7 @@ body.theme-autumn .scenery-container {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 2;
   pointer-events: none;
   background-color: rgba(0, 0, 0, var(--bg-dimmer));

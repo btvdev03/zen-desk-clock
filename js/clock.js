@@ -82,12 +82,14 @@ class ClockEngine {
 
     // Formatting date in Vietnamese
     const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    const dayNamesShort = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     const monthNames = [
       'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
       'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
     ];
 
     const dayName = dayNames[date.getDay()];
+    const dayShort = dayNamesShort[date.getDay()];
     const monthName = monthNames[date.getMonth()];
     const dateNum = date.getDate();
     const year = date.getFullYear();
@@ -106,7 +108,8 @@ class ClockEngine {
       yearProgressPercent,
       isoWeek,
       dateFormatted: `${dayName}, ${dateNum} ${monthName}, ${year}`,
-      dateShort: `${pad(dateNum)}/${pad(date.getMonth() + 1)}/${year}`
+      dateShort: `${pad(dateNum)}/${pad(date.getMonth() + 1)}/${year}`,
+      dateShortFormatted: `${dayShort}, ${pad(dateNum)}/${pad(date.getMonth() + 1)}`
     };
   }
 

@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="ZenDesk Clock - Bàn làm việc đồng hồ lật 3D retro, OLED tối giản, đồng hồ kim Thụy Sĩ & Pomodoro tập trung sâu.">
   <meta name="theme-color" content="#0d0f12">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,11 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=10">
-  <link rel="stylesheet" href="css/flip.css?v=10">
-  <link rel="stylesheet" href="css/analog.css?v=10">
-  <link rel="stylesheet" href="css/themes.css?v=10">
-  <link rel="stylesheet" href="css/scenery.css?v=10">
+  <link rel="stylesheet" href="css/main.css?v=11">
+  <link rel="stylesheet" href="css/flip.css?v=11">
+  <link rel="stylesheet" href="css/analog.css?v=11">
+  <link rel="stylesheet" href="css/themes.css?v=11">
+  <link rel="stylesheet" href="css/scenery.css?v=11">
 </head>
 <body class="theme-flip">
 
@@ -48,25 +48,27 @@
     <!-- TOP BAR: DATE, ISO WEEK, MEMENTO MORI, WAKE LOCK -->
     <header class="top-bar">
       <div class="top-bar-left">
-        <div class="top-bar-chip">
-          <span class="date-text" id="topDateDisplay">Thứ Ba, 3 tháng 11, 2026</span>
+        <div class="top-bar-chip date-chip">
+          <span class="date-text date-full" id="topDateDisplay">Thứ Ba, 3 tháng 11, 2026</span>
+          <span class="date-text date-short" id="topDateShortDisplay">T3, 03/11</span>
         </div>
-        <div class="top-bar-chip">
+        <div class="top-bar-chip week-chip">
           <span id="topWeekDisplay">Tuần 45</span>
         </div>
         <button class="top-bar-chip event-countdown-chip" id="eventCountdownChip" title="Xem và thêm sự kiện đếm ngược (Tết, Noel, Sinh nhật, Deadline...)">
-          <span id="eventCountdownText">🧧 Tết: Đang tải...</span>
+          <span class="event-text-full" id="eventCountdownText">🧧 Tết: Đang tải...</span>
+          <span class="event-text-compact" id="eventCountdownCompactText">🧧 51n</span>
         </button>
       </div>
 
       <div class="top-bar-right">
-        <button class="top-bar-chip" id="wakeLockBtn" title="Giữ màn hình luôn sáng (Không để màn hình tắt khi làm việc)">
+        <button class="top-bar-chip wake-lock-chip" id="wakeLockBtn" title="Giữ màn hình luôn sáng (Không để màn hình tắt khi làm việc)">
           <span class="chip-status-dot" id="wakeLockDot"></span>
-          <span id="wakeLockText">Màn hình luôn sáng</span>
+          <span class="wake-lock-label" id="wakeLockText">Màn hình luôn sáng</span>
         </button>
-        <button class="top-bar-chip" id="fullscreenTopBtn" title="Bật / Thoát toàn màn hình (F)">
+        <button class="top-bar-chip fullscreen-chip" id="fullscreenTopBtn" title="Bật / Thoát toàn màn hình (F)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-          <span>Toàn màn hình</span>
+          <span class="fullscreen-text">Toàn màn hình</span>
         </button>
       </div>
     </header>
@@ -458,7 +460,7 @@
   </div>
 
   <!-- Main ES Module Script -->
-  <script type="module" src="js/app.js?v=9"></script>
+  <script type="module" src="js/app.js?v=11"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>

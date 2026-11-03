@@ -101,6 +101,7 @@ class ZenApp {
 
     // Top Bar elements
     this.topDateDisplay = document.getElementById('topDateDisplay');
+    this.topDateShortDisplay = document.getElementById('topDateShortDisplay');
     this.topWeekDisplay = document.getElementById('topWeekDisplay');
     this.wakeLockBtn = document.getElementById('wakeLockBtn');
     this.wakeLockDot = document.getElementById('wakeLockDot');
@@ -108,6 +109,7 @@ class ZenApp {
     this.fullscreenTopBtn = document.getElementById('fullscreenTopBtn');
     this.eventCountdownChip = document.getElementById('eventCountdownChip');
     this.eventCountdownText = document.getElementById('eventCountdownText');
+    this.eventCountdownCompactText = document.getElementById('eventCountdownCompactText');
 
     // Progress trackers
     this.dayProgressBar = document.getElementById('dayProgressBar');
@@ -218,6 +220,9 @@ class ZenApp {
 
       if (isNewSecond) {
         this.topDateDisplay.textContent = timeData.dateFormatted;
+        if (this.topDateShortDisplay) {
+          this.topDateShortDisplay.textContent = timeData.dateShortFormatted;
+        }
         this.topWeekDisplay.textContent = `Tuần ${timeData.isoWeek}`;
         this.dayProgressBar.style.width = `${timeData.dayProgressPercent}%`;
         this.dayProgressPercent.textContent = `${timeData.dayProgressPercent}%`;
@@ -228,6 +233,9 @@ class ZenApp {
         const countdownData = eventCountdownManager.getActiveCountdown();
         if (countdownData) {
           this.eventCountdownText.textContent = countdownData.shortFormatted;
+          if (this.eventCountdownCompactText) {
+            this.eventCountdownCompactText.textContent = countdownData.compactFormatted;
+          }
         }
 
         if (this.activeMode === 'clock') {
@@ -312,6 +320,9 @@ class ZenApp {
     eventCountdownManager.onChange((data) => {
       if (data && this.eventCountdownText) {
         this.eventCountdownText.textContent = data.shortFormatted;
+        if (this.eventCountdownCompactText) {
+          this.eventCountdownCompactText.textContent = data.compactFormatted;
+        }
       }
     });
 

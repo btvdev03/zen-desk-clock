@@ -1,119 +1,263 @@
 /**
- * ZenDesk Clock - Bauhaus / Swiss Modern Analog Clock
+ * ZenDesk Clock - Iconic Swiss Railway Clock (SBB CFF FFS) & Bauhaus Horology Stylesheet
+ * 100% Vector SVG Precision Geometry with exact Hans Hilfiker proportions.
  */
 
 .analog-clock-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: clamp(260px, 45vw, 420px);
-  height: clamp(260px, 45vw, 420px);
+  width: clamp(280px, min(44vw, 44vh), 450px);
+  height: clamp(280px, min(44vw, 44vh), 450px);
   position: relative;
+  user-select: none;
 }
 
-.analog-dial {
+.analog-clock-wrapper {
   width: 100%;
   height: 100%;
+  position: relative;
   border-radius: 50%;
-  background: var(--analog-bg, #ffffff);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), inset 0 2px 8px rgba(0, 0, 0, 0.12);
-  border: clamp(8px, 1.5vw, 14px) solid var(--analog-border, #1a1a1e);
-  position: relative;
-  overflow: hidden;
+  /* Realistic 3D multi-layer watch casing drop shadows */
+  box-shadow: 
+    0 30px 65px -10px rgba(0, 0, 0, 0.55),
+    0 12px 25px -5px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
 }
 
-.analog-ticks {
-  position: absolute;
-  top: 0;
-  left: 0;
+.analog-clock-wrapper:hover {
+  transform: scale(1.012);
+  box-shadow: 
+    0 35px 75px -10px rgba(0, 0, 0, 0.65),
+    0 16px 30px -5px rgba(0, 0, 0, 0.4),
+    0 0 0 1.5px rgba(255, 255, 255, 0.2);
+}
+
+.analog-svg {
   width: 100%;
   height: 100%;
-}
-
-.tick {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform-origin: 50% 50%;
-  width: 2px;
-  height: 100%;
-  pointer-events: none;
-}
-
-.tick::before {
-  content: '';
   display: block;
-  margin: 0 auto;
-  background: var(--analog-tick, #1c1c1e);
+  overflow: visible;
 }
 
-.tick-major::before {
-  width: 4px;
-  height: clamp(14px, 2.8vw, 24px);
-  border-radius: 2px;
+/* ========================================================
+   HAND SHADOWS & GEOMETRY (SCREEN-SPACE CONSISTENT LIGHTING)
+   ======================================================== */
+.swiss-hand-group {
+  will-change: transform;
 }
 
-.tick-minor::before {
-  width: 2px;
-  height: clamp(8px, 1.5vw, 12px);
-  opacity: 0.4;
+/* Screen-space downward drop-shadows for realistic horology depth */
+.swiss-hour-group {
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3));
 }
 
-.analog-hand {
-  position: absolute;
+.swiss-minute-group {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.32));
+}
+
+.swiss-second-group {
+  filter: drop-shadow(0 3px 5px rgba(225, 29, 72, 0.45));
+}
+
+/* Hand mechanical snap animation in stop2go */
+.minute-mechanical-snap {
+  transition: transform 0.18s cubic-bezier(0.18, 1.45, 0.35, 1) !important;
+}
+
+/* ========================================================
+   DIAL MARKERS & TYPOGRAPHY
+   ======================================================== */
+.swiss-brand {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+  fill: #64748b;
+  text-anchor: middle;
+}
+
+.swiss-sub-brand {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 7.2px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  fill: #94a3b8;
+  text-anchor: middle;
+}
+
+/* Domed glass reflection */
+.swiss-glass {
+  opacity: 0.65;
+  mix-blend-mode: screen;
+}
+
+/* ========================================================
+   STYLE 1: SBB CLASSIC (White Enamel Dial, Hilfiker Rectangles)
+   ======================================================== */
+.style-sbb_classic .tick-major.sbb-tick {
+  fill: #111114;
+}
+
+.style-sbb_classic .tick-minor.sbb-tick {
+  fill: #1c1d22;
+}
+
+.style-sbb_classic .swiss-hour-hand,
+.style-sbb_classic .swiss-minute-hand {
+  fill: #111114;
+}
+
+.style-sbb_classic .swiss-second-stem,
+.style-sbb_classic .swiss-second-disc,
+.style-sbb_classic .swiss-pin-outer {
+  fill: #e3001b; /* Official SBB Pantone 485 C Red */
+}
+
+.style-sbb_classic .swiss-pin-inner {
+  fill: #111114;
+}
+
+/* ========================================================
+   STYLE 2: SBB DARK NIGHT (Obsidian Dial, Super-LumiNova)
+   ======================================================== */
+.style-sbb_dark .swiss-case-bezel {
+  fill: url(#bezelGradientDark) !important;
+  stroke: #090a0c !important;
+}
+
+.style-sbb_dark .tick-major.sbb-tick {
+  fill: #f8fafc;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.45));
+}
+
+.style-sbb_dark .tick-minor.sbb-tick {
+  fill: #94a3b8;
+}
+
+.style-sbb_dark .swiss-brand {
+  fill: #64748b;
+}
+
+.style-sbb_dark .swiss-sub-brand {
+  fill: #475569;
+}
+
+.style-sbb_dark .swiss-hour-hand,
+.style-sbb_dark .swiss-minute-hand {
+  fill: #ffffff;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+}
+
+.style-sbb_dark .swiss-second-stem,
+.style-sbb_dark .swiss-second-disc,
+.style-sbb_dark .swiss-pin-outer {
+  fill: #ff2a4b;
+  filter: drop-shadow(0 0 5px rgba(255, 42, 75, 0.6));
+}
+
+.style-sbb_dark .swiss-pin-inner {
+  fill: #ffffff;
+}
+
+/* ========================================================
+   STYLE 3: BAUHAUS MAX BILL (Vintage Ivory, Needle Hands)
+   ======================================================== */
+.style-bauhaus .bauhaus-tick,
+.style-bauhaus .bauhaus-dot {
+  fill: #1c1917;
+}
+
+.style-bauhaus .swiss-brand {
+  font-family: 'JetBrains Mono', -apple-system, monospace;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  fill: #57534e;
+}
+
+.style-bauhaus .swiss-sub-brand {
+  font-family: -apple-system, sans-serif;
+  font-size: 6.8px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  fill: #78716c;
+}
+
+/* Slender Bauhaus needle hands */
+.style-bauhaus #swissHourBar {
+  x: 197.8;
+  width: 4.4px;
+  rx: 2;
+  fill: #1c1917;
+}
+
+.style-bauhaus #swissMinuteBar {
+  x: 198.5;
+  width: 3px;
+  rx: 1.5;
+  fill: #1c1917;
+}
+
+.style-bauhaus #swissSecondStem {
+  x: 199.2;
+  width: 1.6px;
+  fill: #dc2626;
+}
+
+.style-bauhaus #swissSecondDisc {
+  r: 8.5;
+  cy: 70;
+  fill: #dc2626;
+}
+
+.style-bauhaus .swiss-pin-outer {
+  r: 5.5;
+  fill: #dc2626;
+}
+
+.style-bauhaus .swiss-pin-inner {
+  r: 2;
+  fill: #1c1917;
+}
+
+/* ========================================================
+   SWISS STYLE SWITCH TOAST NOTIFICATION
+   ======================================================== */
+.swiss-toast {
+  position: fixed;
+  top: 70px;
   left: 50%;
-  bottom: 50%;
-  transform-origin: bottom center;
-  border-radius: 4px;
-  transition: none; /* continuous requestAnimationFrame handles smoothing */
+  transform: translateX(-50%) translateY(-12px);
+  background: rgba(13, 17, 23, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #ffffff;
+  border: 1px solid rgba(225, 29, 72, 0.45);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 12px rgba(225, 29, 72, 0.3);
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
 
-.hour-hand {
-  width: clamp(5px, 1vw, 8px);
-  height: 28%;
-  margin-left: calc(-1 * clamp(5px, 1vw, 8px) / 2);
-  background: var(--analog-hands, #111114);
-  z-index: 3;
+.swiss-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
-.minute-hand {
-  width: clamp(4px, 0.8vw, 6px);
-  height: 42%;
-  margin-left: calc(-1 * clamp(4px, 0.8vw, 6px) / 2);
-  background: var(--analog-hands, #111114);
-  z-index: 4;
-}
-
-.second-hand {
-  width: 2px;
-  height: 46%;
-  margin-left: -1px;
-  background: #e11d48; /* Iconic Swiss railway red */
-  z-index: 5;
-}
-
-/* Swiss Railway iconic circle dot */
-.swiss-dot {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: clamp(12px, 2.2vw, 18px);
-  height: clamp(12px, 2.2vw, 18px);
-  background: #e11d48;
-  border-radius: 50%;
-}
-
-/* Center pin */
-.analog-cap {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(12px, 2vw, 16px);
-  height: clamp(12px, 2vw, 16px);
-  background: #e11d48;
-  border-radius: 50%;
-  z-index: 6;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+/* Mobile responsive sizing */
+@media (max-width: 640px) {
+  .analog-clock-container {
+    width: clamp(240px, 78vw, 320px);
+    height: clamp(240px, 78vw, 320px);
+  }
 }

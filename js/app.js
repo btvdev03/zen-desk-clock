@@ -137,6 +137,9 @@ class ZenApp {
     this.showSecondsToggle = document.getElementById('showSecondsToggle');
     this.volumeSlider = document.getElementById('volumeSlider');
     this.focusDurationSelect = document.getElementById('focusDurationSelect');
+    this.swissStyleSelect = document.getElementById('swissStyleSelect');
+    this.swissMoveSelect = document.getElementById('swissMoveSelect');
+    this.swissGlassToggle = document.getElementById('swissGlassToggle');
     this.particleSelect = document.getElementById('particleSelect');
     this.wallpaperSelect = document.getElementById('wallpaperSelect');
     this.customWallpaperOption = document.getElementById('customWallpaperOption');
@@ -412,6 +415,31 @@ class ZenApp {
       pomodoroEngine.setDuration('focus', mins);
       localStorage.setItem('zd_focus_mins', mins);
     });
+
+    // Swiss Horology Settings
+    if (this.swissStyleSelect) {
+      this.swissStyleSelect.addEventListener('change', (e) => {
+        if (this.analogRenderer) {
+          this.analogRenderer.setStyle(e.target.value);
+        }
+      });
+    }
+
+    if (this.swissMoveSelect) {
+      this.swissMoveSelect.addEventListener('change', (e) => {
+        if (this.analogRenderer) {
+          this.analogRenderer.setMovement(e.target.value);
+        }
+      });
+    }
+
+    if (this.swissGlassToggle) {
+      this.swissGlassToggle.addEventListener('change', (e) => {
+        if (this.analogRenderer) {
+          this.analogRenderer.setGlass(e.target.checked);
+        }
+      });
+    }
 
     this.particleSelect.addEventListener('change', (e) => {
       this.particlePreference = e.target.value;
@@ -728,7 +756,13 @@ class ZenApp {
   }
 
   _loadSavedPreferences() {
-    const savedTheme = localStorage.getItem('zd_theme');
+    const urlParams = new URLSearchParams(window.location.search);
+    let initialTheme = urlParams.get('theme');
+    if (initialTheme && !initialTheme.startsWith('theme-')) {
+      initialTheme = `theme-${initialTheme}`;
+    }
+
+    const savedTheme = initialTheme || localStorage.getItem('zd_theme');
     if (savedTheme && this.themes.includes(savedTheme)) {
       this._applyTheme(savedTheme);
     } else {
@@ -764,6 +798,13 @@ class ZenApp {
       const mins = parseInt(savedFocus, 10);
       this.focusDurationSelect.value = mins;
       pomodoroEngine.setDuration('focus', mins);
+    }
+
+    // Load Swiss Analog Preferences
+    if (this.analogRenderer) {
+      if (this.swissStyleSelect) this.swissStyleSelect.value = this.analogRenderer.style;
+      if (this.swissMoveSelect) this.swissMoveSelect.value = this.analogRenderer.movement;
+      if (this.swissGlassToggle) this.swissGlassToggle.checked = this.analogRenderer.showGlass;
     }
 
     const savedParticle = localStorage.getItem('zd_particle_pref');

@@ -19,11 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=9">
-  <link rel="stylesheet" href="css/flip.css?v=9">
-  <link rel="stylesheet" href="css/analog.css?v=9">
-  <link rel="stylesheet" href="css/themes.css?v=9">
-  <link rel="stylesheet" href="css/scenery.css?v=9">
+  <link rel="stylesheet" href="css/main.css?v=10">
+  <link rel="stylesheet" href="css/flip.css?v=10">
+  <link rel="stylesheet" href="css/analog.css?v=10">
+  <link rel="stylesheet" href="css/themes.css?v=10">
+  <link rel="stylesheet" href="css/scenery.css?v=10">
 </head>
 <body class="theme-flip">
 
@@ -238,7 +238,52 @@
           </select>
         </div>
 
-        <!-- 2. HÌNH NỀN 4K & KHUNG CẢNH -->
+        <!-- 2. ĐỒNG HỒ KIM THỤY SĨ & PHONG CÁCH HILFIKER -->
+        <div class="setting-group-header">🇨🇭 Đồng Hồ Kim Thụy Sĩ (Swiss SBB)</div>
+
+        <!-- Phong cách mặt kim -->
+        <div class="setting-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Phong cách mặt đồng hồ <span class="setting-sub">(Mặt Kim)</span></div>
+            <div class="setting-desc">Thiết kế chuẩn đường sắt Liên bang Thụy Sĩ (SBB CFF FFS) & trường phái Bauhaus</div>
+          </div>
+          <div class="setting-control-full">
+            <select id="swissStyleSelect" class="setting-select">
+              <option value="sbb_classic" selected>🇨🇭 SBB Cổ Điển (Mặt trắng viền thép - Chuẩn Hans Hilfiker)</option>
+              <option value="sbb_dark">🌑 SBB Dạ Quang (Mặt đen sang trọng - Tương phản ban đêm)</option>
+              <option value="bauhaus">📐 Bauhaus Max Bill (Tối giản thanh lịch nghệ thuật 1961)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Chuyển động kim giây -->
+        <div class="setting-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Cơ chế kim giây & phút <span class="setting-sub">(Chuyển Động)</span></div>
+            <div class="setting-desc">Cơ chế Stop2Go độc quyền Thụy Sĩ hoặc chuyển động trôi mượt 60fps</div>
+          </div>
+          <div class="setting-control-full">
+            <select id="swissMoveSelect" class="setting-select">
+              <option value="stop2go" selected>⏸️ Chuẩn Thụy Sĩ Stop2Go (Dừng 1.5s ở 12h & Nhảy phút cơ học)</option>
+              <option value="smooth">🌊 Trôi mượt mà 60fps (Continuous Sweep êm dịu)</option>
+              <option value="step">⏱️ Nhảy từng giây (Quartz Stepping)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Phản chiếu mặt kính vòm cong -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Mặt kính vòm quang học 3D <span class="setting-sub">(Phản Chiếu Kính)</span></div>
+            <div class="setting-desc">Hiệu ứng khúc xạ ánh sáng trên vòm kính sapphire cong như đồng hồ cao cấp</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="swissGlassToggle" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <!-- 3. HÌNH NỀN 4K & KHUNG CẢNH -->
         <div class="setting-group-header">🖼️ Hình Nền 4K & Khung Cảnh</div>
 
         <!-- Kiểu hình nền (Full width select) -->

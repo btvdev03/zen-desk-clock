@@ -19,11 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=6">
-  <link rel="stylesheet" href="css/flip.css?v=6">
-  <link rel="stylesheet" href="css/analog.css?v=6">
-  <link rel="stylesheet" href="css/themes.css?v=6">
-  <link rel="stylesheet" href="css/scenery.css?v=6">
+  <link rel="stylesheet" href="css/main.css?v=7">
+  <link rel="stylesheet" href="css/flip.css?v=7">
+  <link rel="stylesheet" href="css/analog.css?v=7">
+  <link rel="stylesheet" href="css/themes.css?v=7">
+  <link rel="stylesheet" href="css/scenery.css?v=7">
 </head>
 <body class="theme-flip">
 
@@ -190,138 +190,173 @@
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 class="modal-title">Settings & Preferences</h2>
-        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+        <h2 class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Cài Đặt & Tùy Chỉnh</span>
+        </h2>
+        <button class="modal-close-btn" id="modalCloseBtn" title="Đóng (Esc)">&times;</button>
       </div>
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Clock Format (24-Hour)</div>
-          <div class="setting-desc">Toggle between 12-hour AM/PM and 24-hour display</div>
-        </div>
-        <input type="checkbox" id="format24Toggle" checked style="width: 20px; height: 20px; cursor: pointer;">
-      </div>
+      <div class="modal-body">
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Show Seconds</div>
-          <div class="setting-desc">Display seconds counter in clock views</div>
-        </div>
-        <input type="checkbox" id="showSecondsToggle" checked style="width: 20px; height: 20px; cursor: pointer;">
-      </div>
+        <!-- 1. THỜI GIAN & POMODORO -->
+        <div class="setting-group-header">⏱️ Thời Gian & Pomodoro</div>
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Ambient Sound Volume</div>
-          <div class="setting-desc">Adjust sound generator output level</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Định dạng 24 Giờ <span class="setting-sub">(24-Hour Clock)</span></div>
+            <div class="setting-desc">Chuyển đổi giữa chế độ 12h (AM/PM) và 24h</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="format24Toggle" checked>
+            <span class="switch-slider"></span>
+          </label>
         </div>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.5">
-      </div>
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Focus Duration</div>
-          <div class="setting-desc">Pomodoro focus duration in minutes</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Hiển thị đếm giây <span class="setting-sub">(Show Seconds)</span></div>
+            <div class="setting-desc">Bật hoặc tắt hiển thị số giây trên mặt đồng hồ</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="showSecondsToggle" checked>
+            <span class="switch-slider"></span>
+          </label>
         </div>
-        <select id="focusDurationSelect" style="background: #232730; color: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-          <option value="15">15 mins</option>
-          <option value="25" selected>25 mins (Classic)</option>
-          <option value="45">45 mins</option>
-          <option value="50">50 mins (Deep Work)</option>
-          <option value="60">60 mins</option>
-        </select>
-      </div>
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Wallpaper Style (Kiểu hình nền)</div>
-          <div class="setting-desc">Ảnh chụp thật 4K theo mùa, tranh Vector hoặc ảnh cá nhân</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Thời lượng tập trung <span class="setting-sub">(Focus Duration)</span></div>
+            <div class="setting-desc">Thời gian một phiên Pomodoro Deep Work</div>
+          </div>
+          <select id="focusDurationSelect" class="setting-select-compact">
+            <option value="15">15 phút</option>
+            <option value="25" selected>25 phút (Classic)</option>
+            <option value="45">45 phút</option>
+            <option value="50">50 phút (Deep Work)</option>
+            <option value="60">60 phút</option>
+          </select>
         </div>
-        <select id="wallpaperSelect" style="background: #232730; color: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-          <option value="auto_photo" selected>📸 Ảnh chụp thật 4K theo mùa (Real Photo)</option>
-          <option value="winter_photo">❄️ Ảnh thật: Căn nhà gỗ tuyết phủ (Winter Cabin)</option>
-          <option value="spring_photo">🌸 Ảnh thật: Cành đào hồng ngày xuân (Peach Blossom)</option>
-          <option value="spring_mai_photo">🧧 Ảnh thật: Cành mai vàng đón Tết (Golden Blossom)</option>
-          <option value="summer_photo">🌊 Ảnh thật: Hoàng hôn biển nhiệt đới (Sunset Beach)</option>
-          <option value="autumn_photo">🍁 Ảnh thật: Rừng phong đỏ Kyoto (Autumn Maple)</option>
-          <option value="cafe_photo">☕ Ảnh thật: Quán cafe ấm cúng (Cozy Cafe)</option>
-          <option value="vector">🎨 Tranh nghệ thuật Vector Parallax</option>
-          <option value="custom" id="customWallpaperOption" disabled>🖼️ Ảnh cá nhân của bạn (Chưa tải lên)</option>
-        </select>
-      </div>
 
-      <div class="setting-row" style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 0.8rem;">
-        <div>
-          <div class="setting-label">Tải Ảnh Nền Từ Máy Bạn (Custom Wallpaper)</div>
-          <div class="setting-desc">Lưu trực tiếp vào trình duyệt qua IndexedDB, không mất khi refresh</div>
+        <!-- 2. HÌNH NỀN 4K & KHUNG CẢNH -->
+        <div class="setting-group-header">🖼️ Hình Nền 4K & Khung Cảnh</div>
+
+        <!-- Kiểu hình nền (Full width select) -->
+        <div class="setting-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Kiểu hình nền <span class="setting-sub">(Wallpaper Style)</span></div>
+            <div class="setting-desc">Bộ sưu tập ảnh chụp thật 4K Unsplash theo mùa, tranh Vector hoặc ảnh cá nhân</div>
+          </div>
+          <div class="setting-control-full">
+            <select id="wallpaperSelect" class="setting-select">
+              <option value="auto_photo" selected>📸 Ảnh chụp thật 4K tự đổi theo mùa (Real Photo)</option>
+              <option value="winter_photo">❄️ Mùa đông: Căn nhà gỗ tuyết phủ Emerald Lake</option>
+              <option value="spring_photo">🌸 Mùa xuân: Cành đào hồng khoe sắc (Peach Blossom)</option>
+              <option value="spring_mai_photo">🧧 Ngày Tết: Cành mai vàng đón Tết (Golden Mai)</option>
+              <option value="summer_photo">🌊 Mùa hạ: Hoàng hôn biển nhiệt đới (Sunset Beach)</option>
+              <option value="autumn_photo">🍁 Mùa thu: Rừng phong đỏ Kyoto (Autumn Maple)</option>
+              <option value="cafe_photo">☕ Không gian: Quán cafe sách ấm cúng (Cozy Study Cafe)</option>
+              <option value="vector">🎨 Tranh nghệ thuật Vector Parallax</option>
+              <option value="custom" id="customWallpaperOption" disabled>🖼️ Ảnh cá nhân của bạn (Chưa tải lên)</option>
+            </select>
+          </div>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <input type="file" id="customWallpaperInput" accept="image/*" style="display: none;">
-          <button type="button" id="uploadWallpaperBtn" class="control-btn active" style="padding: 6px 12px; font-size: 0.82rem; border-radius: 8px;">
-            📁 Chọn Ảnh
+
+        <!-- Tải ảnh nền từ máy (Action Card) -->
+        <div class="setting-block custom-upload-box">
+          <div class="setting-block-header">
+            <div class="setting-label">Tải ảnh nền từ máy tính <span class="setting-sub">(Custom Wallpaper)</span></div>
+            <div class="setting-desc">Lưu trực tiếp an toàn vào trình duyệt qua IndexedDB — Không mất ảnh khi F5 hoặc tắt máy</div>
+          </div>
+          <div class="upload-actions-row">
+            <input type="file" id="customWallpaperInput" accept="image/*" style="display: none;">
+            <button type="button" id="uploadWallpaperBtn" class="setting-btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              <span>Chọn ảnh từ máy tính</span>
+            </button>
+            <button type="button" id="clearWallpaperBtn" class="setting-btn-danger" style="display: none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>Xóa ảnh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hiệu ứng mùa (Full width select) -->
+        <div class="setting-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Hiệu ứng hạt theo mùa <span class="setting-sub">(Atmospheric Particles)</span></div>
+            <div class="setting-desc">Mô phỏng 3D quang học chiều sâu: bông tuyết 6 cánh, cánh đào, mai vàng, lá phong, đom đóm</div>
+          </div>
+          <div class="setting-control-full">
+            <select id="particleSelect" class="setting-select">
+              <option value="auto" selected>✨ Tự động theo mùa (Auto Season)</option>
+              <option value="snow">❄️ Mùa đông: Tuyết rơi tinh thể 6 cánh (Winter Snow)</option>
+              <option value="sakura">🌸 Mùa xuân: Cánh hoa đào hồng bay nhẹ (Peach Petals)</option>
+              <option value="mai">🧧 Tết Nguyên Đán: Cánh hoa mai vàng (Golden Mai Petals)</option>
+              <option value="maple">🍁 Mùa thu: Lá phong đỏ 5 thùy chao nghiêng (Maple Leaves)</option>
+              <option value="fireflies">✨ Mùa hạ: Đom đóm đêm lập lòe (Summer Fireflies)</option>
+              <option value="none">🚫 Tắt hiệu ứng hạt (None)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dimmer slider -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Độ tối khung cảnh <span class="setting-sub">(Background Dimmer)</span></div>
+            <div class="setting-desc">Làm tối nền nhẹ để chữ số đồng hồ hiển thị sắc nét nhất</div>
+          </div>
+          <div class="setting-slider-group">
+            <input type="range" id="bgDimmerSlider" min="0" max="0.9" step="0.05" value="0.30" class="styled-range">
+            <span id="bgDimmerValue" class="slider-badge">30%</span>
+          </div>
+        </div>
+
+        <!-- Blur slider -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Độ mờ nghệ thuật <span class="setting-sub">(Soft Bokeh Blur)</span></div>
+            <div class="setting-desc">Làm mờ hậu cảnh để tập trung làm việc tối đa</div>
+          </div>
+          <div class="setting-slider-group">
+            <input type="range" id="bgBlurSlider" min="0" max="25" step="1" value="0" class="styled-range">
+            <span id="bgBlurValue" class="slider-badge">0px</span>
+          </div>
+        </div>
+
+        <!-- 3. ÂM THANH & SỰ KIỆN -->
+        <div class="setting-group-header">🔊 Âm Thanh & Sự Kiện</div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Âm lượng thiên nhiên <span class="setting-sub">(Ambient Volume)</span></div>
+            <div class="setting-desc">Âm thanh sóng biển, mưa rơi, lò sưởi, chim hót 100% Web Audio</div>
+          </div>
+          <div class="setting-slider-group">
+            <input type="range" class="styled-range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5">
+          </div>
+        </div>
+
+        <div style="margin: 1.1rem 0 0.5rem 0;">
+          <button id="manageEventsBtn" class="setting-milestone-btn">
+            🎯 Quản Lý Sự Kiện & Đếm Ngược (Tết, Noel, Kỷ Niệm...)
           </button>
-          <button type="button" id="clearWallpaperBtn" class="control-btn" style="padding: 6px 10px; font-size: 0.82rem; border-radius: 8px; display: none;" title="Xóa ảnh cá nhân">
-            🗑️ Xóa
-          </button>
         </div>
-      </div>
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Atmospheric Season (Hiệu ứng mùa)</div>
-          <div class="setting-desc">Tuyết rơi, hoa mai đào, lá phong hoặc đom đóm</div>
-        </div>
-        <select id="particleSelect" style="background: #232730; color: #fff; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-          <option value="auto" selected>Auto Season (Theo mùa)</option>
-          <option value="snow">Winter Snow (Tuyết rơi tinh thể 6 cánh)</option>
-          <option value="sakura">Spring Peach Blossom (Hoa đào hồng)</option>
-          <option value="mai">Spring Golden Mai (Hoa mai vàng Tết)</option>
-          <option value="maple">Autumn Maple Leaves (Lá phong 5 thùy)</option>
-          <option value="fireflies">Summer Fireflies (Đom đóm)</option>
-          <option value="none">None (Tắt hiệu ứng)</option>
-        </select>
-      </div>
+        <!-- 4. PHÍM TẮT -->
+        <div class="setting-group-header">⌨️ Phím Tắt Tiện Ích</div>
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Background Dimmer (Độ tối khung cảnh)</div>
-          <div class="setting-desc">Tăng độ tương phản để dễ đọc đồng hồ (0% - 90%)</div>
+        <div class="shortcuts-grid">
+          <div class="shortcut-item"><span class="kbd-badge">Space</span> Bật / Dừng Timer</div>
+          <div class="shortcut-item"><span class="kbd-badge">F</span> Toàn màn hình</div>
+          <div class="shortcut-item"><span class="kbd-badge">T</span> Đổi giao diện theme</div>
+          <div class="shortcut-item"><span class="kbd-badge">M</span> Đổi tiếng thiên nhiên</div>
+          <div class="shortcut-item"><span class="kbd-badge">P</span> Thu nhỏ Picture-in-Picture</div>
+          <div class="shortcut-item"><span class="kbd-badge">H</span> Ẩn nhanh UI (Zen Mode)</div>
+          <div class="shortcut-item"><span class="kbd-badge">S</span> Mở bảng cài đặt này</div>
+          <div class="shortcut-item"><span class="kbd-badge">Esc</span> Đóng hộp thoại</div>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <input type="range" id="bgDimmerSlider" min="0" max="0.9" step="0.05" value="0.30" class="volume-slider">
-          <span id="bgDimmerValue" style="font-size: 0.8rem; min-width: 35px; color: var(--accent-color);">30%</span>
-        </div>
-      </div>
 
-      <div class="setting-row">
-        <div>
-          <div class="setting-label">Background Soft Blur (Độ mờ nghệ thuật)</div>
-          <div class="setting-desc">Làm mờ phong cảnh thành tranh Bokeh để tập trung làm việc</div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <input type="range" id="bgBlurSlider" min="0" max="25" step="1" value="0" class="volume-slider">
-          <span id="bgBlurValue" style="font-size: 0.8rem; min-width: 35px; color: var(--accent-color);">0px</span>
-        </div>
-      </div>
-
-      <div style="margin-top: 1rem;">
-        <button id="manageEventsBtn" class="control-btn active" style="width: 100%; justify-content: center; padding: 0.7rem; border-radius: 10px;">
-          🎯 Quản Lý Sự Kiện & Đếm Ngược (Milestones)
-        </button>
-      </div>
-
-      <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-        <h3 style="font-size: 0.95rem; margin-bottom: 0.8rem; color: var(--accent-color);">Keyboard Shortcuts</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; font-size: 0.82rem;">
-          <div><span class="kbd-badge">Space</span> Start / Pause Timer</div>
-          <div><span class="kbd-badge">F</span> Toggle Fullscreen</div>
-          <div><span class="kbd-badge">T</span> Switch Theme</div>
-          <div><span class="kbd-badge">M</span> Toggle Soundscape</div>
-          <div><span class="kbd-badge">P</span> Picture-in-Picture</div>
-          <div><span class="kbd-badge">H</span> Zen Mode (Hide UI)</div>
-          <div><span class="kbd-badge">S</span> Open Settings</div>
-          <div><span class="kbd-badge">Esc</span> Close Modal</div>
-        </div>
       </div>
     </div>
   </div>
@@ -330,39 +365,46 @@
   <div class="modal-overlay" id="eventModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 class="modal-title">🎯 Countdown & Milestones</h2>
-        <button class="modal-close-btn" id="eventModalCloseBtn">&times;</button>
+        <h2 class="modal-title">
+          <span>🎯</span>
+          <span>Sự Kiện & Đếm Ngược (Milestones)</span>
+        </h2>
+        <button class="modal-close-btn" id="eventModalCloseBtn" title="Đóng (Esc)">&times;</button>
       </div>
 
-      <div class="event-list" id="eventList">
-        <!-- Dynamically populated -->
-      </div>
+      <div class="modal-body">
+        <div class="event-list" id="eventList">
+          <!-- Dynamically populated -->
+        </div>
 
-      <form class="event-add-form" id="eventAddForm">
-        <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-color);">+ Thêm Sự Kiện Của Bạn</div>
-        <div class="event-input-row">
-          <input type="text" id="eventTitleInput" class="event-input" placeholder="Tên sự kiện (Sinh nhật, Deadline, Launch...)" required>
-          <select id="eventIconInput" class="event-input" style="flex: 0 0 65px; text-align: center;">
-            <option value="🎯">🎯</option>
-            <option value="🎂">🎂</option>
-            <option value="🚀">🚀</option>
-            <option value="🎓">🎓</option>
-            <option value="💍">💍</option>
-            <option value="✈️">✈️</option>
-            <option value="🧧">🧧</option>
-            <option value="🎄">🎄</option>
-          </select>
-        </div>
-        <div class="event-input-row">
-          <input type="datetime-local" id="eventDateInput" class="event-input" required>
-          <button type="submit" class="event-add-btn">+ Thêm</button>
-        </div>
-      </form>
+        <form class="event-add-form" id="eventAddForm">
+          <div style="font-size: 0.88rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 0.4rem;">
+            <span>+</span> <span>Thêm Sự Kiện Của Bạn</span>
+          </div>
+          <div class="event-input-row">
+            <input type="text" id="eventTitleInput" class="event-input" placeholder="Tên sự kiện (Sinh nhật, Deadline, Launch...)" required>
+            <select id="eventIconInput" class="event-input" style="flex: 0 0 65px; text-align: center;">
+              <option value="🎯">🎯</option>
+              <option value="🎂">🎂</option>
+              <option value="🚀">🚀</option>
+              <option value="🎓">🎓</option>
+              <option value="💍">💍</option>
+              <option value="✈️">✈️</option>
+              <option value="🧧">🧧</option>
+              <option value="🎄">🎄</option>
+            </select>
+          </div>
+          <div class="event-input-row">
+            <input type="datetime-local" id="eventDateInput" class="event-input" required>
+            <button type="submit" class="event-add-btn">+ Thêm Mới</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
   <!-- Main ES Module Script -->
-  <script type="module" src="js/app.js?v=6"></script>
+  <script type="module" src="js/app.js?v=7"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>

@@ -95,32 +95,41 @@ body.idle .bottom-area {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.4rem 0.95rem;
-  background: rgba(13, 17, 23, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  font-size: 0.85rem;
+  padding: 0.42rem 0.95rem;
+  background: rgba(22, 26, 36, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9999px; /* Apple capsule */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.83rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
   color: #ffffff !important;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
-  transition: all 0.2s ease;
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28), inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .top-bar-chip:hover {
-  background: rgba(22, 27, 34, 0.9);
-  border-color: rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
+  background: rgba(35, 42, 58, 0.85);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.38), inset 0 1px 0.5px rgba(255, 255, 255, 0.4);
+}
+
+.top-bar-chip:active {
+  transform: scale(0.95);
+  transition-duration: 0.08s;
 }
 
 .chip-status-dot {
-  width: 7px;
-  height: 7px;
+  width: 7.5px;
+  height: 7.5px;
   border-radius: 50%;
-  background: #10b981; /* Green when active */
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+  background: #34c759; /* Apple iOS Green */
+  box-shadow: 0 0 10px rgba(52, 199, 89, 0.85);
 }
 
 .chip-status-dot.inactive {
@@ -421,20 +430,23 @@ body.idle .bottom-area {
 }
 
 /* ========================================================
-   BOTTOM DOCK (CONTROLS & SHORTCUTS)
+   BOTTOM DOCK (APPLE FLOATING GLASS DOCK)
    ======================================================== */
 .bottom-dock {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.45rem 0.8rem;
-  background: rgba(13, 17, 23, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 40px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  gap: 0.35rem;
+  padding: 0.38rem 0.65rem;
+  background: rgba(22, 26, 36, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px; /* Continuous Apple capsule */
+  backdrop-filter: blur(35px) saturate(200%);
+  -webkit-backdrop-filter: blur(35px) saturate(200%);
+  box-shadow: 
+    0 20px 48px -6px rgba(0, 0, 0, 0.58),
+    0 0 0 0.5px rgba(255, 255, 255, 0.2),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.35);
+  transition: opacity 0.4s ease, transform 0.4s ease, background 0.3s ease;
   z-index: 20;
   max-width: calc(100vw - 1rem);
   overflow-x: auto;
@@ -448,28 +460,31 @@ body.idle .bottom-area {
 
 .dock-separator {
   width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.18);
-  margin: 0 0.2rem;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  margin: 0 0.15rem;
   flex-shrink: 0;
 }
 
+/* Apple Segmented Pill Buttons */
 .control-btn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   outline: none;
-  color: #ffffff;
-  padding: 0.45rem 0.85rem;
-  border-radius: 20px;
+  color: #f1f5f9;
+  padding: 0.48rem 0.95rem;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  font-size: 0.85rem;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.83rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
-  transition: all 0.2s ease;
+  position: relative;
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
   min-height: 44px;
   min-width: 44px;
   box-sizing: border-box;
@@ -478,23 +493,40 @@ body.idle .bottom-area {
 }
 
 .control-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--accent-color);
-  text-shadow: 0 0 10px var(--accent-color);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2), inset 0 1px 0.5px rgba(255, 255, 255, 0.25);
 }
 
+/* Apple Spring Active Feedback */
+.control-btn:active {
+  transform: scale(0.92) translateY(0);
+  transition-duration: 0.08s;
+}
+
+/* Apple Active Segment Pill */
 .control-btn.active {
-  background: var(--accent-color);
-  color: #020617;
+  background: var(--accent-color, #0a84ff);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #ffffff;
   font-weight: 700;
-  text-shadow: none;
-  box-shadow: 0 0 18px var(--accent-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    0 4px 18px -2px var(--accent-glow, rgba(10, 132, 255, 0.55)),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .control-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   fill: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.control-btn:hover svg {
+  transform: scale(1.05);
 }
 
 /* ========================================================
@@ -763,56 +795,107 @@ body.idle .bottom-area {
   flex-wrap: wrap;
 }
 
+/* Apple System Buttons */
 .setting-btn-primary {
-  background: linear-gradient(135deg, #0284c7, #38bdf8);
-  color: #020617;
-  border: none;
-  border-radius: 8px;
-  padding: 0.55rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  display: flex;
+  background: linear-gradient(180deg, #0a84ff 0%, #0071e3 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px; /* Continuous Apple capsule */
+  padding: 0.55rem 1.15rem;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.4), inset 0 1px 0.5px rgba(255, 255, 255, 0.4);
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .setting-btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.55);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(0, 113, 227, 0.55), inset 0 1px 0.5px rgba(255, 255, 255, 0.5);
+}
+
+.setting-btn-primary:active {
+  transform: scale(0.94);
+  transition-duration: 0.08s;
+}
+
+.setting-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  padding: 0.55rem 1.15rem;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0.5px rgba(255, 255, 255, 0.25);
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1), background 0.2s ease, border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.setting-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #ffffff;
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.setting-btn-secondary:active {
+  transform: scale(0.94);
+  transition-duration: 0.08s;
 }
 
 .setting-btn-danger {
-  background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.4);
-  color: #fb7185;
-  border-radius: 8px;
-  padding: 0.55rem 0.85rem;
-  font-size: 0.85rem;
+  background: rgba(255, 69, 58, 0.14);
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  color: #ff453a;
+  border-radius: 9999px;
+  padding: 0.55rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.84rem;
   font-weight: 600;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .setting-btn-danger:hover {
-  background: rgba(244, 63, 94, 0.3);
-  border-color: #f43f5e;
+  background: rgba(255, 69, 58, 0.25);
+  border-color: #ff453a;
   color: #ffffff;
+  transform: translateY(-1.5px);
 }
 
-/* iOS Style Switch Toggle */
+.setting-btn-danger:active {
+  transform: scale(0.94);
+}
+
+/* Apple Native iOS Toggle Switch */
 .switch-toggle {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 50px;
+  height: 30px;
   flex-shrink: 0;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .switch-toggle input {
@@ -824,34 +907,94 @@ body.idle .bottom-area {
 .switch-slider {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: #334155;
-  border-radius: 24px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(120, 120, 128, 0.35);
+  border-radius: 30px;
+  transition: all 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .switch-slider:before {
   position: absolute;
   content: "";
-  height: 18px;
-  width: 18px;
+  height: 24px;
+  width: 24px;
   left: 2px;
   bottom: 2px;
   background: #ffffff;
   border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+  transition: all 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.18);
 }
 
 .switch-toggle input:checked + .switch-slider {
-  background: #38bdf8;
-  border-color: #38bdf8;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+  background: #34c759; /* Apple iOS Green */
+  border-color: #34c759;
+  box-shadow: 0 0 14px rgba(52, 199, 89, 0.45);
 }
 
 .switch-toggle input:checked + .switch-slider:before {
   transform: translateX(20px);
-  background: #020617;
+  background: #ffffff;
+}
+
+/* ========================================================
+   APPLE-STYLE WALLPAPER LOCATION BADGE (SONOMA AESTHETIC)
+   ======================================================== */
+.wallpaper-caption-badge {
+  position: fixed;
+  bottom: max(1.2rem, env(safe-area-inset-bottom, 0px));
+  left: max(1.5rem, env(safe-area-inset-left, 0px));
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(22, 26, 36, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  padding: 0.38rem 0.85rem;
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38), inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  z-index: 24;
+  cursor: pointer;
+  user-select: none;
+  max-width: clamp(180px, 30vw, 360px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wallpaper-caption-badge.hidden {
+  display: none !important;
+}
+
+.wallpaper-caption-badge:hover {
+  background: rgba(35, 42, 58, 0.88);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1.5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.48), inset 0 1px 0.5px rgba(255, 255, 255, 0.4);
+  color: #38bdf8;
+}
+
+.wallpaper-caption-badge:active {
+  transform: scale(0.95);
+}
+
+.wallpaper-caption-badge .caption-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.wallpaper-caption-badge .caption-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Slider Group */

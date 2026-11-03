@@ -1,7 +1,13 @@
 /**
- * ZenDesk Clock - Realistic Multi-Layer Seasonal Scenery Engine
- * Supports 2.5D Vector Parallax, Curated 4K Real Photography Presets,
- * and Custom User Local Wallpaper via IndexedDB.
+ * ZenDesk Clock - Realistic Multi-Layer Seasonal Scenery & Dynamic Wallpaper Engine
+ * Supports:
+ * - 🌅 Microsoft Bing Daily 4K Wallpaper API (Auto daily update with 4K UHD photography)
+ * - 🎲 Picsum Photos 4K Randomizer API
+ * - 🔄 Auto Slideshow rotation (30 minutes)
+ * - 🧧 Curated Vietnamese Lunar New Year (Tết) 4K collection
+ * - 🌿 4-Season curated Unsplash photography
+ * - 🎨 2.5D Vector Parallax SVG
+ * - 🖼️ Custom User Wallpaper via IndexedDB
  */
 
 import { wallpaperDB } from './wallpaper-db.js';
@@ -86,7 +92,7 @@ export class SceneryEngine {
   constructor(container) {
     this.container = container;
     this.currentSeason = null;
-    this.wallpaperMode = 'auto_photo'; // 'auto_photo', 'vector', specific photo preset id, or 'custom'
+    this.wallpaperMode = 'bing_daily'; // 'bing_daily', 'random_photo', 'auto_slideshow', 'auto_photo', 'vector', specific preset id, 'custom'
     this.customBlobUrl = null;
     this.dimmer = 0.30;
     this.blur = 0;
@@ -95,6 +101,8 @@ export class SceneryEngine {
     this.currentMouseX = 0;
     this.currentMouseY = 0;
     this.rafId = null;
+    this.slideshowIntervalId = null;
+    this.currentRandomUrl = null;
 
     this._initMouseParallax();
     this._loadSavedPreferences();
@@ -142,13 +150,153 @@ export class SceneryEngine {
     await this.applyScene(season);
   }
 
+  /**
+   * Fetches the official Microsoft Bing Daily 4K Wallpaper
+   * Uses high-speed cached endpoint with local daily memoization
+   */
+  async fetchBingDailyWallpaper() {
+    const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const cacheKey = 'zd_bing_cache';
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed.date === todayStr && parsed.url) {
+          return parsed;
+        }
+      } catch (e) {}
+    }
+
+    try {
+      // 3840x2160 true 4K UHD Bing Wallpaper API
+      const resp = await fetch('https://bing.biturl.top/?resolution=3840&format=json&index=0&mkt=en-US', { cache: 'no-cache' });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.url) {
+          let title = data.copyright || 'Microsoft Bing 4K';
+          let location = title;
+          if (title.includes('(')) {
+            location = title.split('(')[0].trim();
+          }
+          const bingData = {
+            date: todayStr,
+            url: data.url,
+            title: location,
+            fullCopyright: data.copyright || ''
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(bingData));
+          return bingData;
+        }
+      }
+    } catch (err) {
+      console.warn('Bing API fetch error, fallback to cached or preset', err);
+    }
+
+    if (cached) {
+      try { return JSON.parse(cached); } catch (e) {}
+    }
+
+    return {
+      date: todayStr,
+      url: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=2560&q=80',
+      title: 'Hồ Emerald tuyết phủ, Canada',
+      fullCopyright: 'Unsplash Photography'
+    };
+  }
+
+  /**
+   * Fetches or updates a random 4K nature/landscape wallpaper
+   */
+  async fetchRandomWallpaper() {
+    const ts = Date.now();
+    const url = `https://picsum.photos/2560/1440?random=${ts}`;
+    this.currentRandomUrl = url;
+    this._applyPhotoLayer(url, '🎲 Ảnh ngẫu nhiên nghệ thuật (Picsum 4K)');
+    return url;
+  }
+
+  startSlideshow() {
+    this.stopSlideshow();
+    this.nextSlideshowImage();
+    // Rotate every 30 minutes
+    this.slideshowIntervalId = setInterval(() => {
+      this.nextSlideshowImage();
+    }, 30 * 60 * 1000);
+  }
+
+  stopSlideshow() {
+    if (this.slideshowIntervalId) {
+      clearInterval(this.slideshowIntervalId);
+      this.slideshowIntervalId = null;
+    }
+  }
+
+  nextSlideshowImage() {
+    const keys = Object.keys(PHOTO_PRESETS);
+    const randKey = keys[Math.floor(Math.random() * keys.length)];
+    const preset = PHOTO_PRESETS[randKey];
+    if (preset) {
+      this._applyPhotoLayer(preset.url, `🔄 ${preset.name}`);
+    }
+  }
+
+  _applyPhotoLayer(url, caption = '') {
+    this.container.innerHTML = `
+      <div class="scenery-photo-layer" style="background-image: url('${url}');"></div>
+    `;
+    this._updateCaptionBadge(caption);
+    document.body.classList.add('has-scenery');
+  }
+
+  _updateCaptionBadge(caption) {
+    const badge = document.getElementById('wallpaperCaptionBadge');
+    const textEl = document.getElementById('wallpaperCaptionText');
+    if (badge && textEl) {
+      if (caption && caption.trim()) {
+        textEl.textContent = caption;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+  }
+
+  _getCurrentCalendarSeason() {
+    const month = new Date().getMonth() + 1;
+    if (month >= 12 || month <= 2) return 'winter';
+    if (month >= 3 && month <= 5) return 'spring';
+    if (month >= 6 && month <= 8) return 'summer';
+    return 'autumn';
+  }
+
   async applyScene(season) {
-    if (!season || season === 'none') {
-      this.container.innerHTML = '';
+    this.stopSlideshow();
+
+    // 1. Microsoft Bing Daily 4K API
+    if (this.wallpaperMode === 'bing_daily') {
+      const bing = await this.fetchBingDailyWallpaper();
+      this._applyPhotoLayer(bing.url, `📍 ${bing.title}`);
       return;
     }
 
-    // 1. Custom User Wallpaper
+    // 2. Random 4K Wallpaper (Picsum API)
+    if (this.wallpaperMode === 'random_photo') {
+      if (this.currentRandomUrl) {
+        this._applyPhotoLayer(this.currentRandomUrl, '🎲 Ảnh ngẫu nhiên nghệ thuật (Picsum 4K)');
+      } else {
+        await this.fetchRandomWallpaper();
+      }
+      return;
+    }
+
+    // 3. Auto Slideshow (30 minutes rotation)
+    if (this.wallpaperMode === 'auto_slideshow') {
+      this.startSlideshow();
+      return;
+    }
+
+    // 4. Custom User Wallpaper via IndexedDB
     if (this.wallpaperMode === 'custom') {
       const blob = await wallpaperDB.getCustomWallpaperBlob();
       if (blob) {
@@ -156,48 +304,50 @@ export class SceneryEngine {
           URL.revokeObjectURL(this.customBlobUrl);
         }
         this.customBlobUrl = URL.createObjectURL(blob);
-        this.container.innerHTML = `
-          <div class="scenery-photo-layer" style="background-image: url('${this.customBlobUrl}');"></div>
-        `;
+        this._applyPhotoLayer(this.customBlobUrl, '🖼️ Ảnh cá nhân');
         return;
       }
     }
 
-    // 2. Specific Real Photo Preset
+    // 5. Specific Real Photo Preset
     if (PHOTO_PRESETS[this.wallpaperMode]) {
       const preset = PHOTO_PRESETS[this.wallpaperMode];
-      this.container.innerHTML = `
-        <div class="scenery-photo-layer" style="background-image: url('${preset.url}');"></div>
-      `;
+      this._applyPhotoLayer(preset.url, preset.name);
       return;
     }
 
-    // 3. Auto Real Photo according to Season (Default for realistic feel!)
+    // 6. Auto Real Photo according to Season
     if (this.wallpaperMode === 'auto_photo') {
+      const currentSeason = (season && season !== 'none') ? season : this._getCurrentCalendarSeason();
       const seasonToPhoto = {
-        winter: PHOTO_PRESETS.winter_photo.url,
-        spring: PHOTO_PRESETS.spring_photo.url,
-        summer: PHOTO_PRESETS.summer_photo.url,
-        autumn: PHOTO_PRESETS.autumn_photo.url
+        winter: PHOTO_PRESETS.winter_photo,
+        spring: PHOTO_PRESETS.spring_photo,
+        summer: PHOTO_PRESETS.summer_photo,
+        autumn: PHOTO_PRESETS.autumn_photo
       };
 
-      const photoUrl = seasonToPhoto[season];
-      if (photoUrl) {
-        this.container.innerHTML = `
-          <div class="scenery-photo-layer" style="background-image: url('${photoUrl}');"></div>
-          ${season === 'winter' ? '<div class="winter-fire-glow"></div>' : ''}
-        `;
-        return;
-      }
-    }
-
-    // 4. Vector 2.5D SVG Parallax
-    if (this.wallpaperMode === 'vector') {
-      this.container.innerHTML = this._getScenerySVG(season);
+      const preset = seasonToPhoto[currentSeason] || PHOTO_PRESETS.tet_mai_photo;
+      this._applyPhotoLayer(preset.url, preset.name);
       return;
     }
 
-    // Default fallback
+    // 7. Vector 2.5D SVG Parallax
+    if (this.wallpaperMode === 'vector') {
+      const currentSeason = (season && season !== 'none') ? season : this._getCurrentCalendarSeason();
+      this.container.innerHTML = this._getScenerySVG(currentSeason);
+      this._updateCaptionBadge('🎨 Tranh nghệ thuật Vector Parallax');
+      document.body.classList.add('has-scenery');
+      return;
+    }
+
+    // If season is explicitly none and no wallpaper chosen
+    if (!season || season === 'none') {
+      this.container.innerHTML = '';
+      this._updateCaptionBadge('');
+      document.body.classList.remove('has-scenery');
+      return;
+    }
+
     this.container.innerHTML = this._getScenerySVG(season);
   }
 
@@ -208,58 +358,34 @@ export class SceneryEngine {
           <svg class="scenery-svg" id="scenerySVG" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="winSky" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#040711" />
-                <stop offset="60%" stop-color="#0e172a" />
-                <stop offset="100%" stop-color="#192843" />
-              </linearGradient>
-              <linearGradient id="winMtn" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#1d283c" stop-opacity="0.9" />
-                <stop offset="100%" stop-color="#090f19" stop-opacity="0.95" />
-              </linearGradient>
-              <linearGradient id="cabinWood" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#110b07" />
-                <stop offset="50%" stop-color="#1c120c" />
-                <stop offset="100%" stop-color="#0d0805" />
+                <stop offset="0%" stop-color="#070d18" />
+                <stop offset="60%" stop-color="#111f38" />
+                <stop offset="100%" stop-color="#1e3458" />
               </linearGradient>
             </defs>
-
-            <!-- Sky & Moon -->
             <rect width="1920" height="1080" fill="url(#winSky)" />
-            <circle cx="1480" cy="200" r="48" fill="#e2e8f0" opacity="0.85" filter="drop-shadow(0 0 35px rgba(226, 232, 240, 0.45))" />
-
-            <!-- Distant Snowy Mountain Ridges -->
-            <path d="M0,740 L280,480 L620,680 L960,430 L1350,660 L1680,490 L1920,630 L1920,1080 L0,1080 Z" fill="url(#winMtn)" opacity="0.65" class="parallax-back" />
-
-            <!-- Pine Forest Midground -->
-            <g fill="#070c15" opacity="0.88" class="parallax-mid">
-              <polygon points="120,780 150,670 180,780" />
-              <polygon points="170,790 210,640 250,790" />
-              <polygon points="340,770 380,660 420,770" />
-              <polygon points="760,780 810,620 860,780" />
-              <polygon points="840,790 890,650 940,790" />
-              <polygon points="1200,790 1250,640 1300,790" />
-              <polygon points="1440,770 1480,660 1520,770" />
-              <polygon points="1720,780 1760,650 1800,780" />
+            <g class="winter-stars" fill="#ffffff" opacity="0.8">
+              <circle cx="150" cy="80" r="1.5" />
+              <circle cx="340" cy="140" r="1" />
+              <circle cx="580" cy="60" r="2" />
+              <circle cx="820" cy="110" r="1.2" />
+              <circle cx="1200" cy="90" r="1.8" />
+              <circle cx="1540" cy="130" r="1.4" />
+              <circle cx="1780" cy="70" r="2.2" />
             </g>
-            <g fill="#bae6fd" opacity="0.55">
-              <path d="M150,670 L142,695 Q150,688 158,695 Z" />
-              <path d="M210,640 L198,670 Q210,660 222,670 Z" />
-              <path d="M810,620 L796,655 Q810,645 824,655 Z" />
-              <path d="M1250,640 L1238,670 Q1250,660 1262,670 Z" />
+            <g id="layerDistant" class="parallax-layer" data-depth="0.08">
+              <path d="M 0,650 L 320,380 L 680,680 L 1100,340 L 1520,620 L 1920,400 L 1920,1080 L 0,1080 Z" fill="#152642" />
+              <path d="M 280,415 L 320,380 L 360,425 L 340,440 L 320,415 L 300,435 Z" fill="#ffffff" opacity="0.9" />
+              <path d="M 1060,375 L 1100,340 L 1145,385 L 1125,405 L 1100,380 L 1080,395 Z" fill="#ffffff" opacity="0.9" />
             </g>
-
-            <!-- Cabin Window Frame -->
-            <g class="parallax-front" fill="url(#cabinWood)">
-              <rect x="0" y="0" width="1920" height="38" />
-              <rect x="0" y="1035" width="1920" height="45" />
-              <rect x="0" y="0" width="45" height="1080" />
-              <rect x="1875" y="0" width="45" height="1080" />
-              <rect x="945" y="0" width="30" height="1080" />
-              <rect x="0" y="525" width="1920" height="25" />
-              <line x1="0" y1="1035" x2="1920" y2="1035" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+            <g id="layerMid" class="parallax-layer" data-depth="0.18">
+              <path d="M 0,720 L 450,560 L 980,740 L 1480,540 L 1920,700 L 1920,1080 L 0,1080 Z" fill="#1a3254" />
+            </g>
+            <g id="layerFore" class="parallax-layer" data-depth="0.32">
+              <path d="M 0,840 Q 480,780 960,860 T 1920,830 L 1920,1080 L 0,1080 Z" fill="#24426e" />
+              <path d="M 0,900 Q 520,850 1020,920 T 1920,890 L 1920,1080 L 0,1080 Z" fill="#e8f1f8" />
             </g>
           </svg>
-          <div class="winter-fire-glow"></div>
         `;
 
       case 'spring':
@@ -267,62 +393,22 @@ export class SceneryEngine {
           <svg class="scenery-svg" id="scenerySVG" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="sprSky" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#140409" />
-                <stop offset="55%" stop-color="#2a0d17" />
-                <stop offset="100%" stop-color="#4a1523" />
+                <stop offset="0%" stop-color="#1a0c1e" />
+                <stop offset="45%" stop-color="#3b1b36" />
+                <stop offset="85%" stop-color="#6e2d4d" />
+                <stop offset="100%" stop-color="#9d425f" />
               </linearGradient>
-              <linearGradient id="sprMtn" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#3d1421" stop-opacity="0.8" />
-                <stop offset="100%" stop-color="#18040b" stop-opacity="0.95" />
-              </linearGradient>
-              <radialGradient id="lanternGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#ffedd5" />
-                <stop offset="40%" stop-color="#ef4444" />
-                <stop offset="100%" stop-color="#991b1b" />
-              </radialGradient>
             </defs>
-
-            <!-- Misty Dawn Sky & Gentle Sunrise Sun -->
             <rect width="1920" height="1080" fill="url(#sprSky)" />
-            <circle cx="960" cy="620" r="280" fill="#f43f5e" opacity="0.12" filter="blur(60px)" />
-
-            <!-- Mountain Silhouettes -->
-            <path d="M0,760 C320,620 540,740 820,640 C1100,540 1450,720 1920,620 L1920,1080 L0,1080 Z" fill="url(#sprMtn)" opacity="0.65" class="parallax-back" />
-            <path d="M0,840 C420,750 780,880 1200,780 C1550,700 1780,830 1920,770 L1920,1080 L0,1080 Z" fill="#1b060d" opacity="0.85" class="parallax-mid" />
-            <path d="M280,730 L320,705 L360,730 L350,730 L355,750 L285,750 L290,730 Z" fill="#140309" opacity="0.9" />
-
-            <!-- Blooming Branches & Lanterns -->
-            <g class="spring-branch-layer parallax-front">
-              <path d="M1920,20 Q1680,40 1520,160 T1280,240 Q1120,300 980,260" fill="none" stroke="#220c06" stroke-width="14" stroke-linecap="round" />
-              <path d="M1540,150 Q1420,110 1340,140" fill="none" stroke="#220c06" stroke-width="8" stroke-linecap="round" />
-              <path d="M1320,230 Q1240,320 1150,340" fill="none" stroke="#220c06" stroke-width="6" stroke-linecap="round" />
-
-              <circle cx="1000" cy="265" r="14" fill="#fbbf24" filter="drop-shadow(0 0 6px #f59e0b)" />
-              <circle cx="985" cy="255" r="10" fill="#f43f5e" />
-              <circle cx="1160" cy="340" r="16" fill="#fbbf24" filter="drop-shadow(0 0 6px #f59e0b)" />
-              <circle cx="1250" cy="245" r="18" fill="#f43f5e" filter="drop-shadow(0 0 8px #e11d48)" />
-              <circle cx="1350" cy="140" r="14" fill="#fbbf24" />
-              <circle cx="1440" cy="115" r="15" fill="#f43f5e" />
-              <circle cx="1520" cy="165" r="20" fill="#f43f5e" filter="drop-shadow(0 0 10px #e11d48)" />
-              <circle cx="1660" cy="65" r="16" fill="#fbbf24" />
-
-              <g class="spring-lantern-layer" style="transform-origin: 1300px 230px;">
-                <line x1="1300" y1="230" x2="1300" y2="350" stroke="#d97706" stroke-width="2.5" />
-                <ellipse cx="1300" cy="405" rx="34" ry="46" fill="url(#lanternGlow)" class="lantern-glow" />
-                <rect x="1282" y="350" width="36" height="10" rx="3" fill="#f59e0b" />
-                <rect x="1282" y="450" width="36" height="10" rx="3" fill="#f59e0b" />
-                <text x="1300" y="415" font-family="sans-serif" font-weight="900" font-size="22" fill="#fef08a" text-anchor="middle">春</text>
-                <line x1="1300" y1="460" x2="1300" y2="520" stroke="#f59e0b" stroke-width="3" />
-              </g>
-
-              <g class="spring-lantern-layer" style="transform-origin: 1560px 160px; animation-delay: -1.8s;">
-                <line x1="1560" y1="160" x2="1560" y2="260" stroke="#d97706" stroke-width="2" />
-                <ellipse cx="1560" cy="305" rx="26" ry="36" fill="url(#lanternGlow)" class="lantern-glow" />
-                <rect x="1546" y="260" width="28" height="8" rx="2" fill="#f59e0b" />
-                <rect x="1546" y="340" width="28" height="8" rx="2" fill="#f59e0b" />
-                <text x="1560" y="312" font-family="sans-serif" font-weight="900" font-size="16" fill="#fef08a" text-anchor="middle">福</text>
-                <line x1="1560" y1="348" x2="1560" y2="400" stroke="#f59e0b" stroke-width="2.5" />
-              </g>
+            <circle cx="1450" cy="380" r="140" fill="#fdf2f4" opacity="0.85" filter="drop-shadow(0 0 35px rgba(253, 242, 244, 0.4))" />
+            <g id="layerDistant" class="parallax-layer" data-depth="0.08">
+              <path d="M 0,700 L 520,580 L 1050,720 L 1520,560 L 1920,680 L 1920,1080 L 0,1080 Z" fill="#301529" opacity="0.75" />
+            </g>
+            <g id="layerMid" class="parallax-layer" data-depth="0.18">
+              <path d="M 0,820 Q 560,740 1120,840 T 1920,810 L 1920,1080 L 0,1080 Z" fill="#200d1c" />
+            </g>
+            <g id="layerFore" class="parallax-layer spring-branch-layer" data-depth="0.32">
+              <path d="M 1920,0 Q 1550,120 1320,80 Q 1180,60 1060,140" stroke="#23121b" stroke-width="14" fill="none" stroke-linecap="round" />
             </g>
           </svg>
         `;
@@ -332,40 +418,20 @@ export class SceneryEngine {
           <svg class="scenery-svg" id="scenerySVG" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="sumSky" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#0c071d" />
-                <stop offset="35%" stop-color="#3d123b" />
-                <stop offset="65%" stop-color="#932b3f" />
-                <stop offset="85%" stop-color="#dd6b20" />
-                <stop offset="100%" stop-color="#fbd38d" />
-              </linearGradient>
-              <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#14283c" />
-                <stop offset="50%" stop-color="#0b1827" />
-                <stop offset="100%" stop-color="#040b13" />
+                <stop offset="0%" stop-color="#040b17" />
+                <stop offset="50%" stop-color="#0c2340" />
+                <stop offset="100%" stop-color="#143e66" />
               </linearGradient>
             </defs>
-
-            <rect width="1920" height="660" fill="url(#sumSky)" />
-            <circle cx="960" cy="655" r="70" fill="#fffaf0" filter="drop-shadow(0 0 45px #f6ad55)" />
-            <rect y="660" width="1920" height="420" fill="url(#oceanGrad)" />
-
-            <g fill="#fbd38d" opacity="0.65" class="summer-waves-layer">
-              <ellipse cx="960" cy="670" rx="90" ry="3" />
-              <ellipse cx="960" cy="690" rx="140" ry="4" />
-              <ellipse cx="960" cy="720" rx="190" ry="5" />
-              <ellipse cx="960" cy="760" rx="250" ry="6" opacity="0.5" />
-              <ellipse cx="960" cy="815" rx="330" ry="8" opacity="0.35" />
-              <ellipse cx="960" cy="885" rx="420" ry="10" opacity="0.2" />
+            <rect width="1920" height="1080" fill="url(#sumSky)" />
+            <g id="layerDistant" class="parallax-layer" data-depth="0.06">
+              <path d="M 0,780 Q 480,772 960,780 T 1920,776 L 1920,1080 L 0,1080 Z" fill="#081a2f" />
             </g>
-
-            <g class="summer-palm-layer parallax-front" fill="#040a12">
-              <path d="M0,0 Q180,80 220,380" stroke="#040a12" stroke-width="26" fill="none" stroke-linecap="round" />
-              <path d="M220,380 Q380,360 480,480 Q380,440 220,380 Z" />
-              <path d="M220,380 Q450,280 560,320 Q440,330 220,380 Z" />
-              <path d="M220,380 Q360,220 460,180 Q350,250 220,380 Z" />
-              <path d="M220,380 Q250,160 300,90 Q220,220 220,380 Z" />
-              <path d="M220,380 Q140,240 80,180 Q160,280 220,380 Z" />
-              <path d="M220,380 Q260,460 280,580 Q220,480 220,380 Z" />
+            <g id="layerMid" class="parallax-layer" data-depth="0.16">
+              <path d="M 0,860 Q 480,848 960,860 T 1920,854 L 1920,1080 L 0,1080 Z" fill="#0c2744" />
+            </g>
+            <g id="layerFore" class="parallax-layer" data-depth="0.28">
+              <path d="M 0,940 Q 520,915 1020,945 T 1920,930 L 1920,1080 L 0,1080 Z" fill="#10365c" />
             </g>
           </svg>
         `;
@@ -375,38 +441,21 @@ export class SceneryEngine {
           <svg class="scenery-svg" id="scenerySVG" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="autSky" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#120803" />
-                <stop offset="50%" stop-color="#2d1408" />
-                <stop offset="100%" stop-color="#4f2008" />
-              </linearGradient>
-              <linearGradient id="autMtn" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#361506" stop-opacity="0.8" />
-                <stop offset="100%" stop-color="#140602" stop-opacity="0.95" />
+                <stop offset="0%" stop-color="#1a0a06" />
+                <stop offset="45%" stop-color="#3d180a" />
+                <stop offset="85%" stop-color="#732f14" />
+                <stop offset="100%" stop-color="#a8471c" />
               </linearGradient>
             </defs>
-
             <rect width="1920" height="1080" fill="url(#autSky)" />
-            <path d="M0,720 Q480,620 960,700 T1920,640 L1920,1080 L0,1080 Z" fill="url(#autMtn)" opacity="0.65" class="parallax-back" />
-
-            <g fill="#160802" opacity="0.85" class="parallax-mid">
-              <path d="M160,780 Q200,600 240,780 Z" />
-              <circle cx="200" cy="620" r="85" fill="#2d1306" />
-              <circle cx="230" cy="600" r="65" fill="#451c08" opacity="0.8" />
-              <path d="M820,790 Q870,580 920,790 Z" />
-              <circle cx="870" cy="600" r="95" fill="#301407" />
-              <circle cx="895" cy="580" r="75" fill="#58240a" opacity="0.75" />
-              <path d="M1520,780 Q1570,620 1620,780 Z" />
-              <circle cx="1570" cy="630" r="80" fill="#2d1306" />
+            <g id="layerDistant" class="parallax-layer" data-depth="0.08">
+              <path d="M 0,690 L 460,540 L 980,710 L 1460,510 L 1920,660 L 1920,1080 L 0,1080 Z" fill="#2d130a" />
             </g>
-
-            <rect y="640" width="1920" height="220" fill="#f97316" opacity="0.08" filter="blur(45px)" class="autumn-mist-layer" />
-
-            <g class="parallax-front">
-              <rect x="0" y="1030" width="1920" height="50" fill="#140803" />
-              <line x1="0" y1="1030" x2="1920" y2="1030" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
-              <path d="M1740,970 L1750,1030 L1810,1030 L1820,970 Z" fill="#1e0c05" stroke="#331408" stroke-width="2" />
-              <path d="M1815,980 Q1840,995 1812,1015" fill="none" stroke="#1e0c05" stroke-width="6" stroke-linecap="round" />
-              <path d="M1775,960 Q1765,940 1775,920 T1785,890" fill="none" stroke="rgba(254, 215, 170, 0.45)" stroke-width="3" stroke-linecap="round" class="autumn-steam" />
+            <g id="layerMid" class="parallax-layer" data-depth="0.18">
+              <path d="M 0,790 Q 520,720 1040,810 T 1920,780 L 1920,1080 L 0,1080 Z" fill="#210c05" />
+            </g>
+            <g id="layerFore" class="parallax-layer" data-depth="0.32">
+              <path d="M 0,900 Q 560,860 1120,920 T 1920,890 L 1920,1080 L 0,1080 Z" fill="#150702" />
             </g>
           </svg>
         `;
@@ -418,41 +467,27 @@ export class SceneryEngine {
 
   _initMouseParallax() {
     window.addEventListener('mousemove', (e) => {
-      this.targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      this.targetMouseY = (e.clientY / window.innerHeight) * 2 - 1;
-
-      if (!this.rafId) {
-        this._startParallaxLoop();
-      }
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      this.targetMouseX = (e.clientX - centerX) / centerX;
+      this.targetMouseY = (e.clientY - centerY) / centerY;
     });
-  }
 
-  _startParallaxLoop() {
-    const loop = () => {
+    const animateParallax = () => {
       this.currentMouseX += (this.targetMouseX - this.currentMouseX) * 0.05;
       this.currentMouseY += (this.targetMouseY - this.currentMouseY) * 0.05;
 
-      const back = this.container.querySelectorAll('.parallax-back');
-      const mid = this.container.querySelectorAll('.parallax-mid');
-      const front = this.container.querySelectorAll('.parallax-front');
-
-      back.forEach(el => {
-        el.style.transform = `translate3d(${this.currentMouseX * 5}px, ${this.currentMouseY * 3}px, 0)`;
-      });
-      mid.forEach(el => {
-        el.style.transform = `translate3d(${this.currentMouseX * 12}px, ${this.currentMouseY * 6}px, 0)`;
-      });
-      front.forEach(el => {
-        el.style.transform = `translate3d(${this.currentMouseX * -4}px, ${this.currentMouseY * -2}px, 0)`;
+      const layers = this.container.querySelectorAll('.parallax-layer');
+      layers.forEach((layer) => {
+        const depth = parseFloat(layer.getAttribute('data-depth')) || 0.1;
+        const moveX = this.currentMouseX * depth * 40;
+        const moveY = this.currentMouseY * depth * 25;
+        layer.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
       });
 
-      if (Math.abs(this.targetMouseX - this.currentMouseX) > 0.001 || Math.abs(this.targetMouseY - this.currentMouseY) > 0.001) {
-        this.rafId = requestAnimationFrame(loop);
-      } else {
-        this.rafId = null;
-      }
+      this.rafId = requestAnimationFrame(animateParallax);
     };
 
-    this.rafId = requestAnimationFrame(loop);
+    animateParallax();
   }
 }

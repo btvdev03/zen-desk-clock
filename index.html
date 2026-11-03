@@ -19,11 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=11">
-  <link rel="stylesheet" href="css/flip.css?v=11">
-  <link rel="stylesheet" href="css/analog.css?v=11">
-  <link rel="stylesheet" href="css/themes.css?v=11">
-  <link rel="stylesheet" href="css/scenery.css?v=11">
+  <link rel="stylesheet" href="css/main.css?v=12">
+  <link rel="stylesheet" href="css/flip.css?v=12">
+  <link rel="stylesheet" href="css/analog.css?v=12">
+  <link rel="stylesheet" href="css/themes.css?v=12">
+  <link rel="stylesheet" href="css/scenery.css?v=12">
 </head>
 <body class="theme-flip">
 
@@ -186,6 +186,12 @@
       </nav>
     </div>
 
+    <!-- APPLE-STYLE FLOATING WALLPAPER LOCATION BADGE -->
+    <div id="wallpaperCaptionBadge" class="wallpaper-caption-badge hidden" title="Nhấp để đổi ngẫu nhiên ảnh phong cảnh khác">
+      <span class="caption-icon">📍</span>
+      <span class="caption-text" id="wallpaperCaptionText">Microsoft Bing 4K</span>
+    </div>
+
   </div>
 
   <!-- SETTINGS & KEYBOARD SHORTCUTS MODAL -->
@@ -296,7 +302,12 @@
           </div>
           <div class="setting-control-full">
             <select id="wallpaperSelect" class="setting-select">
-              <option value="auto_photo" selected>📸 Tự động theo mùa (Ảnh thật 4K)</option>
+              <optgroup label="🌐 Hình Nền Tự Động (Auto API)">
+                <option value="bing_daily" selected>🌅 Ảnh Bing 4K Đổi Mới Mỗi Ngày (Microsoft Bing Daily)</option>
+                <option value="auto_slideshow">🔄 Tự động đổi ảnh phong cảnh (Auto Slideshow 30 phút)</option>
+                <option value="random_photo">🎲 Đổi ảnh nghệ thuật ngẫu nhiên (Picsum 4K)</option>
+                <option value="auto_photo">📸 Tự động theo mùa (Ảnh thật 4K)</option>
+              </optgroup>
               <optgroup label="🧧 Không Khí Tết Việt Nam (Lunar New Year)">
                 <option value="tet_mai_photo">🧧 Tết: Cành mai vàng phương Nam rực rỡ</option>
                 <option value="tet_dao_photo">🌸 Tết: Cành đào hồng Nhật Tân đón xuân</option>
@@ -321,11 +332,15 @@
         <!-- Tải ảnh nền từ máy (Action Card) -->
         <div class="setting-block custom-upload-box">
           <div class="setting-block-header">
-            <div class="setting-label">Tải ảnh nền từ máy tính <span class="setting-sub">(Ảnh Cá Nhân)</span></div>
-            <div class="setting-desc">Lưu trực tiếp an toàn vào trình duyệt qua IndexedDB — Tự động lưu giữ khi F5 hoặc mở lại</div>
+            <div class="setting-label">Tác vụ hình nền nhanh <span class="setting-sub">(Thao Tác)</span></div>
+            <div class="setting-desc">Đổi ảnh phong cảnh mới toanh tức thì hoặc chọn ảnh cá nhân lưu an toàn vào IndexedDB</div>
           </div>
           <div class="upload-actions-row">
             <input type="file" id="customWallpaperInput" accept="image/*" style="display: none;">
+            <button type="button" id="randomWallpaperBtn" class="setting-btn-secondary" title="Tải ngay một ảnh 4K ngẫu nhiên mới">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              <span>Đổi ảnh ngẫu nhiên</span>
+            </button>
             <button type="button" id="uploadWallpaperBtn" class="setting-btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
               <span>Chọn ảnh từ máy</span>

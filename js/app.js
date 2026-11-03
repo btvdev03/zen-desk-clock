@@ -147,6 +147,8 @@ class ZenApp {
     this.customWallpaperOption = document.getElementById('customWallpaperOption');
     this.customWallpaperInput = document.getElementById('customWallpaperInput');
     this.uploadWallpaperBtn = document.getElementById('uploadWallpaperBtn');
+    this.randomWallpaperBtn = document.getElementById('randomWallpaperBtn');
+    this.wallpaperCaptionBadge = document.getElementById('wallpaperCaptionBadge');
     this.clearWallpaperBtn = document.getElementById('clearWallpaperBtn');
     this.bgDimmerSlider = document.getElementById('bgDimmerSlider');
     this.bgDimmerValue = document.getElementById('bgDimmerValue');
@@ -517,6 +519,28 @@ class ZenApp {
         }
         if (this.sceneryEngine) {
           await this.sceneryEngine.setWallpaperMode('auto_photo');
+        }
+      });
+    }
+
+    if (this.randomWallpaperBtn) {
+      this.randomWallpaperBtn.addEventListener('click', async () => {
+        if (this.sceneryEngine) {
+          if (this.wallpaperSelect) this.wallpaperSelect.value = 'random_photo';
+          this.sceneryEngine.wallpaperMode = 'random_photo';
+          localStorage.setItem('zd_wallpaper_mode', 'random_photo');
+          await this.sceneryEngine.fetchRandomWallpaper();
+        }
+      });
+    }
+
+    if (this.wallpaperCaptionBadge) {
+      this.wallpaperCaptionBadge.addEventListener('click', async () => {
+        if (this.sceneryEngine) {
+          if (this.wallpaperSelect) this.wallpaperSelect.value = 'random_photo';
+          this.sceneryEngine.wallpaperMode = 'random_photo';
+          localStorage.setItem('zd_wallpaper_mode', 'random_photo');
+          await this.sceneryEngine.fetchRandomWallpaper();
         }
       });
     }

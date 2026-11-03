@@ -232,6 +232,27 @@ body.theme-swiss .control-btn.active {
   box-shadow: 0 0 14px rgba(225, 29, 72, 0.5);
 }
 
+/* Swiss theme with active photo wallpaper */
+body.theme-swiss.has-scenery .bottom-dock {
+  background: rgba(22, 26, 36, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+body.theme-swiss.has-scenery .control-btn {
+  color: #f1f5f9 !important;
+}
+
+body.theme-swiss.has-scenery .top-bar-chip,
+body.theme-swiss.has-scenery .control-pill {
+  color: #ffffff !important;
+  background: rgba(22, 26, 36, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+body.theme-swiss.has-scenery .date-text {
+  color: #ffffff !important;
+}
+
 /* ========================================================
    THEME 6: MÙA ĐÔNG / GIÁNG SINH NOEL (WINTER NOEL)
    ======================================================== */

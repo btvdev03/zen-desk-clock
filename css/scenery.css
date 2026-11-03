@@ -25,6 +25,7 @@
   transition: opacity 0.8s ease-in-out;
 }
 
+body.has-scenery .scenery-container,
 body.theme-winter .scenery-container,
 body.theme-spring .scenery-container,
 body.theme-summer .scenery-container,

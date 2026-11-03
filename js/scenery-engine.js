@@ -7,43 +7,80 @@
 import { wallpaperDB } from './wallpaper-db.js';
 
 export const PHOTO_PRESETS = {
-  winter_photo: {
-    id: 'winter_photo',
-    name: '❄️ Căn nhà gỗ tuyết phủ (Winter Cabin)',
-    url: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=2560&q=80',
-    particle: 'snow'
-  },
-  spring_photo: {
-    id: 'spring_photo',
-    name: '🌸 Cành đào hồng ngày xuân (Peach Blossom)',
-    url: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=2560&q=80',
-    particle: 'sakura'
-  },
-  spring_mai_photo: {
-    id: 'spring_mai_photo',
-    name: '🧧 Cành mai vàng rực rỡ (Golden Blossom)',
+  // --- BỘ SƯU TẬP TẾT VIỆT NAM (LUNAR NEW YEAR) ---
+  tet_mai_photo: {
+    id: 'tet_mai_photo',
+    name: '🧧 Tết: Cành mai vàng phương Nam rực rỡ',
     url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=2560&q=80',
     particle: 'mai'
   },
+  tet_dao_photo: {
+    id: 'tet_dao_photo',
+    name: '🌸 Tết: Cành đào hồng Nhật Tân đón xuân',
+    url: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=2560&q=80',
+    particle: 'sakura'
+  },
+  tet_hoian_photo: {
+    id: 'tet_hoian_photo',
+    name: '🏮 Tết: Phố cổ Hội An giàn lồng đèn đỏ',
+    url: 'https://images.unsplash.com/photo-1560113855-2ea616c915ee?auto=format&fit=crop&w=2560&q=80',
+    particle: 'mai'
+  },
+  tet_river_photo: {
+    id: 'tet_river_photo',
+    name: '🛶 Tết: Thả hoa đăng đêm sông Hoài Hội An',
+    url: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=2560&q=80',
+    particle: 'fireflies'
+  },
+  tet_lanterns_photo: {
+    id: 'tet_lanterns_photo',
+    name: '🏮 Tết: Sắc màu lồng đèn chợ đêm xuân',
+    url: 'https://images.unsplash.com/photo-1580974852861-c381510bc98a?auto=format&fit=crop&w=2560&q=80',
+    particle: 'mai'
+  },
+  tet_pagoda_photo: {
+    id: 'tet_pagoda_photo',
+    name: '⛩️ Tết: Đi lễ chùa cổ đầu năm thanh tịnh',
+    url: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=2560&q=80',
+    particle: 'sakura'
+  },
+  tet_fireworks_photo: {
+    id: 'tet_fireworks_photo',
+    name: '🎆 Tết: Pháo hoa đêm Giao thừa rực sáng',
+    url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=2560&q=80',
+    particle: 'fireflies'
+  },
+
+  // --- PHONG CẢNH 4 MÙA & KHÔNG GIAN LÀM VIỆC ---
+  winter_photo: {
+    id: 'winter_photo',
+    name: '❄️ Mùa đông: Căn nhà gỗ tuyết phủ Emerald Lake',
+    url: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=2560&q=80',
+    particle: 'snow'
+  },
   summer_photo: {
     id: 'summer_photo',
-    name: '🌊 Hoàng hôn biển nhiệt đới (Sunset Beach)',
+    name: '🌊 Mùa hạ: Hoàng hôn bờ biển nhiệt đới',
     url: 'https://images.unsplash.com/photo-1509233725247-49e657c54213?auto=format&fit=crop&w=2560&q=80',
     particle: 'fireflies'
   },
   autumn_photo: {
     id: 'autumn_photo',
-    name: '🍁 Rừng phong đỏ Kyoto (Autumn Maple)',
+    name: '🍁 Mùa thu: Rừng phong đỏ Kyoto',
     url: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=2560&q=80',
     particle: 'maple'
   },
   cafe_photo: {
     id: 'cafe_photo',
-    name: '☕ Quán cafe ấm cúng (Cozy Cafe)',
+    name: '☕ Không gian: Quán cafe sách ấm cúng',
     url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=2560&q=80',
     particle: 'none'
   }
 };
+
+// Aliases for compatibility
+PHOTO_PRESETS.spring_photo = PHOTO_PRESETS.tet_dao_photo;
+PHOTO_PRESETS.spring_mai_photo = PHOTO_PRESETS.tet_mai_photo;
 
 export class SceneryEngine {
   constructor(container) {

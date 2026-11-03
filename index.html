@@ -19,11 +19,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=8">
-  <link rel="stylesheet" href="css/flip.css?v=8">
-  <link rel="stylesheet" href="css/analog.css?v=8">
-  <link rel="stylesheet" href="css/themes.css?v=8">
-  <link rel="stylesheet" href="css/scenery.css?v=8">
+  <link rel="stylesheet" href="css/main.css?v=9">
+  <link rel="stylesheet" href="css/flip.css?v=9">
+  <link rel="stylesheet" href="css/analog.css?v=9">
+  <link rel="stylesheet" href="css/themes.css?v=9">
+  <link rel="stylesheet" href="css/scenery.css?v=9">
 </head>
 <body class="theme-flip">
 
@@ -249,15 +249,24 @@
           </div>
           <div class="setting-control-full">
             <select id="wallpaperSelect" class="setting-select">
-              <option value="auto_photo" selected>📸 Ảnh chụp thật 4K tự đổi theo mùa</option>
-              <option value="winter_photo">❄️ Mùa đông: Căn nhà gỗ tuyết phủ Emerald Lake</option>
-              <option value="spring_photo">🌸 Mùa xuân: Cành đào hồng khoe sắc</option>
-              <option value="spring_mai_photo">🧧 Ngày Tết: Cành mai vàng đón Tết</option>
-              <option value="summer_photo">🌊 Mùa hạ: Hoàng hôn biển nhiệt đới</option>
-              <option value="autumn_photo">🍁 Mùa thu: Rừng phong đỏ Kyoto</option>
-              <option value="cafe_photo">☕ Không gian: Quán cafe sách ấm cúng</option>
-              <option value="vector">🎨 Tranh nghệ thuật Vector Parallax</option>
-              <option value="custom" id="customWallpaperOption" disabled>🖼️ Ảnh cá nhân của bạn (Chưa tải lên)</option>
+              <option value="auto_photo" selected>📸 Tự động theo mùa (Ảnh thật 4K)</option>
+              <optgroup label="🧧 Không Khí Tết Việt Nam (Lunar New Year)">
+                <option value="tet_mai_photo">🧧 Tết: Cành mai vàng phương Nam rực rỡ</option>
+                <option value="tet_dao_photo">🌸 Tết: Cành đào hồng Nhật Tân đón xuân</option>
+                <option value="tet_hoian_photo">🏮 Tết: Phố cổ Hội An giàn lồng đèn đỏ</option>
+                <option value="tet_river_photo">🛶 Tết: Thả hoa đăng đêm sông Hoài Hội An</option>
+                <option value="tet_lanterns_photo">🏮 Tết: Sắc màu lồng đèn chợ đêm xuân</option>
+                <option value="tet_pagoda_photo">⛩️ Tết: Đi lễ chùa cổ đầu năm thanh tịnh</option>
+                <option value="tet_fireworks_photo">🎆 Tết: Pháo hoa đêm Giao thừa rực sáng</option>
+              </optgroup>
+              <optgroup label="🌿 Phong Cảnh 4 Mùa & Không Gian">
+                <option value="winter_photo">❄️ Mùa đông: Căn nhà gỗ tuyết phủ Emerald Lake</option>
+                <option value="summer_photo">🌊 Mùa hạ: Hoàng hôn bờ biển nhiệt đới</option>
+                <option value="autumn_photo">🍁 Mùa thu: Rừng phong đỏ Kyoto</option>
+                <option value="cafe_photo">☕ Không gian: Quán cafe sách ấm cúng</option>
+                <option value="vector">🎨 Tranh nghệ thuật Vector Parallax</option>
+                <option value="custom" id="customWallpaperOption" disabled>🖼️ Ảnh cá nhân của bạn (Chưa tải lên)</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -404,7 +413,7 @@
   </div>
 
   <!-- Main ES Module Script -->
-  <script type="module" src="js/app.js?v=8"></script>
+  <script type="module" src="js/app.js?v=9"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>

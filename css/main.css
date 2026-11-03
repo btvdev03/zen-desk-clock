@@ -683,6 +683,13 @@ body.idle .bottom-area {
   padding: 10px;
 }
 
+.setting-select optgroup {
+  background: #10141d;
+  color: #38bdf8;
+  font-weight: 700;
+  padding: 8px 4px;
+}
+
 .setting-select-compact {
   background: #1b202a;
   border: 1px solid rgba(255, 255, 255, 0.18);

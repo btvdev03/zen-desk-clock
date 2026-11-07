@@ -312,3 +312,32 @@ body.theme-autumn {
   --dock-bg: rgba(35, 19, 10, 0.85);
   --dock-border: rgba(249, 115, 22, 0.3);
 }
+
+
+/* ========================================================
+   THEME 10: VINTAGE NIXIE TUBE (COLD CATHODE GLOW)
+   ======================================================== */
+body.theme-nixie {
+  --bg-color: #0c0907;
+  --text-main: #ffbb66;
+  --text-dim: #996e48;
+  --accent-color: #ff6600;
+  --dock-bg: rgba(22, 16, 13, 0.88);
+  --dock-border: rgba(255, 120, 0, 0.24);
+}
+
+body.theme-nixie .top-bar-chip {
+  background: rgba(24, 17, 13, 0.75);
+  border-color: rgba(255, 136, 0, 0.2);
+}
+
+body.theme-nixie .quotes-bar,
+body.theme-nixie .progress-trackers {
+  background: rgba(24, 17, 13, 0.75);
+  border-color: rgba(255, 136, 0, 0.18);
+}
+
+body.theme-nixie .progress-bar-fill {
+  background: linear-gradient(90deg, #ff6600, #ffaa00);
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+}

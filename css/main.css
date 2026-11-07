@@ -137,6 +137,52 @@ body.idle .bottom-area {
   box-shadow: none;
 }
 
+/* Minimalist Single-Icon Top Chips */
+.night-chip-icon {
+  stroke: #94a3b8;
+  fill: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.night-mode-chip.active {
+  background: rgba(220, 38, 38, 0.25) !important;
+  border-color: rgba(255, 68, 68, 0.45) !important;
+}
+
+.night-mode-chip.active .night-chip-icon {
+  fill: #ff3b30;
+  stroke: #ff3b30;
+  filter: drop-shadow(0 0 7px rgba(255, 59, 48, 0.8));
+}
+
+.wake-chip-icon {
+  stroke: #94a3b8;
+  fill: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.wake-lock-chip.active {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border-color: rgba(52, 211, 153, 0.45) !important;
+}
+
+.wake-lock-chip.active .wake-chip-icon {
+  stroke: #34c759;
+  filter: drop-shadow(0 0 7px rgba(52, 199, 89, 0.85));
+}
+
+.weather-chip-svg {
+  stroke: #38bdf8;
+  flex-shrink: 0;
+}
+
+.event-chip-svg {
+  stroke: #f59e0b;
+  flex-shrink: 0;
+}
+
 .date-text {
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -378,55 +424,286 @@ body.idle .bottom-area {
 /* Progress Trackers Pill */
 .progress-trackers {
   width: 100%;
-  max-width: 460px;
+  max-width: 560px;
   display: flex;
-  gap: 1.2rem;
-  background: rgba(13, 17, 23, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 16px;
-  padding: 0.55rem 1.2rem;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  flex-direction: column;
+  gap: 0.45rem;
+  background: rgba(14, 18, 28, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  padding: 0.55rem 1.15rem 0.65rem;
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.progress-trackers:hover {
+  background: rgba(20, 26, 42, 0.92);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1.5px);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.progress-trackers:active {
+  transform: scale(0.99);
+}
+
+/* Top Meta Row */
+.progress-trackers-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.15rem;
+}
+
+.progress-meta-title {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+/* 2-Column Row (Equal 50/50 balance) */
+.progress-trackers-row {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  width: 100%;
+}
+
+.progress-col-divider {
+  width: 1px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
 }
 
 .progress-item {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.32rem;
+  min-width: 0;
 }
 
 .progress-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #cbd5e1;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
 }
 
-.progress-header span:last-child {
+
+.prog-lbl-full {
+  display: inline;
+  white-space: nowrap;
+}
+
+.prog-lbl-short {
+  display: none;
+  white-space: nowrap;
+}
+
+.progress-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.progress-label-wrap svg {
+  stroke: currentColor;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.progress-val-badge {
+  font-family: 'JetBrains Mono', var(--font-mono, monospace);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#dayProgressPercent {
   color: #38bdf8;
-  font-weight: 800;
-  text-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
 }
 
+#yearProgressPercent {
+  color: #a78bfa;
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.6);
+}
+
+/* Realtime Digits & Countdown Typography */
+.prog-int {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.prog-dec {
+  font-size: 0.74rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0.92;
+  letter-spacing: -0.01em;
+}
+
+.prog-pct {
+  font-size: 0.7rem;
+  font-weight: 600;
+  opacity: 0.75;
+  margin-left: 1px;
+}
+
+.prog-countdown {
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.01em;
+}
+
+/* Header Live Mode Badge */
+.progress-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  padding: 0.16rem 0.48rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 9999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  color: #34d399;
+  text-transform: uppercase;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.progress-live-badge.mode-countdown {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.progress-live-badge.mode-simple {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #cbd5e1;
+}
+
+.live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: liveBeaconPulse 1.6s infinite ease-in-out;
+}
+
+.progress-live-badge.mode-countdown .live-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 6px #f59e0b;
+}
+
+.progress-live-badge.mode-simple .live-dot {
+  background: #94a3b8;
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes liveBeaconPulse {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 10px currentColor;
+  }
+}
+
+/* Progress Grooves: STRICT OVERFLOW HIDDEN prevents light streak escaping */
 .progress-bar-bg {
   width: 100%;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 3px;
-  overflow: hidden;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+  height: 7px;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 9999px;
+  overflow: hidden !important;
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.75), 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-color), #38bdf8);
-  border-radius: 3px;
-  box-shadow: 0 0 10px var(--accent-color);
-  transition: width 0.6s ease;
+  border-radius: 9999px;
+  transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  position: relative;
+  overflow: hidden !important;
+}
+
+#dayProgressBar {
+  background: linear-gradient(90deg, #f59e0b 0%, #06b6d4 55%, #38bdf8 100%);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+}
+
+#yearProgressBar {
+  background: linear-gradient(90deg, #10b981 0%, #3b82f6 55%, #a855f7 100%);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.65);
+}
+
+.progress-glow-head {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 6.5px;
+  border-radius: 9999px;
+  background: #ffffff;
+  pointer-events: none;
+  z-index: 5;
+}
+
+#dayProgressBar .progress-glow-head {
+  box-shadow: 0 0 10px 2.5px rgba(56, 189, 248, 0.95), 0 0 3px #ffffff;
+}
+
+#yearProgressBar .progress-glow-head {
+  box-shadow: 0 0 10px 2.5px rgba(168, 85, 247, 0.95), 0 0 3px #ffffff;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+  animation: progressGleam 3s infinite linear;
+}
+
+@keyframes progressGleam {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* ========================================================
@@ -962,7 +1239,7 @@ body.idle .bottom-area {
   z-index: 24;
   cursor: pointer;
   user-select: none;
-  max-width: clamp(180px, 30vw, 360px);
+  max-width: clamp(160px, 20vw, 240px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -986,12 +1263,218 @@ body.idle .bottom-area {
   transform: scale(0.95);
 }
 
-.wallpaper-caption-badge .caption-icon {
-  font-size: 0.85rem;
+.wallpaper-badge-svg {
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .wallpaper-caption-badge .caption-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================================
+   WALLPAPER SWITCHER & UPLOAD MODAL
+   ======================================================== */
+.wallpaper-modal-card {
+  max-width: 600px;
+  width: 100%;
+}
+
+.wallpaper-quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.wallpaper-quick-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  color: #f1f5f9;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wallpaper-quick-btn:hover {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.wallpaper-quick-btn svg {
+  flex-shrink: 0;
+  color: var(--accent-color, #38bdf8);
+}
+
+.quick-btn-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.quick-btn-info strong {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.quick-btn-info span {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.wallpaper-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.4rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(56, 189, 248, 0.35);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  text-align: center;
+}
+
+.wallpaper-dropzone:hover, .wallpaper-dropzone.dragover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: #38bdf8;
+  transform: scale(1.01);
+}
+
+.dropzone-text strong {
+  display: block;
+  font-size: 0.86rem;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.dropzone-text span {
+  display: block;
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+.custom-wallpaper-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 12px;
+  margin-top: 0.65rem;
+}
+
+.custom-thumb {
+  width: 48px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.custom-thumb-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+#customThumbName {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-thumb-status {
+  font-size: 0.72rem;
+  color: #34c759;
+}
+
+.btn-remove-custom {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  border-radius: 8px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-custom:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.wallpaper-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.65rem;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+  scrollbar-width: thin;
+}
+
+.wallpaper-preset-card {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wallpaper-preset-card:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: #38bdf8;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.wallpaper-preset-card.active {
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
+}
+
+.wallpaper-preset-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.85) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 0.45rem 0.55rem;
+}
+
+.wallpaper-preset-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #ffffff;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1112,6 +1595,32 @@ body.idle .bottom-area {
 /* ========================================================
    AMBIENT CANVAS & SEASONAL PARTICLES
    ======================================================== */
+/* ========================================================
+   THREE.JS 3D AMBIENT ZEN SCENE CANVAS
+   ======================================================== */
+.three-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.75;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.three-canvas-disabled .three-canvas {
+  display: none !important;
+}
+
+#threeDfxBtn.active {
+  background: var(--accent-color, #38bdf8);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  box-shadow: 0 4px 18px -2px var(--accent-glow, rgba(56, 189, 248, 0.55));
+}
+
 .ambient-canvas {
   position: fixed;
   top: 0;
@@ -1260,26 +1769,73 @@ body.idle .bottom-area {
    RESPONSIVE DESIGN & ADAPTIVE VIEWPORT SCALING
    ======================================================== */
 
+@media (max-width: 1200px) {
+  .wallpaper-caption-badge {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .week-chip {
+    display: none !important;
+  }
+  .event-text-full {
+    display: none !important;
+  }
+  .event-text-compact {
+    display: inline !important;
+  }
+  .wake-lock-label,
+  .night-mode-label,
+  .fullscreen-text {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .date-full {
+    display: none !important;
+  }
+  .date-short {
+    display: inline !important;
+  }
+}
+
 /* Tablet & Mobile Screens (< 768px) */
 @media (max-width: 768px) {
   .top-bar {
-    left: max(0.6rem, env(safe-area-inset-left, 0px));
-    right: max(0.6rem, env(safe-area-inset-right, 0px));
-    top: max(0.6rem, env(safe-area-inset-top, 0px));
-    gap: 0.4rem;
+    left: max(0.5rem, env(safe-area-inset-left, 0px));
+    right: max(0.5rem, env(safe-area-inset-right, 0px));
+    top: max(0.5rem, env(safe-area-inset-top, 0px));
+    gap: 0.35rem;
   }
 
   .top-bar-left, .top-bar-right {
-    gap: 0.4rem;
+    gap: 0.35rem;
   }
 
   .top-bar-chip {
-    padding: 0.35rem 0.65rem;
-    font-size: 0.78rem;
+    padding: 0.32rem 0.6rem;
+    font-size: 0.76rem;
+    gap: 0.35rem;
+  }
+
+  .date-full {
+    display: none !important;
+  }
+
+  .date-short {
+    display: inline !important;
+  }
+
+  .fullscreen-chip,
+  .night-mode-chip,
+  .wake-lock-chip {
+    padding: 0.32rem 0.5rem;
   }
 
   .fullscreen-chip .fullscreen-text {
-    display: none;
+    display: none !important;
   }
 
   .bottom-area {
@@ -1398,6 +1954,35 @@ body.idle .bottom-area {
 
 /* Compact Mobile Screens (< 480px, e.g. iPhone standard) */
 @media (max-width: 480px) {
+
+  /* Responsive Progress Trackers on Mobile */
+  .prog-lbl-full {
+    display: none !important;
+  }
+  .prog-lbl-short {
+    display: inline !important;
+  }
+  .progress-trackers {
+    padding: 0.4rem 0.65rem 0.45rem !important;
+    gap: 0.35rem !important;
+    max-width: 96% !important;
+  }
+  .progress-trackers-row {
+    gap: 0.55rem !important;
+  }
+  .progress-header {
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
+  }
+  .progress-val-badge {
+    font-size: 0.74rem !important;
+    white-space: nowrap !important;
+  }
+  .prog-countdown {
+    font-size: 0.68rem !important;
+    white-space: nowrap !important;
+  }
+
   .top-bar {
     left: max(0.4rem, env(safe-area-inset-left, 0px));
     right: max(0.4rem, env(safe-area-inset-right, 0px));
@@ -1476,13 +2061,32 @@ body.idle .bottom-area {
     font-size: 0.74rem;
   }
 
+  .control-btn span,
+  .control-btn.active span {
+    display: none !important;
+  }
+
   .bottom-dock {
-    padding: 0.3rem 0.45rem;
-    gap: 0.25rem;
+    padding: 0.3rem 0.4rem;
+    gap: 0.2rem;
+    justify-content: center;
   }
 
   .control-btn {
-    padding: 0.3rem 0.55rem;
+    min-width: 36px;
+    min-height: 40px;
+    padding: 0.3rem 0.45rem;
+    gap: 0;
+  }
+
+  .control-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dock-separator {
+    height: 18px;
+    margin: 0 0.1rem;
   }
 }
 
@@ -1608,4 +2212,10 @@ body.idle .bottom-area {
     max-height: 88dvh;
     padding: 1rem 1.2rem;
   }
+}
+
+
+/* Event Modal layering above standard modal-overlay */
+#eventModal {
+  z-index: 110;
 }

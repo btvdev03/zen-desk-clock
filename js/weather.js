@@ -93,11 +93,15 @@ export class WeatherWidget {
     this.currentLocation = this._getSavedLocation();
 
     // Fetch and render
-    await this.fetchWeather(false);
+    try {
+      await this.fetchWeather(false);
+    } catch (e) {
+      console.warn('WeatherWidget initial load caught:', e);
+    }
 
     // Periodically update weather every 15 minutes in background
     setInterval(() => {
-      this.fetchWeather(false);
+      this.fetchWeather(false).catch(e => console.warn('Background weather update caught:', e));
     }, this.cacheTtl);
   }
 
@@ -273,9 +277,24 @@ export class WeatherWidget {
     if (refreshBtn) {
       refreshBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        refreshBtn.classList.add('spinning');
-        await this.fetchWeather(true);
-        setTimeout(() => refreshBtn.classList.remove('spinning'), 600);
+        if (this.isLoading) return;
+        const startT = Date.now();
+        this._setLoadingState(true);
+        try {
+          await this.fetchWeather(true);
+        } catch (err) {
+          console.warn('Weather refresh failed:', err);
+        } finally {
+          const elapsed = Date.now() - startT;
+          const minSpin = 650; // Smooth visual rotation feedback
+          if (elapsed < minSpin) {
+            setTimeout(() => {
+              this._setLoadingState(false);
+            }, minSpin - elapsed);
+          } else {
+            this._setLoadingState(false);
+          }
+        }
       });
     }
 
@@ -288,7 +307,7 @@ export class WeatherWidget {
     }
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.isOpen) {
+      if (e.key && e.key.toLowerCase() === 'escape' && this.isOpen) {
         this.closeModal();
       }
     });
@@ -319,20 +338,24 @@ export class WeatherWidget {
       chip.textContent = item.name;
       chip.addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (item.isAuto) {
-          localStorage.removeItem(this.storageLocationKey);
-          this.currentLocation = await this.getUserCoordinates();
-        } else {
-          this.currentLocation = {
-            lat: item.lat,
-            lon: item.lon,
-            city: item.name,
-            isAuto: false
-          };
-          this._saveLocation(this.currentLocation);
+        try {
+          if (item.isAuto) {
+            localStorage.removeItem(this.storageLocationKey);
+            this.currentLocation = await this.getUserCoordinates();
+          } else {
+            this.currentLocation = {
+              lat: item.lat,
+              lon: item.lon,
+              city: item.name,
+              isAuto: false
+            };
+            this._saveLocation(this.currentLocation);
+          }
+          this._renderCityChips();
+          await this.fetchWeather(true);
+        } catch (err) {
+          console.warn('Weather city switch caught error:', err);
         }
-        this._renderCityChips();
-        await this.fetchWeather(true);
       });
 
       container.appendChild(chip);
@@ -516,15 +539,19 @@ export class WeatherWidget {
       this.render();
       return this.weatherData;
     } catch (err) {
-      console.error('WeatherWidget fetchWeather error:', err);
+      console.warn('WeatherWidget fetchWeather caught error:', err);
       // If error occurred but we have stale cache, keep showing it
       const stale = this._getCache();
-      if (stale) {
+      if (stale && stale.weather) {
         this.currentLocation = stale.location;
         this.weatherData = stale.weather;
         this.render();
+        const updateTime = document.getElementById('wmUpdateTime');
+        if (updateTime) {
+          updateTime.textContent = 'Dữ liệu đã lưu (Ngoại tuyến)';
+        }
       } else {
-        this._renderError(err?.message || 'Không thể tải thời tiết');
+        this._renderError(err?.message || 'Không thể kết nối máy chủ thời tiết');
       }
     } finally {
       this.isLoading = false;
@@ -535,6 +562,27 @@ export class WeatherWidget {
   /**
    * Helper to retrieve weather code metadata (Vietnamese label, icon, description).
    */
+  /**
+   * Return clean minimalist vector SVG for weather conditions
+   */
+  getWeatherSvg(code, isDay = 1, size = 15) {
+    let p = '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>'; // cloud default
+    if (!isDay && (code === 0 || code === 1)) {
+      p = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    } else if (code === 0) {
+      p = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+    } else if (code === 1 || code === 2) {
+      p = '<path d="M12 2v2M4.93 4.93l1.41 1.41M2 12h2"/><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>';
+    } else if (code >= 51 && code <= 67) {
+      p = '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><line x1="8" y1="19" x2="6" y2="22"/><line x1="12" y1="19" x2="10" y2="22"/><line x1="16" y1="19" x2="14" y2="22"/>';
+    } else if (code >= 71 && code <= 86) {
+      p = '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><circle cx="8" cy="21" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="16" cy="21" r="1"/>';
+    } else if (code >= 95) {
+      p = '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><polygon points="13 14 10 18 13 18 11 22 16 16 13 16 15 14"/>';
+    }
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  }
+
   getWeatherMeta(code, isDay = 1) {
     const meta = WMO_WEATHER_MAP[code] || {
       label: 'Thời tiết ổn định',
@@ -572,7 +620,12 @@ export class WeatherWidget {
     const tempRounded = Math.round(current.temperature_2m);
     const city = this.currentLocation ? this.currentLocation.city : 'Hà Nội';
 
-    if (this.chipIconEl) this.chipIconEl.textContent = meta.icon;
+    const svgEl = document.getElementById('weatherChipSvg');
+    if (svgEl) {
+      svgEl.innerHTML = this.getWeatherSvg(current.weather_code, isDay, 15).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+    } else if (this.chipIconEl) {
+      this.chipIconEl.innerHTML = this.getWeatherSvg(current.weather_code, isDay, 15);
+    }
     if (this.chipTempEl) this.chipTempEl.textContent = `${tempRounded}°C`;
     if (this.chipCityEl) this.chipCityEl.textContent = city;
 
@@ -737,33 +790,70 @@ export class WeatherWidget {
   }
 
   /**
-   * Renders an error state in the chip and modal.
+   * Renders an error state in the chip and modal gracefully with fallback UI.
    */
   _renderError(message) {
-    if (this.chipTempEl) this.chipTempEl.textContent = 'Lỗi';
-    if (this.chipEl) this.chipEl.title = `Lỗi thời tiết: ${message}. Bấm để thử lại.`;
+    const msgStr = String(message || '');
+    const isOffline = !navigator.onLine || msgStr.includes('Failed to fetch') || msgStr.includes('network') || msgStr.includes('CORS');
+    const displayMsg = isOffline ? 'Mất kết nối mạng' : 'Không có dữ liệu';
+
+    if (this.chipTempEl) this.chipTempEl.textContent = '--°C';
+    if (this.chipIconEl) this.chipIconEl.textContent = '☁️';
+    if (this.chipCityEl && !this.chipCityEl.textContent) {
+      this.chipCityEl.textContent = this.currentLocation ? this.currentLocation.city : 'Hà Nội';
+    }
+    if (this.chipEl) this.chipEl.title = `Thời tiết: ${displayMsg}. Bấm để làm mới.`;
+
+    const heroTemp = document.getElementById('wmHeroTemp');
+    if (heroTemp) heroTemp.textContent = '--';
+
+    const heroIcon = document.getElementById('wmHeroIcon');
+    if (heroIcon) heroIcon.textContent = '☁️';
 
     const heroCondition = document.getElementById('wmHeroCondition');
-    if (heroCondition) heroCondition.textContent = `Lỗi: ${message}`;
+    if (heroCondition) heroCondition.textContent = `${displayMsg} (Nhấp nút làm mới ↻)`;
+
+    const updateTime = document.getElementById('wmUpdateTime');
+    if (updateTime) updateTime.textContent = 'Chưa thể cập nhật';
+
+    const metricStatus = document.getElementById('wmMetricStatus');
+    if (metricStatus) metricStatus.textContent = 'Ngoại tuyến';
+
+    const metricStatusDesc = document.getElementById('wmMetricStatusDesc');
+    if (metricStatusDesc) metricStatusDesc.textContent = 'Kiểm tra Wi-Fi / 4G';
+
+    const listEl = document.getElementById('wmForecastList');
+    if (listEl && !listEl.children.length) {
+      listEl.innerHTML = `<div class="weather-error-hint" style="text-align: center; color: #94a3b8; font-size: 0.84rem; padding: 1.5rem 0.5rem; line-height: 1.5;">Không thể kết nối máy chủ thời tiết.<br>Vui lòng kiểm tra kết nối mạng và nhấn nút làm mới ↻ góc trên.</div>`;
+    }
   }
 
   /**
-   * Opens the Weather Details Modal.
+   * Opens the Weather Details Modal with smooth transition and accessibility state.
    */
   openModal() {
     if (!this.modalEl) return;
+    document.body.classList.remove('idle');
     this.modalEl.classList.add('open');
+    this.modalEl.setAttribute('aria-hidden', 'false');
     this.isOpen = true;
+    if (window.zenModalManager) {
+      window.zenModalManager.push('weatherModal', () => this.closeModal());
+    }
     this._renderCityChips();
   }
 
   /**
-   * Closes the Weather Details Modal.
+   * Closes the Weather Details Modal smoothly.
    */
   closeModal() {
     if (!this.modalEl) return;
     this.modalEl.classList.remove('open');
+    this.modalEl.setAttribute('aria-hidden', 'true');
     this.isOpen = false;
+    if (window.zenModalManager) {
+      window.zenModalManager.remove('weatherModal');
+    }
   }
 
   /**

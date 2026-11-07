@@ -34,6 +34,8 @@ export class AudioSynthesizer {
       crickets: 0.4,
       birds: 0.35,
       cafe: 0.45,
+      wind: 0.45,
+      thunder: 0.4,
       brown: 0.5,
       pink: 0.4,
       white: 0.3,
@@ -67,16 +69,28 @@ export class AudioSynthesizer {
   initContext() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new AudioCtx();
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
     }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
     }
-    if (!this.masterGainNode) {
+    if (this.ctx && !this.masterGainNode) {
       this.masterGainNode = this.ctx.createGain();
       this.masterGainNode.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
       this.masterGainNode.connect(this.ctx.destination);
       this.gainNode = this.masterGainNode; // legacy alias
+    }
+  }
+
+  /**
+   * Autoplay Policy Unlock: resume suspended AudioContext on user interaction
+   */
+  unlockAudioContext() {
+    this.initContext();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
     }
   }
 
@@ -114,7 +128,7 @@ export class AudioSynthesizer {
 
   /**
    * Start an individual sound track concurrently with other active tracks.
-   * @param {string} trackId - 'rain', 'fire', 'ocean', 'crickets', 'birds', 'cafe', 'brown', 'pink', 'white', 'binaural'
+   * @param {string} trackId - 'rain', 'fire', 'ocean', 'crickets', 'birds', 'cafe', 'wind', 'thunder', 'brown', 'pink', 'white', 'binaural'
    * @param {number} [volume] - Optional track volume (0-1). Defaults to trackVolumes[trackId] or 0.5.
    */
   startTrack(trackId, volume = null) {
@@ -125,10 +139,18 @@ export class AudioSynthesizer {
     }
     const trackVol = this.trackVolumes[trackId] ?? 0.5;
 
-    // If track is already playing, just update volume smoothly
+    // If track is in progress of stopping, destroy immediately and recreate cleanly
     if (this.activeTracks[trackId]) {
-      this.setTrackVolume(trackId, trackVol);
-      return;
+      if (this.activeTracks[trackId]._stopping) {
+        if (this.activeTracks[trackId]._stoppingTimer) {
+          clearTimeout(this.activeTracks[trackId]._stoppingTimer);
+        }
+        this._destroyTrack(this.activeTracks[trackId]);
+        delete this.activeTracks[trackId];
+      } else {
+        this.setTrackVolume(trackId, trackVol);
+        return;
+      }
     }
 
     // Create a dedicated GainNode for this track
@@ -174,6 +196,12 @@ export class AudioSynthesizer {
       case 'cafe':
         this._buildCafeTrack(trackObj);
         break;
+      case 'wind':
+        this._buildWindTrack(trackObj);
+        break;
+      case 'thunder':
+        this._buildThunderTrack(trackObj);
+        break;
       case 'binaural':
         this._buildBinauralTrack(trackObj);
         break;
@@ -188,7 +216,48 @@ export class AudioSynthesizer {
   }
 
   /**
-   * Stop an individual track with smooth fade-out.
+   * Internal helper: Disconnect and stop all nodes of a track completely
+   */
+  _destroyTrack(track) {
+    if (!track) return;
+
+    if (track.intervals) {
+      track.intervals.forEach(id => {
+        clearInterval(id);
+        clearTimeout(id);
+      });
+      track.intervals = [];
+    }
+
+    if (track.nodes) {
+      track.nodes.forEach(node => {
+        try {
+          if (typeof node.stop === 'function') node.stop();
+          node.disconnect();
+        } catch (e) {
+          // Ignored
+        }
+      });
+      track.nodes = [];
+    }
+
+    if (track.cleanup) {
+      try { track.cleanup(); } catch (e) {}
+      track.cleanup = null;
+    }
+
+    if (track.gainNode) {
+      try { track.gainNode.disconnect(); } catch (e) {}
+      track.gainNode = null;
+    }
+
+    if (track.id === 'binaural') {
+      this.binauralNodes = null;
+    }
+  }
+
+  /**
+   * Stop an individual track with smooth fade-out and complete cleanup.
    * @param {string} trackId
    * @param {number} [fadeDuration=0.08]
    */
@@ -196,45 +265,40 @@ export class AudioSynthesizer {
     const track = this.activeTracks[trackId];
     if (!track) return;
 
-    const now = this.ctx ? this.ctx.currentTime : 0;
-    if (track.gainNode && this.ctx) {
-      track.gainNode.gain.cancelScheduledValues(now);
-      track.gainNode.gain.setValueAtTime(track.gainNode.gain.value, now);
-      track.gainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDuration);
+    // Immediately stop creating any new pulses/chirps/crackles
+    if (track.intervals) {
+      track.intervals.forEach(id => {
+        clearInterval(id);
+        clearTimeout(id);
+      });
+      track.intervals = [];
     }
 
-    setTimeout(() => {
-      // Clear all intervals
-      if (track.intervals) {
-        track.intervals.forEach(id => clearInterval(id));
+    if (track._stoppingTimer) {
+      clearTimeout(track._stoppingTimer);
+    }
+    track._stopping = true;
+
+    const now = this.ctx ? this.ctx.currentTime : 0;
+    if (track.gainNode && this.ctx && this.ctx.state === 'running') {
+      try {
+        track.gainNode.gain.cancelScheduledValues(now);
+        track.gainNode.gain.setValueAtTime(track.gainNode.gain.value, now);
+        track.gainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDuration);
+      } catch (e) {
+        // Fallback
       }
-      // Stop and disconnect all nodes
-      if (track.nodes) {
-        track.nodes.forEach(node => {
-          try {
-            if (typeof node.stop === 'function') node.stop();
-            node.disconnect();
-          } catch (e) {
-            // Ignored
-          }
-        });
-      }
-      if (track.cleanup) {
-        try { track.cleanup(); } catch (e) { /* Ignored */ }
-      }
-      if (track.gainNode) {
-        try { track.gainNode.disconnect(); } catch (e) { /* Ignored */ }
-      }
-      if (trackId === 'binaural') {
-        this.binauralNodes = null;
-      }
+    }
+
+    track._stoppingTimer = setTimeout(() => {
+      this._destroyTrack(track);
       delete this.activeTracks[trackId];
 
       // Update currentSound if all stopped
       if (Object.keys(this.activeTracks).length === 0) {
         this.currentSound = 'none';
       }
-    }, fadeDuration * 1000 + 20);
+    }, Math.max(10, fadeDuration * 1000 + 15));
   }
 
   /**
@@ -514,6 +578,171 @@ export class AudioSynthesizer {
 
     src.start(now);
     src.stop(now + dur + 0.02);
+  }
+
+  // =========================================================================
+  // WIND PROCEDURAL GENERATOR
+  // =========================================================================
+
+  /**
+   * Organic Wind:
+   * Looped pink noise with modulated bandpass filter and gentle volume swells.
+   */
+  _buildWindTrack(trackObj) {
+    const bufferSize = this.ctx.sampleRate * 4;
+    const buffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
+    this._generatePinkNoise(buffer.getChannelData(0), buffer.getChannelData(1), bufferSize);
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    // Highpass to eliminate low sub-bass rumble
+    const highpass = this.ctx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.setValueAtTime(140, this.ctx.currentTime);
+
+    // Resonant Bandpass for wind whistling / rustling air
+    const bandpass = this.ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.setValueAtTime(420, this.ctx.currentTime);
+    bandpass.Q.setValueAtTime(2.6, this.ctx.currentTime);
+
+    // Lowpass filter to smooth out harsh highs
+    const lowpass = this.ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.setValueAtTime(1800, this.ctx.currentTime);
+
+    // LFO 1: Frequency modulation for dynamic wind gusts
+    const lfo1 = this.ctx.createOscillator();
+    lfo1.type = 'sine';
+    lfo1.frequency.setValueAtTime(0.12, this.ctx.currentTime); // ~8.3s cycle
+
+    const lfo1Gain = this.ctx.createGain();
+    lfo1Gain.gain.setValueAtTime(280, this.ctx.currentTime);
+
+    lfo1.connect(lfo1Gain);
+    lfo1Gain.connect(bandpass.frequency);
+
+    // LFO 2: Volume swell modulation for realistic gusts
+    const gustGain = this.ctx.createGain();
+    gustGain.gain.setValueAtTime(0.7, this.ctx.currentTime);
+
+    const lfo2 = this.ctx.createOscillator();
+    lfo2.type = 'sine';
+    lfo2.frequency.setValueAtTime(0.08, this.ctx.currentTime); // ~12.5s cycle
+
+    const lfo2Gain = this.ctx.createGain();
+    lfo2Gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+
+    lfo2.connect(lfo2Gain);
+    lfo2Gain.connect(gustGain.gain);
+
+    source.connect(highpass);
+    highpass.connect(bandpass);
+    bandpass.connect(lowpass);
+    lowpass.connect(gustGain);
+    gustGain.connect(trackObj.gainNode);
+
+    lfo1.start();
+    lfo2.start();
+    source.start();
+
+    trackObj.nodes.push(source, highpass, bandpass, lowpass, gustGain, lfo1, lfo1Gain, lfo2, lfo2Gain);
+  }
+
+  // =========================================================================
+  // THUNDER PROCEDURAL GENERATOR
+  // =========================================================================
+
+  /**
+   * Distant Rolling Thunder:
+   * Continuous deep storm rumble bed + periodic organic rolling thunder strikes.
+   */
+  _buildThunderTrack(trackObj) {
+    // 1. Continuous deep ambient storm rumble bed
+    const bufferSize = this.ctx.sampleRate * 4;
+    const buffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
+    this._generateBrownNoise(buffer.getChannelData(0), buffer.getChannelData(1), bufferSize);
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    const lowpass = this.ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.setValueAtTime(75, this.ctx.currentTime);
+
+    const rumbleGain = this.ctx.createGain();
+    rumbleGain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+
+    source.connect(lowpass);
+    lowpass.connect(rumbleGain);
+    rumbleGain.connect(trackObj.gainNode);
+    source.start();
+
+    trackObj.nodes.push(source, lowpass, rumbleGain);
+
+    // 2. Periodic distant rolling thunder strikes
+    const triggerClap = () => {
+      if (!this.isTrackPlaying('thunder') || this.isMuted) return;
+      this._triggerRollingThunderTo(trackObj.gainNode);
+    };
+
+    // First clap after 3.5 seconds
+    const initialTimer = setTimeout(triggerClap, 3500);
+    trackObj.intervals.push(initialTimer);
+
+    // Recurring claps every 16 seconds (with randomness)
+    const thunderInterval = setInterval(() => {
+      if (Math.random() < 0.75) {
+        triggerClap();
+      }
+    }, 16000);
+    trackObj.intervals.push(thunderInterval);
+  }
+
+  _triggerRollingThunderTo(destinationGain) {
+    if (!this.ctx || this.ctx.state !== 'running') return;
+    const now = this.ctx.currentTime;
+    const dur = 4.2;
+    const bufSize = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(2, bufSize, this.ctx.sampleRate);
+    const left = buf.getChannelData(0);
+    const right = buf.getChannelData(1);
+
+    this._generateBrownNoise(left, right, bufSize);
+
+    // Add multi-stage decay envelope directly into the buffer for natural reverberation
+    for (let i = 0; i < bufSize; i++) {
+      const t = i / this.ctx.sampleRate;
+      let env = Math.exp(-t / 1.6);
+      if (t > 0.8 && t < 2.0) {
+        env += 0.35 * Math.exp(-(t - 1.2) * (t - 1.2) / 0.15);
+      }
+      left[i] *= env;
+      right[i] *= env;
+    }
+
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(160, now);
+    filter.frequency.exponentialRampToValueAtTime(65, now + dur);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.42, now + 0.12);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(destinationGain);
+
+    src.start(now);
+    src.stop(now + dur + 0.05);
   }
 
   // =========================================================================
@@ -978,3 +1207,13 @@ export class AudioSynthesizer {
 }
 
 export const soundEngine = new AudioSynthesizer();
+
+// Autoplay Policy: Automatically unlock Web Audio AudioContext upon first user interaction
+if (typeof window !== 'undefined') {
+  const unlockEvents = ['click', 'touchstart', 'touchend', 'keydown', 'pointerdown'];
+  const handleFirstInteraction = () => {
+    soundEngine.unlockAudioContext();
+    unlockEvents.forEach(evt => window.removeEventListener(evt, handleFirstInteraction, { capture: true }));
+  };
+  unlockEvents.forEach(evt => window.addEventListener(evt, handleFirstInteraction, { capture: true, passive: true }));
+}

@@ -48,6 +48,11 @@ ZenDesk Clock transforms any spare display, old iPad, or secondary monitor into 
 - 🔥 **Vintage Nixie Tube Clock (IN-12 / IN-14 Soviet Cold Cathode):**
   - **Authentic Physics:** Realistic glass envelope reflection, wire anode mesh, glowing neon plasma filaments, gas discharge halos, and relay click synthesis.
   - **Slot-Machine Anti-Cathode-Poisoning Cycle:** High-speed digit cycling with staggered settling on demand or interval.
+- 🌌 **Three.js 3D Ambient WebGL Engine:**
+  - **Tranquil Zen Hologram Waves & Galaxy Motes:** Smooth 60fps WebGL background featuring Cyber Energy Waves, Quantum Nebula Motes, and Zen Orbital Rings.
+  - **Synchronized Palette & Night Mode:** Automatically adapts to all 10 theme colors and transitions seamlessly into Monochromatic Apple StandBy Red or Warm Amber.
+  - **Ultra-Efficient Performance:** Capped at 60fps, 1-2 draw calls, Page Visibility API auto-pause (zero CPU/battery burn when backgrounded).
+  - **Offline PWA Ready:** ESM CDN loading with local cached vendor fallback.
 - 🌙 **Apple StandBy Red Night Mode:**
   - **Circadian Rhythm Friendly:** Monochromatic deep red (`#ff2a2a`) or warm amber (`#ff7700`) on OLED true black (`#000000`).
   - **Auto-Schedule:** Automatically activates between 22:00 - 06:00 or toggle manually anytime with <kbd>N</kbd>.
@@ -123,6 +128,7 @@ cd zen-desk-clock
 | :---: | :--- | :--- |
 | <kbd>Space</kbd> | **Start / Pause Timer** | Toggles Pomodoro focus or flow timer |
 | <kbd>F</kbd> | **Toggle Fullscreen** | Expands to immersive borderless full screen |
+| <kbd>B</kbd> | **Three.js 3D Zen Mode** | Toggles 3D WebGL ambient cyber energy waves & galaxy motes |
 | <kbd>T</kbd> | **Cycle Themes** | Flip ➔ OLED ➔ Matrix ➔ Aura ➔ Swiss Analog ➔ Nixie |
 | <kbd>M</kbd> | **Sound Mixer & Waves** | Opens multi-track ambient sound mixer & binaural beats |
 | <kbd>N</kbd> | **StandBy Night Mode** | Toggles Apple StandBy OLED monochromatic red night mode |
@@ -161,6 +167,7 @@ zen-desk-clock/
 │   ├── flip-renderer.js    # Split-flap DOM 3D transition controller
 │   ├── analog-renderer.js  # 60fps continuous sweep analog clock
 │   ├── nixie-renderer.js   # Cold cathode nixie tube engine & slot-machine cycle
+│   ├── three-scene.js      # Three.js 3D WebGL ambient wave & galaxy mote engine
 │   ├── night-mode.js       # Apple StandBy red night mode & circadian scheduler
 │   ├── weather.js          # Open-Meteo live weather client & geolocation fallback
 │   ├── sound-mixer.js      # Multi-track ambient audio controller & preset manager

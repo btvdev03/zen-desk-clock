@@ -19,7 +19,7 @@
   background: rgba(6, 9, 14, 0.82);
   backdrop-filter: blur(18px) saturate(190%);
   -webkit-backdrop-filter: blur(18px) saturate(190%);
-  z-index: 120;
+  z-index: 100;
   display: none;
   align-items: center;
   justify-content: center;

@@ -19,6 +19,46 @@ import { SceneryEngine, PHOTO_PRESETS } from './scenery-engine.js';
 import { wallpaperDB } from './wallpaper-db.js';
 import { NixieRenderer } from './nixie-renderer.js';
 import { nightModeManager } from './night-mode.js';
+import { soundMixer } from './sound-mixer.js';
+import { zenThreeScene } from './three-scene.js';
+
+// Central Modal & Drawer Layering Coordinator
+if (!window.zenModalManager) {
+  window.zenModalManager = {
+    stack: [],
+    push(id, closeFn) {
+      this.stack = this.stack.filter(item => item.id !== id);
+      this.stack.push({ id, close: closeFn });
+    },
+    remove(id) {
+      this.stack = this.stack.filter(item => item.id !== id);
+    },
+    closeTopmost() {
+      if (this.stack.length > 0) {
+        const top = this.stack.pop();
+        if (top && typeof top.close === 'function') {
+          try { top.close(); } catch (e) { console.error(e); }
+          return true;
+        }
+      }
+      return false;
+    },
+    hasOpenModal() {
+      return this.stack.length > 0;
+    }
+  };
+
+  // High-priority capture phase Escape handler: strictly closes topmost dialog/drawer
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (window.zenModalManager.hasOpenModal()) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        window.zenModalManager.closeTopmost();
+      }
+    }
+  }, true);
+}
 
 class ZenApp {
   constructor() {
@@ -41,15 +81,16 @@ class ZenApp {
       'theme-matrix': 'Matrix CRT',
       'theme-aura': 'Hoàng Hôn Aura',
       'theme-swiss': 'Kim Thụy Sĩ',
-      'theme-nixie': '🔥 Đèn Nixie',
-      'theme-winter': '❄️ Mùa Đông',
-      'theme-spring': '🌸 Mùa Xuân',
-      'theme-summer': '🌊 Mùa Hạ',
-      'theme-autumn': '🍁 Mùa Thu'
+      'theme-nixie': 'Đèn Nixie',
+      'theme-winter': 'Mùa Đông',
+      'theme-spring': 'Mùa Xuân',
+      'theme-summer': 'Mùa Hạ',
+      'theme-autumn': 'Mùa Thu'
     };
+    this.progressMode = localStorage.getItem('zd_progress_mode') || 'realtime_pct';
 
     this.activeMode = 'clock'; // 'clock' | 'pomodoro'
-    this.ambientSounds = ['none', 'rain', 'fire', 'ocean', 'crickets', 'birds', 'brown', 'pink', 'white'];
+    this.ambientSounds = ['none', 'rain', 'fire', 'ocean', 'crickets', 'birds', 'wind', 'thunder', 'cafe', 'brown', 'pink', 'white'];
     this.currentSoundIndex = 0; // starts at none
     this.particlePreference = 'auto'; // 'auto', 'snow', 'sakura', 'maple', 'fireflies', 'none'
     this.idleTimer = null;
@@ -68,6 +109,7 @@ class ZenApp {
     this._cacheDOM();
     this._initScenery();
     this._initParticles();
+    this._initThreeScene();
     this._initFlipClock();
     this._initAnalogClock();
     this._initNixieClock();
@@ -79,8 +121,12 @@ class ZenApp {
     this._initIdleDetection();
     this._initEventCountdown();
     this._initEventListeners();
+    this._initWallpaperModal();
     this._initQuotes();
     this._loadSavedPreferences();
+    if (typeof soundMixer !== 'undefined' && soundMixer.updateDockStatus) {
+      soundMixer.updateDockStatus();
+    }
   }
 
   _cacheDOM() {
@@ -141,11 +187,17 @@ class ZenApp {
     this.ambientSoundBtn = document.getElementById('ambientSoundBtn');
     this.soundLabel = document.getElementById('soundLabel');
     this.pipBtn = document.getElementById('pipBtn');
+    this.threeDfxBtn = document.getElementById('threeDfxBtn');
+    this.threeDfxToggle = document.getElementById('threeDfxToggle');
+    this.threeDfxModeSelect = document.getElementById('threeDfxModeSelect');
+    this.threeDfxOpacitySlider = document.getElementById('threeDfxOpacitySlider');
+    this.threeDfxOpacityValue = document.getElementById('threeDfxOpacityValue');
     this.settingsBtn = document.getElementById('settingsBtn');
 
     // Settings Modal elements
     this.settingsModal = document.getElementById('settingsModal');
     this.modalCloseBtn = document.getElementById('modalCloseBtn');
+    this.themeSelect = document.getElementById('themeSelect');
     this.format24Toggle = document.getElementById('format24Toggle');
     this.showSecondsToggle = document.getElementById('showSecondsToggle');
     this.volumeSlider = document.getElementById('volumeSlider');
@@ -181,6 +233,86 @@ class ZenApp {
     if (this.sceneryContainer) {
       this.sceneryEngine = new SceneryEngine(this.sceneryContainer);
     }
+  }
+
+
+  _initThreeScene() {
+    // Initialize 3D scene asynchronously
+    zenThreeScene.init().then(() => {
+      this._syncThreeControls();
+    });
+
+    // Dock button toggle
+    if (this.threeDfxBtn) {
+      this.threeDfxBtn.addEventListener('click', () => {
+        const isEnabled = zenThreeScene.toggle();
+        this._syncThreeControls();
+        this._showToast(`Hiệu ứng 3D: ${isEnabled ? 'Bật' : 'Tắt'}`);
+      });
+    }
+
+    // Settings Modal Toggle switch
+    if (this.threeDfxToggle) {
+      this.threeDfxToggle.addEventListener('change', (e) => {
+        zenThreeScene.setEnabled(e.target.checked);
+        this._syncThreeControls();
+        this._showToast(`Hiệu ứng 3D: ${e.target.checked ? 'Bật' : 'Tắt'}`);
+      });
+    }
+
+    // Settings Modal Mode selector
+    if (this.threeDfxModeSelect) {
+      this.threeDfxModeSelect.addEventListener('change', (e) => {
+        zenThreeScene.setMode(e.target.value);
+        this._syncThreeControls();
+      });
+    }
+
+    // Settings Modal Opacity slider
+    if (this.threeDfxOpacitySlider) {
+      this.threeDfxOpacitySlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        zenThreeScene.setOpacity(val);
+        if (this.threeDfxOpacityValue) {
+          this.threeDfxOpacityValue.textContent = `${Math.round(val * 100)}%`;
+        }
+      });
+    }
+  }
+
+  _syncThreeControls() {
+    const isEnabled = zenThreeScene.enabled;
+    if (this.threeDfxBtn) {
+      this.threeDfxBtn.classList.toggle('active', isEnabled);
+    }
+    if (this.threeDfxToggle) {
+      this.threeDfxToggle.checked = isEnabled;
+    }
+    if (this.threeDfxModeSelect) {
+      this.threeDfxModeSelect.value = zenThreeScene.mode;
+    }
+    if (this.threeDfxOpacitySlider) {
+      this.threeDfxOpacitySlider.value = zenThreeScene.opacity;
+      if (this.threeDfxOpacityValue) {
+        this.threeDfxOpacityValue.textContent = `${Math.round(zenThreeScene.opacity * 100)}%`;
+      }
+    }
+  }
+
+  _showToast(message) {
+    let toast = document.getElementById('zenToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'zenToast';
+      toast.className = 'swiss-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('visible');
+    if (this._toastTimer) clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      toast.classList.remove('visible');
+    }, 2200);
   }
 
   _initParticles() {
@@ -221,7 +353,7 @@ class ZenApp {
         this.nightModeDot.classList.toggle('inactive', !enabled);
       }
       if (this.nightModeText) {
-        this.nightModeText.textContent = enabled ? 'Đang bật StandBy' : 'Chế độ đêm';
+        this.nightModeText.textContent = 'Chế độ đêm';
       }
     });
   }
@@ -263,10 +395,8 @@ class ZenApp {
           this.topDateShortDisplay.textContent = timeData.dateShortFormatted;
         }
         this.topWeekDisplay.textContent = `Tuần ${timeData.isoWeek}`;
-        this.dayProgressBar.style.width = `${timeData.dayProgressPercent}%`;
-        this.dayProgressPercent.textContent = `${timeData.dayProgressPercent}%`;
-        this.yearProgressBar.style.width = `${timeData.yearProgressPercent}%`;
-        this.yearProgressPercent.textContent = `${timeData.yearProgressPercent}%`;
+        // Update Progress Trackers in realtime lockstep
+        this._updateProgressTrackers(timeData);
 
         // Update Event Countdown
         const countdownData = eventCountdownManager.getActiveCountdown();
@@ -306,6 +436,74 @@ class ZenApp {
     clockEngine.start();
   }
 
+  _updateProgressTrackers(timeData) {
+    if (!this.dayProgressBar || !this.yearProgressBar) return;
+
+    // 1. Update progress bar fill widths with high precision
+    const dayW = Math.max(0, Math.min(100, timeData.dayProgressRaw || 0));
+    const yearW = Math.max(0, Math.min(100, timeData.yearProgressRaw || 0));
+
+    this.dayProgressBar.style.width = `${dayW.toFixed(4)}%`;
+    this.yearProgressBar.style.width = `${yearW.toFixed(4)}%`;
+
+    // 2. Update Live Mode Badge & Digits
+    const liveBadge = document.getElementById('progressLiveBadge');
+    const liveText = document.getElementById('progressLiveText');
+
+    if (this.progressMode === 'countdown') {
+      if (liveBadge) liveBadge.className = 'progress-live-badge mode-countdown';
+      if (liveText) liveText.textContent = 'ĐẾM NGƯỢC';
+
+      const now = new Date();
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+      const diffMsDay = Math.max(0, midnight - now);
+      const remHours = Math.floor(diffMsDay / (1000 * 60 * 60));
+      const remMins = Math.floor((diffMsDay % (1000 * 60 * 60)) / (1000 * 60));
+      const remSecs = Math.floor((diffMsDay % (1000 * 60)) / 1000);
+      const pad = (n) => String(n).padStart(2, '0');
+
+      if (this.dayProgressPercent) {
+        this.dayProgressPercent.innerHTML = `<span class="prog-countdown">Còn ${pad(remHours)}:${pad(remMins)}:${pad(remSecs)}</span>`;
+      }
+
+      const endOfYear = new Date(now.getFullYear() + 1, 0, 1, 0, 0, 0);
+      const diffMsYear = Math.max(0, endOfYear - now);
+      const remYearDays = Math.floor(diffMsYear / (1000 * 60 * 60 * 24));
+      const remYearHours = Math.floor((diffMsYear % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const remYearMins = Math.floor((diffMsYear % (1000 * 60)) / (1000 * 60));
+      const remYearSecs = Math.floor((diffMsYear % (1000 * 60)) / 1000);
+
+      if (this.yearProgressPercent) {
+        this.yearProgressPercent.innerHTML = `<span class="prog-countdown">Còn ${remYearDays}n ${pad(remYearHours)}:${pad(remYearMins)}:${pad(remYearSecs)}</span>`;
+      }
+    } else if (this.progressMode === 'simple_pct') {
+      if (liveBadge) liveBadge.className = 'progress-live-badge mode-simple';
+      if (liveText) liveText.textContent = 'CHUẨN';
+
+      if (this.dayProgressPercent) {
+        this.dayProgressPercent.innerHTML = `<span class="prog-int">${timeData.dayProgressPercent}</span><span class="prog-pct">%</span>`;
+      }
+      if (this.yearProgressPercent) {
+        this.yearProgressPercent.innerHTML = `<span class="prog-int">${timeData.yearProgressPercent}</span><span class="prog-pct">%</span>`;
+      }
+    } else {
+      // Default: 'realtime_pct' (Live High-Precision Ticker)
+      if (liveBadge) liveBadge.className = 'progress-live-badge';
+      if (liveText) liveText.textContent = 'LIVE';
+
+      if (this.dayProgressPercent) {
+        this.dayProgressPercent.innerHTML = `
+          <span class="prog-int">${timeData.dayProgressInt || 0}</span><span class="prog-dec">${timeData.dayProgressDec || '.0000'}</span><span class="prog-pct">%</span>
+        `;
+      }
+      if (this.yearProgressPercent) {
+        this.yearProgressPercent.innerHTML = `
+          <span class="prog-int">${timeData.yearProgressInt || 0}</span><span class="prog-dec">${timeData.yearProgressDec || '.0000'}</span><span class="prog-pct">%</span>
+        `;
+      }
+    }
+  }
+
   _initPiP() {
     pipController.setStateGetter(() => {
       const timeData = clockEngine.getTimeData();
@@ -326,12 +524,18 @@ class ZenApp {
 
   _initWakeLock() {
     wakeLockManager.onStatusChange((active) => {
-      if (active) {
-        this.wakeLockDot.classList.remove('inactive');
-        this.wakeLockText.textContent = 'Màn hình luôn sáng';
-      } else {
-        this.wakeLockDot.classList.add('inactive');
-        this.wakeLockText.textContent = 'Chế độ nghỉ tự nhiên';
+      if (this.wakeLockBtn) {
+        this.wakeLockBtn.classList.toggle('active', active);
+      }
+      if (this.wakeLockDot) {
+        if (active) {
+          this.wakeLockDot.classList.remove('inactive');
+        } else {
+          this.wakeLockDot.classList.add('inactive');
+        }
+      }
+      if (this.wakeLockText) {
+        this.wakeLockText.textContent = 'Màn hình bật';
       }
     });
 
@@ -342,12 +546,34 @@ class ZenApp {
     window.addEventListener('click', enableWake, { once: true });
   }
 
+  _isAnyModalOrActiveInputOpen() {
+    if (window.zenModalManager && window.zenModalManager.hasOpenModal()) {
+      return true;
+    }
+
+    const openModals = document.querySelectorAll(
+      '.modal-overlay.open, .zen-tasks-modal.open, .weather-modal-overlay.open, .sound-mixer-modal.open, .sound-mixer-overlay.open, .zen-scratchpad-drawer.open'
+    );
+    if (openModals.length > 0) return true;
+
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable)) {
+      return true;
+    }
+
+    return false;
+  }
+
   _initIdleDetection() {
     const resetIdle = () => {
       if (this.zenPureMode) return;
       document.body.classList.remove('idle');
       clearTimeout(this.idleTimer);
       this.idleTimer = setTimeout(() => {
+        // Never trigger auto-idle if any modal is open, or user is focused/typing in scratchpad/inputs
+        if (this._isAnyModalOrActiveInputOpen()) {
+          return;
+        }
         document.body.classList.add('idle');
       }, 3500);
     };
@@ -390,11 +616,35 @@ class ZenApp {
     this.modeClockBtn.addEventListener('click', () => this.setMode('clock'));
     this.modePomoBtn.addEventListener('click', () => this.setMode('pomodoro'));
 
+    // Progress Trackers click-to-cycle between:
+    // 1. 'realtime_pct' (Live high-precision % ticking every second)
+    // 2. 'countdown' (Live countdown remaining hh:mm:ss)
+    // 3. 'simple_pct' (Classic rounded 1-decimal %)
+    const progressTrackers = document.getElementById('progressTrackers');
+    if (progressTrackers) {
+      progressTrackers.addEventListener('click', () => {
+        if (this.progressMode === 'realtime_pct') {
+          this.progressMode = 'countdown';
+        } else if (this.progressMode === 'countdown') {
+          this.progressMode = 'simple_pct';
+        } else {
+          this.progressMode = 'realtime_pct';
+        }
+        localStorage.setItem('zd_progress_mode', this.progressMode);
+        const timeData = clockEngine.getTimeData();
+        this._updateProgressTrackers(timeData);
+      });
+    }
+
     // Theme Switcher Button
     this.themeSwitchBtn.addEventListener('click', () => this.cycleTheme());
 
-    // Ambient Sound Button
-    this.ambientSoundBtn.addEventListener('click', () => this.cycleSound());
+    // Ambient Sound Button -> Opens Sound Mixer
+    if (this.ambientSoundBtn) {
+      this.ambientSoundBtn.addEventListener('click', () => {
+        soundMixer.open();
+      });
+    }
 
     // PiP Button
     this.pipBtn.addEventListener('click', async () => {
@@ -616,7 +866,18 @@ class ZenApp {
 
     // Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (
+        e.target.tagName === 'INPUT' ||
+        e.target.tagName === 'SELECT' ||
+        e.target.tagName === 'TEXTAREA' ||
+        e.target.isContentEditable ||
+        (document.activeElement && (
+          document.activeElement.tagName === 'INPUT' ||
+          document.activeElement.tagName === 'TEXTAREA' ||
+          document.activeElement.tagName === 'SELECT' ||
+          document.activeElement.isContentEditable
+        ))
+      ) return;
 
       const key = e.key.toLowerCase();
 
@@ -630,8 +891,12 @@ class ZenApp {
         this.toggleFullscreen();
       } else if (key === 't') {
         this.cycleTheme();
+      } else if (key === 'b') {
+        const isEnabled = zenThreeScene.toggle();
+        this._syncThreeControls();
+        this._showToast(`Hiệu ứng 3D: ${isEnabled ? 'Bật' : 'Tắt'}`);
       } else if (key === 'm') {
-        this.cycleSound();
+        soundMixer.open();
       } else if (key === 'n') {
         nightModeManager.toggle(true);
       } else if (key === 'p') {
@@ -641,11 +906,17 @@ class ZenApp {
       } else if (key === 's') {
         this.openModal(this.settingsModal);
       } else if (key === 'escape') {
-        this.closeModal(this.settingsModal);
-        this.closeModal(this.eventModal);
+        // If zenModalManager didn't close a topmost modal, exit pure mode
         if (this.zenPureMode) this.toggleZenPureMode();
       }
     });
+
+    // Theme Selector dropdown in Settings Modal
+    if (this.themeSelect) {
+      this.themeSelect.addEventListener('change', (e) => {
+        this._applyTheme(e.target.value);
+      });
+    }
   }
 
   setMode(mode) {
@@ -679,12 +950,19 @@ class ZenApp {
     this.currentThemeIndex = this.themes.indexOf(themeName);
     localStorage.setItem('zd_theme', themeName);
 
+    if (this.themeSelect && this.themeSelect.value !== themeName) {
+      this.themeSelect.value = themeName;
+    }
+
     if (this.activeMode === 'clock') {
       this._updateThemeViewVisibility();
     }
 
     this._syncParticles();
     this._syncScenery();
+    if (typeof zenThreeScene !== 'undefined' && zenThreeScene.setTheme) {
+      zenThreeScene.setTheme(themeName);
+    }
   }
 
   _updateThemeViewVisibility() {
@@ -768,13 +1046,24 @@ class ZenApp {
       ocean: '🌊 Sóng biển',
       crickets: '🦗 Tiếng dế',
       birds: '🐦 Chim hót',
+      wind: '💨 Gió rít',
+      thunder: '⚡ Sấm sét',
+      cafe: '☕ Quán cà phê',
       brown: '🪵 Nhiễu nâu',
       pink: '🍃 Nhiễu hồng',
-      white: '💨 Nhiễu trắng'
+      white: '📻 Nhiễu trắng'
     };
 
-    this.soundLabel.textContent = labels[sound] || 'Âm thanh';
-    this.ambientSoundBtn.classList.toggle('active', sound !== 'none');
+    if (this.soundLabel) {
+      this.soundLabel.textContent = labels[sound] || 'Âm thanh';
+    }
+    if (this.ambientSoundBtn) {
+      this.ambientSoundBtn.classList.toggle('active', sound !== 'none');
+    }
+    if (typeof soundMixer !== 'undefined') {
+      soundMixer.syncActiveChannelsWithEngine();
+      soundMixer.updateDockStatus();
+    }
   }
 
   _renderEventList() {
@@ -833,11 +1122,22 @@ class ZenApp {
   }
 
   openModal(modal) {
-    if (modal) modal.classList.add('open');
+    if (modal) {
+      document.body.classList.remove('idle');
+      modal.classList.add('open');
+      if (window.zenModalManager) {
+        window.zenModalManager.push(modal.id, () => this.closeModal(modal));
+      }
+    }
   }
 
   closeModal(modal) {
-    if (modal) modal.classList.remove('open');
+    if (modal) {
+      modal.classList.remove('open');
+      if (window.zenModalManager) {
+        window.zenModalManager.remove(modal.id);
+      }
+    }
   }
 
   _loadSavedPreferences() {
@@ -852,6 +1152,10 @@ class ZenApp {
       this._applyTheme(savedTheme);
     } else {
       this._applyTheme('theme-flip');
+    }
+
+    if (this.themeSelect && savedTheme) {
+      this.themeSelect.value = savedTheme;
     }
 
     const savedFormat24 = localStorage.getItem('zd_format24');
@@ -869,6 +1173,9 @@ class ZenApp {
       document.getElementById('flipSeconds').style.display = show ? '' : 'none';
       document.getElementById('flipSecSep').style.display = show ? '' : 'none';
       this.digitalSeconds.style.display = show ? '' : 'none';
+      if (this.nixieRenderer && typeof this.nixieRenderer.setShowSeconds === 'function') {
+        this.nixieRenderer.setShowSeconds(show);
+      }
     }
 
     const savedVol = localStorage.getItem('zd_volume');
@@ -930,6 +1237,218 @@ class ZenApp {
         this.wallpaperSelect.value = this.sceneryEngine.wallpaperMode;
       }
     }).catch(() => {});
+  }
+
+  _initWallpaperModal() {
+    this.wallpaperModal = document.getElementById('wallpaperModal');
+    this.wallpaperModalCloseBtn = document.getElementById('wallpaperModalCloseBtn');
+    this.quickRandomWallpaperBtn = document.getElementById('quickRandomWallpaperBtn');
+    this.quickBingWallpaperBtn = document.getElementById('quickBingWallpaperBtn');
+    this.wallpaperDropzone = document.getElementById('wallpaperDropzone');
+    this.modalWallpaperFileInput = document.getElementById('modalWallpaperFileInput');
+    this.customWallpaperPreviewBar = document.getElementById('customWallpaperPreviewBar');
+    this.customWallpaperThumb = document.getElementById('customWallpaperThumb');
+    this.customThumbName = document.getElementById('customThumbName');
+    this.removeCustomWallpaperBtn = document.getElementById('removeCustomWallpaperBtn');
+    this.wallpaperPresetsGrid = document.getElementById('wallpaperPresetsGrid');
+    this.modalDimmerSlider = document.getElementById('modalDimmerSlider');
+    this.modalDimmerValue = document.getElementById('modalDimmerValue');
+    this.modalBlurSlider = document.getElementById('modalBlurSlider');
+    this.modalBlurValue = document.getElementById('modalBlurValue');
+
+    // 1. Open/Close Modal via Badge or Esc
+    if (this.wallpaperCaptionBadge) {
+      this.wallpaperCaptionBadge.addEventListener('click', () => {
+        this.openModal(this.wallpaperModal);
+        this._syncWallpaperModalState();
+      });
+    }
+
+    if (this.wallpaperModalCloseBtn) {
+      this.wallpaperModalCloseBtn.addEventListener('click', () => {
+        this.closeModal(this.wallpaperModal);
+      });
+    }
+
+    // 2. Quick Random 4K Action
+    if (this.quickRandomWallpaperBtn) {
+      this.quickRandomWallpaperBtn.addEventListener('click', async () => {
+        if (this.sceneryEngine) {
+          if (this.wallpaperSelect) this.wallpaperSelect.value = 'random_photo';
+          this.sceneryEngine.wallpaperMode = 'random_photo';
+          localStorage.setItem('zd_wallpaper_mode', 'random_photo');
+          await this.sceneryEngine.fetchRandomWallpaper();
+          this.closeModal(this.wallpaperModal);
+        }
+      });
+    }
+
+    // 3. Quick Bing Daily 4K Action
+    if (this.quickBingWallpaperBtn) {
+      this.quickBingWallpaperBtn.addEventListener('click', async () => {
+        if (this.sceneryEngine) {
+          if (this.wallpaperSelect) this.wallpaperSelect.value = 'bing_daily';
+          await this.sceneryEngine.setWallpaperMode('bing_daily');
+          this.closeModal(this.wallpaperModal);
+        }
+      });
+    }
+
+    // 4. Custom Drag-and-Drop & File Picker
+    if (this.wallpaperDropzone && this.modalWallpaperFileInput) {
+      this.wallpaperDropzone.addEventListener('click', () => {
+        this.modalWallpaperFileInput.click();
+      });
+
+      this.wallpaperDropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        this.wallpaperDropzone.classList.add('dragover');
+      });
+
+      this.wallpaperDropzone.addEventListener('dragleave', () => {
+        this.wallpaperDropzone.classList.remove('dragover');
+      });
+
+      this.wallpaperDropzone.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        this.wallpaperDropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          await this._handleCustomWallpaperUpload(e.dataTransfer.files[0]);
+        }
+      });
+
+      this.modalWallpaperFileInput.addEventListener('change', async (e) => {
+        if (e.target.files && e.target.files[0]) {
+          await this._handleCustomWallpaperUpload(e.target.files[0]);
+        }
+      });
+    }
+
+    // 5. Remove Custom Wallpaper
+    if (this.removeCustomWallpaperBtn) {
+      this.removeCustomWallpaperBtn.addEventListener('click', async () => {
+        await wallpaperDB.clearCustomWallpaper();
+        if (this.customWallpaperPreviewBar) this.customWallpaperPreviewBar.style.display = 'none';
+        if (this.customWallpaperOption) {
+          this.customWallpaperOption.disabled = true;
+          this.customWallpaperOption.textContent = 'Ảnh cá nhân của bạn (Chưa tải lên)';
+        }
+        if (this.sceneryEngine) {
+          await this.sceneryEngine.setWallpaperMode('bing_daily');
+        }
+      });
+    }
+
+    // 6. Curated Presets Grid
+    this._renderWallpaperPresetsGrid();
+
+    // 7. Modal Dimmer & Blur Sliders
+    if (this.modalDimmerSlider) {
+      this.modalDimmerSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        if (this.sceneryEngine) this.sceneryEngine.setDimmer(val);
+        if (this.modalDimmerValue) this.modalDimmerValue.textContent = `${Math.round(val * 100)}%`;
+        if (this.bgDimmerSlider) this.bgDimmerSlider.value = val;
+        if (this.bgDimmerValue) this.bgDimmerValue.textContent = `${Math.round(val * 100)}%`;
+      });
+    }
+
+    if (this.modalBlurSlider) {
+      this.modalBlurSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        if (this.sceneryEngine) this.sceneryEngine.setBlur(val);
+        if (this.modalBlurValue) this.modalBlurValue.textContent = `${val}px`;
+        if (this.bgBlurSlider) this.bgBlurSlider.value = val;
+        if (this.bgBlurValue) this.bgBlurValue.textContent = `${val}px`;
+      });
+    }
+  }
+
+  async _handleCustomWallpaperUpload(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('Vui lòng chọn một tệp hình ảnh hợp lệ (JPG, PNG, WEBP).');
+      return;
+    }
+    try {
+      await wallpaperDB.saveCustomWallpaper(file);
+      if (this.sceneryEngine) {
+        await this.sceneryEngine.setWallpaperMode('custom');
+      }
+      await this._syncWallpaperModalState();
+      this.closeModal(this.wallpaperModal);
+    } catch (err) {
+      alert('Không thể lưu ảnh cá nhân: ' + err.message);
+    }
+  }
+
+  async _syncWallpaperModalState() {
+    const hasCustom = await wallpaperDB.hasCustomWallpaper();
+    if (hasCustom && this.customWallpaperPreviewBar) {
+      const blob = await wallpaperDB.getCustomWallpaperBlob();
+      if (blob) {
+        if (this.customWallpaperThumb) {
+          this.customWallpaperThumb.src = URL.createObjectURL(blob);
+        }
+        if (this.customThumbName) {
+          const meta = await wallpaperDB.getCustomWallpaperMeta();
+          this.customThumbName.textContent = meta ? meta.name : 'Ảnh cá nhân';
+        }
+        this.customWallpaperPreviewBar.style.display = 'flex';
+      }
+    } else if (this.customWallpaperPreviewBar) {
+      this.customWallpaperPreviewBar.style.display = 'none';
+    }
+
+    if (this.sceneryEngine) {
+      if (this.modalDimmerSlider) {
+        this.modalDimmerSlider.value = this.sceneryEngine.dimmer || 0.3;
+        if (this.modalDimmerValue) {
+          this.modalDimmerValue.textContent = `${Math.round((this.sceneryEngine.dimmer || 0.3) * 100)}%`;
+        }
+      }
+      if (this.modalBlurSlider) {
+        this.modalBlurSlider.value = this.sceneryEngine.blur || 0;
+        if (this.modalBlurValue) {
+          this.modalBlurValue.textContent = `${this.sceneryEngine.blur || 0}px`;
+        }
+      }
+    }
+  }
+
+  _renderWallpaperPresetsGrid() {
+    if (!this.wallpaperPresetsGrid) return;
+    this.wallpaperPresetsGrid.innerHTML = '';
+
+    const presets = [
+      { key: 'switzerland', name: 'Thụy Sĩ Tuyết', url: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=360&auto=format&fit=crop&q=70' },
+      { key: 'kyoto_autumn', name: 'Kyoto Thu', url: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=360&auto=format&fit=crop&q=70' },
+      { key: 'fuji_snow', name: 'Núi Phú Sĩ', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=360&auto=format&fit=crop&q=70' },
+      { key: 'nordic_aurora', name: 'Cực Quang', url: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=360&auto=format&fit=crop&q=70' },
+      { key: 'yosemite', name: 'Yosemite', url: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=360&auto=format&fit=crop&q=70' },
+      { key: 'desert_dunes', name: 'Sa Mạc Vàng', url: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=360&auto=format&fit=crop&q=70' },
+      { key: 'rainy_window', name: 'Mưa Chiều', url: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=360&auto=format&fit=crop&q=70' },
+      { key: 'cyber_tokyo', name: 'Tokyo Đêm', url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=360&auto=format&fit=crop&q=70' }
+    ];
+
+    presets.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'wallpaper-preset-card';
+      card.innerHTML = `
+        <img src="${p.url}" alt="${p.name}" class="preset-card-img" loading="lazy">
+        <span class="preset-card-title">${p.name}</span>
+      `;
+      card.addEventListener('click', async () => {
+        if (this.sceneryEngine) {
+          if (PHOTO_PRESETS[p.key]) {
+            await this.sceneryEngine.setWallpaperMode(p.key);
+          } else {
+            this.sceneryEngine._applyPhotoLayer(p.url, p.name);
+          }
+          this.closeModal(this.wallpaperModal);
+        }
+      });
+      this.wallpaperPresetsGrid.appendChild(card);
+    });
   }
 }
 

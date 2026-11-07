@@ -16,43 +16,43 @@ export const PHOTO_PRESETS = {
   // --- BỘ SƯU TẬP TẾT VIỆT NAM (LUNAR NEW YEAR) ---
   tet_mai_photo: {
     id: 'tet_mai_photo',
-    name: '🧧 Tết: Cành mai vàng phương Nam rực rỡ',
+    name: 'Tết: Cành mai vàng phương Nam rực rỡ',
     url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=2560&q=80',
     particle: 'mai'
   },
   tet_dao_photo: {
     id: 'tet_dao_photo',
-    name: '🌸 Tết: Cành đào hồng Nhật Tân đón xuân',
+    name: 'Tết: Cành đào hồng Nhật Tân đón xuân',
     url: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?auto=format&fit=crop&w=2560&q=80',
     particle: 'sakura'
   },
   tet_hoian_photo: {
     id: 'tet_hoian_photo',
-    name: '🏮 Tết: Phố cổ Hội An giàn lồng đèn đỏ',
+    name: 'Tết: Phố cổ Hội An giàn lồng đèn đỏ',
     url: 'https://images.unsplash.com/photo-1560113855-2ea616c915ee?auto=format&fit=crop&w=2560&q=80',
     particle: 'mai'
   },
   tet_river_photo: {
     id: 'tet_river_photo',
-    name: '🛶 Tết: Thả hoa đăng đêm sông Hoài Hội An',
+    name: 'Tết: Thả hoa đăng đêm sông Hoài Hội An',
     url: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=2560&q=80',
     particle: 'fireflies'
   },
   tet_lanterns_photo: {
     id: 'tet_lanterns_photo',
-    name: '🏮 Tết: Sắc màu lồng đèn chợ đêm xuân',
+    name: 'Tết: Sắc màu lồng đèn chợ đêm xuân',
     url: 'https://images.unsplash.com/photo-1580974852861-c381510bc98a?auto=format&fit=crop&w=2560&q=80',
     particle: 'mai'
   },
   tet_pagoda_photo: {
     id: 'tet_pagoda_photo',
-    name: '⛩️ Tết: Đi lễ chùa cổ đầu năm thanh tịnh',
+    name: '️ Tết: Đi lễ chùa cổ đầu năm thanh tịnh',
     url: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=2560&q=80',
     particle: 'sakura'
   },
   tet_fireworks_photo: {
     id: 'tet_fireworks_photo',
-    name: '🎆 Tết: Pháo hoa đêm Giao thừa rực sáng',
+    name: 'Tết: Pháo hoa đêm Giao thừa rực sáng',
     url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=2560&q=80',
     particle: 'fireflies'
   },
@@ -60,25 +60,25 @@ export const PHOTO_PRESETS = {
   // --- PHONG CẢNH 4 MÙA & KHÔNG GIAN LÀM VIỆC ---
   winter_photo: {
     id: 'winter_photo',
-    name: '❄️ Mùa đông: Căn nhà gỗ tuyết phủ Emerald Lake',
+    name: '️ Mùa đông: Căn nhà gỗ tuyết phủ Emerald Lake',
     url: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=2560&q=80',
     particle: 'snow'
   },
   summer_photo: {
     id: 'summer_photo',
-    name: '🌊 Mùa hạ: Hoàng hôn bờ biển nhiệt đới',
+    name: 'Mùa hạ: Hoàng hôn bờ biển nhiệt đới',
     url: 'https://images.unsplash.com/photo-1509233725247-49e657c54213?auto=format&fit=crop&w=2560&q=80',
     particle: 'fireflies'
   },
   autumn_photo: {
     id: 'autumn_photo',
-    name: '🍁 Mùa thu: Rừng phong đỏ Kyoto',
+    name: 'Mùa thu: Rừng phong đỏ Kyoto',
     url: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=2560&q=80',
     particle: 'maple'
   },
   cafe_photo: {
     id: 'cafe_photo',
-    name: '☕ Không gian: Quán cafe sách ấm cúng',
+    name: 'Không gian: Quán cafe sách ấm cúng',
     url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=2560&q=80',
     particle: 'none'
   }
@@ -212,7 +212,7 @@ export class SceneryEngine {
     const ts = Date.now();
     const url = `https://picsum.photos/2560/1440?random=${ts}`;
     this.currentRandomUrl = url;
-    this._applyPhotoLayer(url, '🎲 Ảnh ngẫu nhiên nghệ thuật (Picsum 4K)');
+    this._applyPhotoLayer(url, 'Ảnh ngẫu nhiên nghệ thuật (Picsum 4K)');
     return url;
   }
 
@@ -237,7 +237,7 @@ export class SceneryEngine {
     const randKey = keys[Math.floor(Math.random() * keys.length)];
     const preset = PHOTO_PRESETS[randKey];
     if (preset) {
-      this._applyPhotoLayer(preset.url, `🔄 ${preset.name}`);
+      this._applyPhotoLayer(preset.url, preset.name);
     }
   }
 
@@ -276,14 +276,14 @@ export class SceneryEngine {
     // 1. Microsoft Bing Daily 4K API
     if (this.wallpaperMode === 'bing_daily') {
       const bing = await this.fetchBingDailyWallpaper();
-      this._applyPhotoLayer(bing.url, `📍 ${bing.title}`);
+      this._applyPhotoLayer(bing.url, bing.title || 'Ảnh Bing 4K hôm nay');
       return;
     }
 
     // 2. Random 4K Wallpaper (Picsum API)
     if (this.wallpaperMode === 'random_photo') {
       if (this.currentRandomUrl) {
-        this._applyPhotoLayer(this.currentRandomUrl, '🎲 Ảnh ngẫu nhiên nghệ thuật (Picsum 4K)');
+        this._applyPhotoLayer(this.currentRandomUrl, 'Ảnh ngẫu nhiên nghệ thuật (Picsum 4K)');
       } else {
         await this.fetchRandomWallpaper();
       }
@@ -304,7 +304,7 @@ export class SceneryEngine {
           URL.revokeObjectURL(this.customBlobUrl);
         }
         this.customBlobUrl = URL.createObjectURL(blob);
-        this._applyPhotoLayer(this.customBlobUrl, '🖼️ Ảnh cá nhân');
+        this._applyPhotoLayer(this.customBlobUrl, 'Ảnh cá nhân của bạn');
         return;
       }
     }

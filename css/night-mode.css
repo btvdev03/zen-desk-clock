@@ -50,23 +50,65 @@ body.apple-standby-active {
   transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.6s ease;
 }
 
-body.apple-standby-active .app-wrapper,
-body.apple-standby-active .main-stage {
+body.apple-standby-active .app-wrapper {
   background: #000000 !important;
   background-color: #000000 !important;
 }
 
-/* OLED Anti-Burn-In Pixel Drift Animation (Safe for 8+ hours bedside display) */
+/* Reinforce perfect dead-center positioning in StandBy Night Mode */
 body.apple-standby-active .main-stage {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* OLED Anti-Burn-In Pixel Drift Animation - Uses gentle margin offsets to never disturb CSS transform center */
+body.apple-standby-active .main-stage > *:not(.hidden) {
   animation: standbyOledDrift 1200s infinite alternate ease-in-out;
 }
 
 @keyframes standbyOledDrift {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(3px, -2px); }
-  50% { transform: translate(-2px, 3px); }
-  75% { transform: translate(-3px, -2px); }
-  100% { transform: translate(2px, 2px); }
+  0% { margin-top: 0px; margin-left: 0px; }
+  25% { margin-top: 2px; margin-left: -2px; }
+  50% { margin-top: -2px; margin-left: 2px; }
+  75% { margin-top: -2px; margin-left: -2px; }
+  100% { margin-top: 1px; margin-left: 1px; }
+}
+
+/* ========================================================
+   TOP BAR QUICK TOGGLE CHIP (IDLE & NIGHT SYNC)
+   ======================================================== */
+.night-mode-chip {
+  transition: all 0.25s ease;
+}
+
+.night-mode-chip .night-chip-icon {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  transition: all 0.25s ease;
+}
+
+.night-mode-chip.active .night-chip-icon {
+  fill: #ff2a2a;
+  stroke: #ff2a2a;
+  filter: drop-shadow(0 0 6px rgba(255, 42, 42, 0.7));
+}
+
+.night-dot {
+  background: #ff2a2a !important;
+  box-shadow: 0 0 10px rgba(255, 42, 42, 0.9) !important;
+}
+
+.night-dot.inactive {
+  background: #64748b !important;
+  box-shadow: none !important;
 }
 
 /* ========================================================
@@ -75,10 +117,17 @@ body.apple-standby-active .main-stage {
 body.apple-standby-active .clock-display-digital,
 body.apple-standby-active .digital-hours,
 body.apple-standby-active .digital-minutes,
-body.apple-standby-active .digital-seconds,
 body.apple-standby-active .digital-colon {
   color: var(--standby-red-core) !important;
   text-shadow: var(--standby-red-glow) !important;
+}
+
+body.apple-standby-active .digital-seconds-badge {
+  color: var(--standby-red-core) !important;
+  background: rgba(20, 2, 2, 0.85) !important;
+  border: 1px solid var(--standby-red-border) !important;
+  text-shadow: var(--standby-red-glow) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
 }
 
 body.apple-standby-active .digital-ampm {
@@ -96,7 +145,7 @@ body.apple-standby-active .flip-card-unit .card-face,
 body.apple-standby-active .flip-card-unit .card-flap {
   background: #090101 !important;
   color: var(--standby-red-core) !important;
-  border-color: rgba(255, 42, 42, 0.12) !important;
+  border-color: rgba(255, 42, 42, 0.15) !important;
 }
 
 body.apple-standby-active .flip-card-unit .digit {
@@ -118,50 +167,57 @@ body.apple-standby-active .flip-separator {
    3. SWISS RAILWAY & BAUHAUS ANALOG IN NIGHT MODE
    ======================================================== */
 body.apple-standby-active .analog-clock-wrapper {
-  filter: drop-shadow(0 0 20px rgba(255, 42, 42, 0.15));
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 0 1px var(--standby-red-border) !important;
+  filter: drop-shadow(0 0 20px rgba(255, 42, 42, 0.15)) !important;
 }
 
-body.apple-standby-active .analog-clock-wrapper #dialCircle,
-body.apple-standby-active .analog-clock-wrapper circle[fill*="dialGradient"] {
+body.apple-standby-active .swiss-case-bezel {
+  fill: #0c0202 !important;
+  stroke: #250404 !important;
+}
+
+body.apple-standby-active .swiss-case-rehault {
+  stroke: rgba(255, 42, 42, 0.15) !important;
+}
+
+body.apple-standby-active .swiss-dial-base {
   fill: #000000 !important;
 }
 
-body.apple-standby-active .analog-clock-wrapper #bezelRim,
-body.apple-standby-active .analog-clock-wrapper circle[stroke*="bezelGradient"] {
-  stroke: #180303 !important;
+body.apple-standby-active .swiss-ticks .tick-major {
+  fill: var(--standby-red-core) !important;
+  filter: drop-shadow(0 0 2px rgba(255, 42, 42, 0.5)) !important;
 }
 
-body.apple-standby-active .analog-clock-wrapper .hour-tick,
-body.apple-standby-active .analog-clock-wrapper .minute-tick {
+body.apple-standby-active .swiss-ticks .tick-minor {
   fill: var(--standby-red-dim) !important;
 }
 
-body.apple-standby-active .analog-clock-wrapper .hour-tick {
-  fill: var(--standby-red-core) !important;
-  filter: drop-shadow(0 0 2px rgba(255, 42, 42, 0.4));
-}
-
-body.apple-standby-active .analog-clock-wrapper .hour-hand,
-body.apple-standby-active .analog-clock-wrapper .minute-hand {
+body.apple-standby-active .swiss-hour-hand,
+body.apple-standby-active .swiss-minute-hand {
   fill: var(--standby-red-core) !important;
   filter: drop-shadow(0 0 6px rgba(255, 42, 42, 0.6)) !important;
 }
 
-body.apple-standby-active .analog-clock-wrapper .second-hand-group path,
-body.apple-standby-active .analog-clock-wrapper .second-hand-group circle {
+body.apple-standby-active .swiss-second-stem,
+body.apple-standby-active .swiss-second-disc,
+body.apple-standby-active .swiss-pin-outer {
   fill: var(--standby-red-bright) !important;
   filter: drop-shadow(0 0 8px rgba(255, 59, 48, 0.8)) !important;
 }
 
-body.apple-standby-active .analog-clock-wrapper .brand-text {
+body.apple-standby-active .swiss-pin-inner {
+  fill: #000000 !important;
+}
+
+body.apple-standby-active .swiss-brand,
+body.apple-standby-active .swiss-sub-brand {
   fill: var(--standby-red-dim) !important;
   opacity: 0.65 !important;
 }
 
-/* Soft red crystal reflection */
-body.apple-standby-active .analog-clock-wrapper .glass-reflection {
-  opacity: 0.08 !important;
-  mix-blend-mode: screen;
+body.apple-standby-active .swiss-glass {
+  opacity: 0.05 !important;
 }
 
 /* ========================================================
@@ -189,6 +245,11 @@ body.apple-standby-active .nixie-glass-envelope {
   border-color: rgba(255, 42, 42, 0.15) !important;
 }
 
+body.apple-standby-active .nixie-digit.unlit {
+  color: rgba(60, 10, 10, 0.18) !important;
+  text-shadow: none !important;
+}
+
 body.apple-standby-active .nixie-plinth {
   background: linear-gradient(180deg, #150303 0%, #090101 100%) !important;
   border-color: rgba(255, 42, 42, 0.2) !important;
@@ -201,6 +262,22 @@ body.apple-standby-active .nixie-brass-badge {
   -webkit-text-fill-color: var(--standby-red-dim) !important;
 }
 
+body.apple-standby-active .nixie-control-pill {
+  background: rgba(14, 2, 2, 0.9) !important;
+  border-color: var(--standby-red-border) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+}
+
+body.apple-standby-active .nixie-pill-btn {
+  color: var(--standby-red-dim) !important;
+}
+
+body.apple-standby-active .nixie-pill-btn:hover,
+body.apple-standby-active .nixie-pill-btn.active {
+  color: var(--standby-red-core) !important;
+  background: rgba(255, 42, 42, 0.18) !important;
+}
+
 /* ========================================================
    5. POMODORO VIEW IN NIGHT MODE
    ======================================================== */
@@ -209,71 +286,162 @@ body.apple-standby-active .pomodoro-time-text {
   text-shadow: var(--standby-red-glow) !important;
 }
 
-body.apple-standby-active .pomodoro-progress-svg circle.progress-fill {
-  stroke: var(--standby-red-core) !important;
-  filter: drop-shadow(0 0 6px rgba(255, 42, 42, 0.6));
+body.apple-standby-active .pomodoro-svg .ring-bg {
+  stroke: var(--standby-red-subtle, #380808) !important;
 }
 
-body.apple-standby-active .pomodoro-progress-svg circle.progress-track {
-  stroke: var(--standby-red-subtle) !important;
+body.apple-standby-active .pomodoro-svg .ring-progress {
+  stroke: var(--standby-red-core) !important;
+  filter: drop-shadow(0 0 8px rgba(255, 42, 42, 0.7)) !important;
 }
 
 body.apple-standby-active .pomodoro-mode-badge {
-  background: rgba(40, 6, 6, 0.6) !important;
+  background: rgba(40, 5, 5, 0.7) !important;
   color: var(--standby-red-core) !important;
   border-color: var(--standby-red-border) !important;
 }
 
-body.apple-standby-active .pomo-btn {
-  background: rgba(20, 3, 3, 0.8) !important;
-  color: var(--standby-red-core) !important;
-  border-color: var(--standby-red-border) !important;
+body.apple-standby-active .pomodoro-session-count {
+  color: var(--standby-red-dim) !important;
 }
 
 /* ========================================================
-   6. TOP BAR, DOCK & SYSTEM CONTROLS
+   6. TOP BAR, WEATHER CHIP & DOCK CONTROLS
    ======================================================== */
 body.apple-standby-active .top-bar,
 body.apple-standby-active .bottom-area {
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-body.apple-standby-active .date-display,
-body.apple-standby-active .date-short-display,
-body.apple-standby-active .week-display {
+body.apple-standby-active .top-bar-chip {
+  background: rgba(16, 2, 2, 0.85) !important;
+  border-color: var(--standby-red-border) !important;
+  color: var(--standby-red-core) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.apple-standby-active .top-bar-chip:hover {
+  background: rgba(35, 4, 4, 0.9) !important;
+  border-color: rgba(255, 42, 42, 0.4) !important;
+}
+
+body.apple-standby-active .date-text {
+  color: var(--standby-red-core) !important;
+  text-shadow: none !important;
+}
+
+body.apple-standby-active #topWeekDisplay {
+  color: var(--standby-red-core) !important;
+  text-shadow: 0 0 10px rgba(255, 42, 42, 0.5) !important;
+}
+
+body.apple-standby-active .weather-chip {
   color: var(--standby-red-core) !important;
 }
 
-body.apple-standby-active .wakelock-btn,
-body.apple-standby-active .fullscreen-btn,
-body.apple-standby-active .event-chip {
-  background: rgba(20, 3, 3, 0.7) !important;
+body.apple-standby-active #weatherChipTemp,
+body.apple-standby-active #weatherChipCity {
   color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active #weatherChipIcon {
+  filter: grayscale(100%) sepia(100%) hue-rotate(-50deg) saturate(600%) !important;
+}
+
+body.apple-standby-active .event-countdown-chip {
+  color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active #eventCountdownText,
+body.apple-standby-active #eventCountdownCompactText {
+  color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .wake-lock-label,
+body.apple-standby-active .fullscreen-text {
+  color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .chip-status-dot:not(.night-dot):not(.inactive) {
+  background: var(--standby-red-core) !important;
+  box-shadow: 0 0 8px rgba(255, 42, 42, 0.8) !important;
+}
+
+/* Focus Task Pill in Night Mode */
+body.apple-standby-active .zen-pomo-focus-pill {
+  background: rgba(16, 2, 2, 0.88) !important;
+  border-color: var(--standby-red-border) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 12px rgba(255, 42, 42, 0.25) !important;
+}
+
+body.apple-standby-active .zen-pomo-focus-pill:hover {
+  background: rgba(32, 4, 4, 0.95) !important;
+  border-color: rgba(255, 42, 42, 0.5) !important;
+}
+
+body.apple-standby-active .zen-pill-label {
+  color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .zen-pill-title {
+  color: var(--standby-red-core) !important;
+  text-shadow: 0 0 8px rgba(255, 42, 42, 0.4) !important;
+}
+
+body.apple-standby-active .zen-pill-pomos {
+  background: rgba(255, 42, 42, 0.15) !important;
+  border-color: var(--standby-red-border) !important;
+  color: var(--standby-red-bright) !important;
+}
+
+body.apple-standby-active .zen-mit-chip {
+  background: rgba(16, 2, 2, 0.85) !important;
   border-color: var(--standby-red-border) !important;
 }
 
-body.apple-standby-active .dock-container {
-  background: rgba(10, 2, 2, 0.88) !important;
-  border-color: var(--standby-red-border) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 1px var(--standby-red-border) !important;
+body.apple-standby-active #zenMitChipText {
+  color: var(--standby-red-core) !important;
 }
 
-body.apple-standby-active .dock-btn {
+body.apple-standby-active #zenMitChipBadge {
+  background: rgba(255, 42, 42, 0.2) !important;
+  color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .zen-dot-active {
+  background: var(--standby-red-core) !important;
+  box-shadow: 0 0 8px rgba(255, 42, 42, 0.85) !important;
+}
+
+/* Bottom Controls Dock in Night Mode */
+body.apple-standby-active .bottom-dock {
+  background: rgba(10, 1, 1, 0.94) !important;
+  border-color: var(--standby-red-border) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 1px var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .dock-separator {
+  background: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .control-btn {
   color: var(--standby-red-dim) !important;
 }
 
-body.apple-standby-active .dock-btn:hover,
-body.apple-standby-active .dock-btn.active {
+body.apple-standby-active .control-btn:hover {
   color: var(--standby-red-core) !important;
   background: rgba(255, 42, 42, 0.12) !important;
 }
 
-body.apple-standby-active .progress-fill {
+body.apple-standby-active .control-btn.active {
   background: var(--standby-red-core) !important;
+  color: #000000 !important;
+  box-shadow: 0 0 14px rgba(255, 42, 42, 0.6) !important;
 }
 
-body.apple-standby-active .progress-track {
-  background: var(--standby-red-subtle) !important;
+body.apple-standby-active .quotes-bar {
+  background: rgba(14, 2, 2, 0.75) !important;
+  border-color: var(--standby-red-border) !important;
 }
 
 body.apple-standby-active .quote-text,
@@ -281,9 +449,66 @@ body.apple-standby-active .quote-author {
   color: var(--standby-red-dim) !important;
 }
 
+body.apple-standby-active .progress-trackers {
+  background: rgba(14, 2, 2, 0.75) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .progress-header {
+  color: var(--standby-red-dim) !important;
+}
+
+body.apple-standby-active .progress-header span:last-child,
+body.apple-standby-active #dayProgressPercent,
+body.apple-standby-active #yearProgressPercent {
+  color: var(--standby-red-bright) !important;
+  text-shadow: 0 0 10px rgba(255, 42, 42, 0.8) !important;
+}
+
+body.apple-standby-active .progress-bar-bg {
+  background: var(--standby-red-subtle, #380808) !important;
+}
+
+body.apple-standby-active .progress-bar-fill,
+body.apple-standby-active #dayProgressBar,
+body.apple-standby-active #yearProgressBar {
+  background: var(--standby-red-core) !important;
+  box-shadow: 0 0 12px rgba(255, 42, 42, 0.75) !important;
+}
+
+body.apple-standby-active .progress-label-wrap svg {
+  stroke: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .progress-live-badge {
+  background: rgba(255, 42, 42, 0.15) !important;
+  border-color: var(--standby-red-border) !important;
+  color: var(--standby-red-bright) !important;
+}
+
+body.apple-standby-active .live-dot {
+  background: var(--standby-red-core) !important;
+  box-shadow: 0 0 8px var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .progress-glow-head {
+  background: #ffffff !important;
+  box-shadow: 0 0 8px 2px rgba(255, 42, 42, 0.95), 0 0 3px #ffffff !important;
+}
+
+body.apple-standby-active .wallpaper-caption-badge {
+  display: none !important;
+}
+
 /* ========================================================
    7. SCENERY & PARTICLE CANVASES (Circadian Protection)
    ======================================================== */
+body.apple-standby-active #threeCanvas {
+  opacity: 0.38 !important;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
 body.apple-standby-active #sceneryContainer,
 body.apple-standby-active #ambientCanvas {
   opacity: 0.12 !important;
@@ -341,9 +566,10 @@ body.apple-standby-active .standby-toggle-btn {
 /* StandBy Toast Notification */
 .standby-toast {
   position: fixed;
-  top: 24px;
+  bottom: 84px;
+  top: auto;
   left: 50%;
-  transform: translateX(-50%) translateY(-20px);
+  transform: translateX(-50%) translateY(14px);
   background: rgba(20, 3, 3, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -356,7 +582,10 @@ body.apple-standby-active .standby-toggle-btn {
   font-weight: 600;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  max-width: calc(100vw - 2rem);
+  white-space: nowrap;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 42, 42, 0.3);
   z-index: 9999;
   opacity: 0;

@@ -368,7 +368,7 @@ export class ZenProductivityUI {
           <div class="zen-tasks-header">
             <div class="zen-tasks-header-left">
               <div class="zen-tasks-title">
-                <span>🎯 Mục Tiêu Tập Trung Hôm Nay</span>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Mục Tiêu Tập Trung Hôm Nay</span>
               </div>
               <div class="zen-tasks-subtitle">Ivy Lee & MIT Method: Chọn 3–5 việc quan trọng nhất để duy trì Flow state.</div>
             </div>
@@ -380,7 +380,7 @@ export class ZenProductivityUI {
               <span id="zenStatsTasksCount">0/0 việc hoàn thành</span>
             </div>
             <div class="zen-stats-right">
-              <span>🍅 <span id="zenStatsPomoCount">0</span> phiên hôm nay</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span><span id="zenStatsPomoCount">0</span> phiên hôm nay</span>
             </div>
           </div>
 
@@ -426,7 +426,7 @@ export class ZenProductivityUI {
         <div class="zen-scratchpad-header">
           <div class="zen-scratchpad-title-group">
             <div class="zen-scratchpad-title">
-              <span>📝 Zen Scratchpad</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Zen Scratchpad</span>
             </div>
             <div class="zen-scratchpad-save-indicator">
               <span class="zen-save-dot" id="zenSaveDot"></span>
@@ -435,13 +435,13 @@ export class ZenProductivityUI {
           </div>
           <div class="zen-scratchpad-actions">
             <button class="zen-scratchpad-btn" id="zenCopyBtn" title="Sao chép toàn bộ nháp">
-              <span>📋</span> Chép
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Chép
             </button>
             <button class="zen-scratchpad-btn" id="zenDownloadBtn" title="Tải về file text">
-              <span>📥</span> Xuất
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Xuất
             </button>
             <button class="zen-scratchpad-btn danger" id="zenClearPadBtn" title="Xóa nội dung nháp">
-              <span>🗑️</span> Xóa
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Xóa
             </button>
             <button class="zen-scratchpad-close-btn" id="zenScratchpadCloseBtn" title="Đóng sổ nháp (Q hoặc Esc)">&times;</button>
           </div>
@@ -465,13 +465,13 @@ export class ZenProductivityUI {
       document.body.appendChild(drawer);
     }
 
-    // 4. Inject Bottom Dock Buttons
+    // 4. Connect or Inject Bottom Dock Buttons
     const bottomDock = document.querySelector('.bottom-dock');
     if (bottomDock) {
-      if (!document.getElementById('focusTasksDockBtn')) {
+      if (!document.getElementById('taskWidgetBtn') && !document.getElementById('focusTasksDockBtn')) {
         const taskBtn = document.createElement('button');
         taskBtn.className = 'control-btn zen-dock-btn';
-        taskBtn.id = 'focusTasksDockBtn';
+        taskBtn.id = 'taskWidgetBtn';
         taskBtn.title = 'Mục tiêu tập trung hôm nay (Phím V)';
         taskBtn.innerHTML = `
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -490,17 +490,17 @@ export class ZenProductivityUI {
         }
       }
 
-      if (!document.getElementById('scratchpadDockBtn')) {
+      if (!document.getElementById('scratchpadBtn') && !document.getElementById('scratchpadDockBtn')) {
         const padBtn = document.createElement('button');
         padBtn.className = 'control-btn zen-dock-btn';
-        padBtn.id = 'scratchpadDockBtn';
+        padBtn.id = 'scratchpadBtn';
         padBtn.title = 'Sổ nháp nhanh không phân tâm (Phím Q)';
         padBtn.innerHTML = `
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
-          <span>Ghi chú</span>
+          <span>Sổ nháp</span>
         `;
 
         const settingsBtn = document.getElementById('settingsBtn');
@@ -512,20 +512,9 @@ export class ZenProductivityUI {
       }
     }
 
-    // 5. Inject Top Bar MIT Chip
-    const topBarLeft = document.querySelector('.top-bar-left');
-    if (topBarLeft && !document.getElementById('zenMitTopChip')) {
-      const mitChip = document.createElement('button');
-      mitChip.className = 'top-bar-chip zen-mit-chip';
-      mitChip.id = 'zenMitTopChip';
-      mitChip.title = 'Mục tiêu tập trung hôm nay (Nhấp để xem/đổi)';
-      mitChip.innerHTML = `
-        <span class="chip-status-dot zen-dot-active" id="zenMitChipDot"></span>
-        <span class="zen-mit-text" id="zenMitChipText">🎯 Mục tiêu hôm nay</span>
-        <span class="zen-mit-badge" id="zenMitChipBadge">🍅 0</span>
-      `;
-      topBarLeft.appendChild(mitChip);
-    }
+    // 5. Top Bar MIT Chip disabled to avoid crowding the status bar
+    // Tasks are cleanly tracked in Bottom Dock (#taskWidgetBtn) and Pomodoro Focus Pill (#zenPomoFocusPill)
+    this.mitTopChip = null;
 
     // 6. Inject Pomodoro Focus Pill
     const pomoView = document.getElementById('pomodoroView');
@@ -535,12 +524,15 @@ export class ZenProductivityUI {
       pill.id = 'zenPomoFocusPill';
       pill.title = 'Nhấp để quản lý hoặc đổi mục tiêu tập trung (Phím V)';
       pill.innerHTML = `
-        <span class="zen-pill-icon">🎯</span>
+        <svg class="zen-pill-icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
         <div class="zen-pill-info">
           <span class="zen-pill-label">Đang tập trung:</span>
           <span class="zen-pill-title" id="zenPomoFocusTitle">Chưa chọn mục tiêu</span>
         </div>
-        <span class="zen-pill-pomos" id="zenPomoFocusCount">🍅 0</span>
+        <span class="zen-pill-pomos" id="zenPomoFocusCount">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="zenPomoFocusNum">0</span>
+        </span>
       `;
       pomoView.appendChild(pill);
     }
@@ -573,9 +565,9 @@ export class ZenProductivityUI {
     this.downloadBtn = document.getElementById('zenDownloadBtn');
     this.clearPadBtn = document.getElementById('zenClearPadBtn');
 
-    // Dock & Top elements
-    this.focusTasksDockBtn = document.getElementById('focusTasksDockBtn');
-    this.scratchpadDockBtn = document.getElementById('scratchpadDockBtn');
+    // Dock & Top elements (support both IDs)
+    this.focusTasksDockBtn = document.getElementById('taskWidgetBtn') || document.getElementById('focusTasksDockBtn');
+    this.scratchpadDockBtn = document.getElementById('scratchpadBtn') || document.getElementById('scratchpadDockBtn');
     this.mitTopChip = document.getElementById('zenMitTopChip');
     this.mitChipText = document.getElementById('zenMitChipText');
     this.mitChipBadge = document.getElementById('zenMitChipBadge');
@@ -789,8 +781,12 @@ export class ZenProductivityUI {
      ======================================================== */
   openTasksModal() {
     if (this.tasksModal) {
+      document.body.classList.remove('idle');
       this.tasksModal.classList.add('open');
       this._renderTasks();
+      if (window.zenModalManager) {
+        window.zenModalManager.push('zenTasksModal', () => this.closeTasksModal());
+      }
       setTimeout(() => {
         if (this.taskInput) this.taskInput.focus();
       }, 100);
@@ -800,6 +796,9 @@ export class ZenProductivityUI {
   closeTasksModal() {
     if (this.tasksModal) {
       this.tasksModal.classList.remove('open');
+      if (window.zenModalManager) {
+        window.zenModalManager.remove('zenTasksModal');
+      }
     }
   }
 
@@ -813,8 +812,12 @@ export class ZenProductivityUI {
 
   openScratchpad() {
     if (this.scratchpadDrawer) {
+      document.body.classList.remove('idle');
       this.scratchpadDrawer.classList.add('open');
       if (this.scratchpadBackdrop) this.scratchpadBackdrop.classList.add('open');
+      if (window.zenModalManager) {
+        window.zenModalManager.push('zenScratchpadDrawer', () => this.closeScratchpad());
+      }
       setTimeout(() => {
         if (this.scratchpadTextarea) this.scratchpadTextarea.focus();
       }, 120);
@@ -825,6 +828,9 @@ export class ZenProductivityUI {
     if (this.scratchpadDrawer) {
       this.scratchpadDrawer.classList.remove('open');
       if (this.scratchpadBackdrop) this.scratchpadBackdrop.classList.remove('open');
+      if (window.zenModalManager) {
+        window.zenModalManager.remove('zenScratchpadDrawer');
+      }
     }
   }
 
@@ -876,18 +882,19 @@ export class ZenProductivityUI {
           item.innerHTML = `
             <div class="zen-task-left">
               <input type="checkbox" class="zen-task-checkbox" data-id="${task.id}" ${isDone ? 'checked' : ''} title="Đánh dấu hoàn thành">
+              ${task.isMIT ? '<span class="zen-task-mit-tag" title="Mục tiêu cốt lõi trong ngày (Most Important Task)">MIT</span>' : ''}
               <span class="zen-task-text">${this._escapeHTML(task.text)}</span>
             </div>
             <div class="zen-task-right">
               <div class="zen-task-pomos-badge" title="Số phiên Pomodoro đã dành cho nhiệm vụ này">
-                <span>🍅 ${task.pomodoros || 0}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="zen-pomo-count-text">${task.pomodoros || 0}</span>
                 <button type="button" class="zen-pomo-btn" data-action="inc" data-id="${task.id}" title="Thêm 1 phiên">+</button>
-                <button type="button" class="zen-pomo-btn" data-action="dec" data-id="${task.id}" title="Bớt 1 phiên">-</button>
+                <button type="button" class="zen-pomo-btn" data-action="dec" data-id="${task.id}" title="Bớt 1 phiên">−</button>
               </div>
 
               ${!isDone ? `
                 <button type="button" class="zen-task-focus-btn" data-id="${task.id}" title="${isActive ? 'Đang là mục tiêu tập trung' : 'Đặt làm mục tiêu tập trung hiện tại'}">
-                  ${isActive ? '⚡ Đang làm' : '🎯 Tập trung'}
+                  ${isActive ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Đang làm</span>' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Tập trung</span>'}
                 </button>
               ` : ''}
 
@@ -952,7 +959,7 @@ export class ZenProductivityUI {
         this.pomoFocusTitle.textContent = activeTask.text;
       }
       if (this.pomoFocusCount) {
-        this.pomoFocusCount.textContent = `🍅 ${activeTask.pomodoros || 0}`;
+        const numEl = document.getElementById('zenPomoFocusNum'); if (numEl) numEl.textContent = activeTask.pomodoros || 0;
         this.pomoFocusCount.style.display = 'inline-flex';
       }
     } else {

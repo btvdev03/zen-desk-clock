@@ -2,7 +2,7 @@
  * ZenDesk Clock - Offline Service Worker
  */
 
-const CACHE_NAME = 'zendesk-clock-v13';
+const CACHE_NAME = 'zendesk-clock-v18';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -32,6 +32,8 @@ const ASSETS_TO_CACHE = [
   './js/wakelock.js',
   './js/quotes.js',
   './js/particle-engine.js',
+  './js/three-scene.js',
+  './js/vendor/three.module.min.js',
   './js/event-countdown.js',
   './js/scenery-engine.js',
   './js/wallpaper-db.js',

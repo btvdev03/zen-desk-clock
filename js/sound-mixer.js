@@ -63,6 +63,22 @@ export const TRACKS_CONFIG = [
     defaultVol: 0.45
   },
   {
+    id: 'wind',
+    name: 'Gió Rừng Vi Vu',
+    icon: '💨',
+    desc: 'Tiếng gió rít qua rặng cây, từng cơn gió thoảng qua',
+    category: 'nature',
+    defaultVol: 0.45
+  },
+  {
+    id: 'thunder',
+    name: 'Sấm Sét Rền Vang',
+    icon: '⚡',
+    desc: 'Tiếng sấm rền xa xa trầm bổng trong cơn dông chiều',
+    category: 'nature',
+    defaultVol: 0.40
+  },
+  {
     id: 'binaural',
     name: 'Sóng Não Binaural',
     icon: '🧠',
@@ -106,6 +122,17 @@ export const BUILTIN_PRESETS = [
     tracks: {
       rain: 0.60,
       cafe: 0.40
+    }
+  },
+  {
+    id: 'summer_storm',
+    name: 'Dông bão mùa hạ',
+    icon: '⛈️',
+    description: 'Mưa rào xối xả kết hợp gió rít và sấm sét gầm vang',
+    tracks: {
+      rain: 0.65,
+      wind: 0.50,
+      thunder: 0.45
     }
   },
   {
@@ -240,6 +267,7 @@ export class SoundMixerController {
     this._attachDockTrigger();
     this._setupSleepTimerCallbacks();
     this.syncActiveChannelsWithEngine();
+    this.updateDockStatus();
   }
 
   /**
@@ -617,70 +645,32 @@ export class SoundMixerController {
   }
 
   /**
-   * Setup keyboard shortcuts: Shift + M to toggle Mixer
+   * Setup keyboard shortcuts: Escape to close modal
    */
   _attachKeyboardShortcuts() {
     window.addEventListener('keydown', (e) => {
       // Don't trigger when user is typing in inputs or textareas
       const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
-      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') return;
+      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select' || (document.activeElement && document.activeElement.isContentEditable)) return;
 
-      if (e.key.toLowerCase() === 'm' && e.shiftKey) {
-        e.preventDefault();
-        this.toggle();
-      } else if (e.key === 'Escape' && this.isOpen) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && this.isOpen) {
         this.close();
       }
     });
   }
 
   /**
-   * Enhance existing ambientSoundBtn or inject dedicated sound mixer trigger
+   * Configure ambientSoundBtn to trigger the mixer
    */
   _attachDockTrigger() {
-    const dock = document.querySelector('.bottom-dock');
     const existingAmbientBtn = document.getElementById('ambientSoundBtn');
 
-    // Right-click or long-press on ambientSoundBtn opens mixer
     if (existingAmbientBtn) {
+      existingAmbientBtn.title = 'Trình Trộn Đa Âm Thanh & Sóng Não (Phím M)';
       existingAmbientBtn.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         this.open();
       });
-
-      // Also add tiny mixer badge icon to ambient sound button
-      let triggerPill = existingAmbientBtn.querySelector('.mixer-quick-pill');
-      if (!triggerPill) {
-        triggerPill = document.createElement('span');
-        triggerPill.className = 'mixer-quick-pill';
-        triggerPill.title = 'Mở Trình Trộn Đa Âm Thanh (Shift + M)';
-        triggerPill.innerHTML = `🎚️`;
-        triggerPill.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.open();
-        });
-        existingAmbientBtn.appendChild(triggerPill);
-      }
-    }
-
-    // If dock exists, inject dedicated button if not present
-    if (dock && !document.getElementById('mixerDockBtn')) {
-      const btn = document.createElement('button');
-      btn.className = 'control-btn mixer-dock-btn';
-      btn.id = 'mixerDockBtn';
-      btn.title = 'Trình Trộn Âm Thanh & Sóng Não (Shift + M)';
-      btn.innerHTML = `
-        <svg viewBox="0 0 24 24"><path d="M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span>Bộ Trộn</span>
-      `;
-      btn.addEventListener('click', () => this.toggle());
-
-      // Insert right after ambientSoundBtn or at end before settingsBtn
-      if (existingAmbientBtn && existingAmbientBtn.nextSibling) {
-        dock.insertBefore(btn, existingAmbientBtn.nextSibling);
-      } else {
-        dock.appendChild(btn);
-      }
     }
   }
 
@@ -911,9 +901,13 @@ export class SoundMixerController {
     if (!this.modalEl) return;
 
     this.syncActiveChannelsWithEngine();
+    document.body.classList.remove('idle');
     this.modalEl.classList.add('open');
     this.modalEl.setAttribute('aria-hidden', 'false');
     this.isOpen = true;
+    if (window.zenModalManager) {
+      window.zenModalManager.push('soundMixerModal', () => this.close());
+    }
     document.body.style.overflow = 'hidden';
   }
 
@@ -922,6 +916,9 @@ export class SoundMixerController {
     this.modalEl.classList.remove('open');
     this.modalEl.setAttribute('aria-hidden', 'true');
     this.isOpen = false;
+    if (window.zenModalManager) {
+      window.zenModalManager.remove('soundMixerModal');
+    }
     document.body.style.overflow = '';
   }
 

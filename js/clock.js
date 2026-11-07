@@ -67,15 +67,23 @@ class ClockEngine {
 
     const pad = (n) => String(n).padStart(2, '0');
 
-    // Day Progress calculation
+    // Day Progress calculation (High-Precision Realtime)
     const totalSecondsInDay = 86400;
-    const currentDaySeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-    const dayProgressPercent = ((currentDaySeconds / totalSecondsInDay) * 100).toFixed(1);
+    const currentDaySeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + (millis / 1000);
+    const dayProgressRaw = (currentDaySeconds / totalSecondsInDay) * 100;
+    const dayProgressPercent = dayProgressRaw.toFixed(1);
+    const dayProgressRealtime = dayProgressRaw.toFixed(4);
+    const dayProgressInt = Math.floor(dayProgressRaw);
+    const dayProgressDec = dayProgressRaw.toFixed(4).slice(String(dayProgressInt).length);
 
-    // Year Progress calculation (Memento Mori)
+    // Year Progress calculation (High-Precision Realtime Memento Mori)
     const startOfYear = new Date(date.getFullYear(), 0, 1);
     const endOfYear = new Date(date.getFullYear() + 1, 0, 1);
-    const yearProgressPercent = (((date - startOfYear) / (endOfYear - startOfYear)) * 100).toFixed(1);
+    const yearProgressRaw = ((date - startOfYear) / (endOfYear - startOfYear)) * 100;
+    const yearProgressPercent = yearProgressRaw.toFixed(1);
+    const yearProgressRealtime = yearProgressRaw.toFixed(4);
+    const yearProgressInt = Math.floor(yearProgressRaw);
+    const yearProgressDec = yearProgressRaw.toFixed(4).slice(String(yearProgressInt).length);
 
     // ISO Week Number
     const isoWeek = this.getISOWeek(date);
@@ -104,8 +112,16 @@ class ClockEngine {
       millisRaw: millis,
       ampm,
       is24Hour: this.is24Hour,
+      dayProgressRaw,
       dayProgressPercent,
+      dayProgressRealtime,
+      dayProgressInt,
+      dayProgressDec,
+      yearProgressRaw,
       yearProgressPercent,
+      yearProgressRealtime,
+      yearProgressInt,
+      yearProgressDec,
       isoWeek,
       dateFormatted: `${dayName}, ${dateNum} ${monthName}, ${year}`,
       dateShort: `${pad(dateNum)}/${pad(date.getMonth() + 1)}/${year}`,

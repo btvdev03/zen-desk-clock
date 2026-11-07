@@ -19,16 +19,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="css/main.css?v=12">
-  <link rel="stylesheet" href="css/flip.css?v=12">
-  <link rel="stylesheet" href="css/analog.css?v=12">
-  <link rel="stylesheet" href="css/themes.css?v=12">
-  <link rel="stylesheet" href="css/scenery.css?v=12">
-  <link rel="stylesheet" href="css/weather.css?v=12">
-  <link rel="stylesheet" href="css/sound-mixer.css?v=12">
-  <link rel="stylesheet" href="css/nixie.css?v=12">
-  <link rel="stylesheet" href="css/night-mode.css?v=12">
-  <link rel="stylesheet" href="css/task-scratchpad.css?v=12">
+  <link rel="stylesheet" href="css/main.css?v=18">
+  <link rel="stylesheet" href="css/flip.css?v=18">
+  <link rel="stylesheet" href="css/analog.css?v=18">
+  <link rel="stylesheet" href="css/themes.css?v=18">
+  <link rel="stylesheet" href="css/scenery.css?v=18">
+  <link rel="stylesheet" href="css/weather.css?v=18">
+  <link rel="stylesheet" href="css/sound-mixer.css?v=18">
+  <link rel="stylesheet" href="css/nixie.css?v=18">
+  <link rel="stylesheet" href="css/night-mode.css?v=18">
+  <link rel="stylesheet" href="css/task-scratchpad.css?v=18">
 </head>
 <body class="theme-flip">
 
@@ -37,6 +37,10 @@
 
   <!-- User Background Dimmer & Soft Bokeh Blur Overlay -->
   <div id="sceneryDimmerOverlay" class="scenery-dimmer-overlay"></div>
+
+  <!-- Ambient 2D Particle Canvas for Seasons (Snow, Sakura, Maple, Fireflies) -->
+  <!-- Ambient Three.js 3D Zen Canvas (Ethereal Waves & Galaxy Motes) -->
+  <canvas id="threeCanvas" class="three-canvas" aria-hidden="true"></canvas>
 
   <!-- Ambient 2D Particle Canvas for Seasons (Snow, Sakura, Maple, Fireflies) -->
   <canvas id="ambientCanvas" class="ambient-canvas"></canvas>
@@ -61,28 +65,46 @@
           <span id="topWeekDisplay">Tuần 45</span>
         </div>
         <button class="top-bar-chip weather-chip" id="weatherChip" title="Xem dự báo thời tiết & nhiệt độ thời gian thực">
-          <span class="weather-chip-icon" id="weatherChipIcon">🌤️</span>
+          <svg class="weather-chip-svg" id="weatherChipSvg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          </svg>
           <span class="weather-chip-temp" id="weatherChipTemp">--°C</span>
-          <span class="weather-chip-city" id="weatherChipCity">Hà Nội</span>
+          <span class="weather-chip-city" id="weatherChipCity" style="display: none;">Hà Nội</span>
         </button>
         <button class="top-bar-chip event-countdown-chip" id="eventCountdownChip" title="Xem và thêm sự kiện đếm ngược (Tết, Noel, Sinh nhật, Deadline...)">
-          <span class="event-text-full" id="eventCountdownText">🧧 Tết: Đang tải...</span>
-          <span class="event-text-compact" id="eventCountdownCompactText">🧧 51n</span>
+          <svg class="event-chip-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span class="event-text-full" id="eventCountdownText">Tết: Đang tải...</span>
+          <span class="event-text-compact" id="eventCountdownCompactText">51n</span>
         </button>
       </div>
 
       <div class="top-bar-right">
-        <button class="top-bar-chip night-mode-chip" id="nightModeBtn" title="Chế độ đêm Apple StandBy (Phím N)">
-          <span class="chip-status-dot night-dot" id="nightModeDot"></span>
+        <button class="top-bar-chip night-mode-chip" id="nightModeBtn" title="Chế độ đêm Apple StandBy đỏ (Phím N)">
+          <svg class="night-chip-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
           <span class="night-mode-label" id="nightModeText">Chế độ đêm</span>
         </button>
-        <button class="top-bar-chip wake-lock-chip" id="wakeLockBtn" title="Giữ màn hình luôn sáng (Không để màn hình tắt khi làm việc)">
-          <span class="chip-status-dot" id="wakeLockDot"></span>
-          <span class="wake-lock-label" id="wakeLockText">Màn hình luôn sáng</span>
+        <button class="top-bar-chip wake-lock-chip" id="wakeLockBtn" title="Chống tắt màn hình khi để bàn (Screen Wake Lock)">
+          <svg class="wake-chip-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span class="wake-lock-label" id="wakeLockText">Màn hình bật</span>
         </button>
         <button class="top-bar-chip fullscreen-chip" id="fullscreenTopBtn" title="Bật / Thoát toàn màn hình (F)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-          <span class="fullscreen-text">Toàn màn hình</span>
+          <svg class="fullscreen-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
         </button>
       </div>
     </header>
@@ -141,23 +163,49 @@
         <p class="quote-author" id="quoteAuthor">— Cal Newport</p>
       </div>
 
-      <div class="progress-trackers" id="progressTrackers">
-        <div class="progress-item">
-          <div class="progress-header">
-            <span>Tiến độ ngày</span>
-            <span id="dayProgressPercent">0%</span>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="dayProgressBar" style="width: 0%;"></div>
-          </div>
+      <div class="progress-trackers" id="progressTrackers" title="Nhấp để đổi chế độ: % Realtime • Đếm ngược • Chuẩn">
+        <div class="progress-trackers-meta">
+          <span class="progress-meta-title">Tiến độ thời gian</span>
+          <span class="progress-live-badge" id="progressLiveBadge">
+            <span class="live-dot"></span><span class="live-text" id="progressLiveText">LIVE</span>
+          </span>
         </div>
-        <div class="progress-item">
-          <div class="progress-header">
-            <span>Tiến độ năm</span>
-            <span id="yearProgressPercent">0%</span>
+
+        <div class="progress-trackers-row">
+          <div class="progress-item" id="dayProgressItem">
+            <div class="progress-header">
+              <span class="progress-label-wrap">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <span class="prog-lbl-full">Tiến độ ngày</span><span class="prog-lbl-short">Ngày</span>
+              </span>
+              <span class="progress-val-badge" id="dayProgressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="dayProgressBar" style="width: 0%;">
+                <span class="progress-glow-head"></span>
+              </div>
+            </div>
           </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="yearProgressBar" style="width: 0%;"></div>
+
+          <div class="progress-col-divider"></div>
+
+          <div class="progress-item" id="yearProgressItem">
+            <div class="progress-header">
+              <span class="progress-label-wrap">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                </svg>
+                <span class="prog-lbl-full">Tiến độ năm</span><span class="prog-lbl-short">Năm</span>
+              </span>
+              <span class="progress-val-badge" id="yearProgressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="yearProgressBar" style="width: 0%;">
+                <span class="progress-glow-head"></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -180,6 +228,16 @@
         <button class="control-btn" id="themeSwitchBtn" title="Đổi giao diện chủ đề (Phím T)">
           <svg viewBox="0 0 24 24"><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           <span id="themeNameLabel">Lật Số</span>
+        </button>
+
+        <!-- Three.js 3D Zen Mode Quick Toggle -->
+        <button class="control-btn active" id="threeDfxBtn" title="Hiệu ứng 3D Three.js Không gian (Phím B)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <span id="threeDfxLabel">3D Zen</span>
         </button>
 
         <!-- Ambient Soundscapes -->
@@ -215,11 +273,15 @@
       </nav>
     </div>
 
-    <!-- APPLE-STYLE FLOATING WALLPAPER LOCATION BADGE -->
-    <div id="wallpaperCaptionBadge" class="wallpaper-caption-badge hidden" title="Nhấp để đổi ngẫu nhiên ảnh phong cảnh khác">
-      <span class="caption-icon">📍</span>
-      <span class="caption-text" id="wallpaperCaptionText">Microsoft Bing 4K</span>
-    </div>
+    <!-- WALLPAPER QUICK CONTROLLER & SWITCHER -->
+    <button type="button" id="wallpaperCaptionBadge" class="wallpaper-caption-badge hidden" title="Đổi ảnh nền ngẫu nhiên hoặc tải lên ảnh cá nhân">
+      <svg class="wallpaper-badge-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <span class="caption-text" id="wallpaperCaptionText">Đổi ảnh nền</span>
+    </button>
 
   </div>
 
@@ -235,6 +297,30 @@
       </div>
 
       <div class="modal-body">
+
+        <!-- 0. CHỦ ĐỀ GIAO DIỆN & LOẠI ĐỒNG HỒ -->
+        <div class="setting-group-header">🎨 Giao Diện & Mặt Đồng Hồ</div>
+
+        <div class="setting-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Chủ đề hiển thị <span class="setting-sub">(Giao Diện)</span></div>
+            <div class="setting-desc">Lựa chọn giữa đồng hồ lật 3D retro, đèn Nixie chân không, kim Thụy Sĩ, OLED đen hay 4 mùa</div>
+          </div>
+          <div class="setting-control-full">
+            <select id="themeSelect" class="setting-select">
+              <option value="theme-flip" selected>🏷️ Đồng Hồ Lật 3D Retro (Split-Flap Fliqlo)</option>
+              <option value="theme-nixie">🔥 Đèn Nixie (Cold Cathode Vacuum Tube)</option>
+              <option value="theme-swiss">🇨🇭 Đồng Hồ Kim Thụy Sĩ (Swiss SBB & Bauhaus)</option>
+              <option value="theme-oled">🌑 Minimalist OLED Đen Tuyền (True Black)</option>
+              <option value="theme-matrix">💻 Cyberpunk Matrix CRT Terminal</option>
+              <option value="theme-aura">🌅 Hoàng Hôn Aura Glow (Lofi Scandinavian)</option>
+              <option value="theme-winter">❄️ Mùa Đông / Tuyết Rơi Noel (Emerald Lake)</option>
+              <option value="theme-spring">🌸 Mùa Xuân / Tết Giáp Thìn (Hoa Đào & Mai Vàng)</option>
+              <option value="theme-summer">🌊 Mùa Hạ / Hoàng Hôn Biển Nhiệt Đới</option>
+              <option value="theme-autumn">🍁 Mùa Thu / Rừng Phong Đỏ Kyoto</option>
+            </select>
+          </div>
+        </div>
 
         <!-- 1. THỜI GIAN & POMODORO -->
         <div class="setting-group-header">⏱️ Thời Gian & Pomodoro</div>
@@ -425,6 +511,46 @@
         </div>
 
         <!-- 3. ÂM THANH & SỰ KIỆN -->
+        <!-- 3D THREE.JS AMBIENT SCENE -->
+        <div class="setting-group-header">🌌 Hiệu Ứng 3D Three.js Không Gian (WebGL)</div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Bật không gian 3D Three.js <span class="setting-sub">(WebGL Zen)</span></div>
+            <div class="setting-desc">Hiệu ứng sóng năng lượng cyber & bụi sao 3D thư giãn chạy ngầm</div>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="threeDfxToggle" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Kiểu hoạt cảnh 3D <span class="setting-sub">(Chế Độ 3D)</span></div>
+            <div class="setting-desc">Chọn giữa sóng biển cyber, dải ngân hà hạt lượng tử hay vòng quỹ đạo thiền định</div>
+          </div>
+          <div class="setting-control-full">
+            <select id="threeDfxModeSelect" class="setting-select">
+              <option value="combo" selected>🌌 Kết Hợp Đa Tầng (Sóng Năng Lượng & Bụi Sao)</option>
+              <option value="waves">🌊 Sóng Năng Lượng Cyber (Zen Hologram Waves)</option>
+              <option value="particles">✨ Đám Mây Hạt Lượng Tử (Quantum Galaxy Nebula)</option>
+              <option value="rings">🪐 Vòng Quỹ Đạo Thiền Định (Zen Orbital Rings)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Độ sáng hiệu ứng 3D <span class="setting-sub">(Cường Độ)</span></div>
+            <div class="setting-desc">Điều chỉnh độ sáng/mờ của hạt và sóng 3D để không chói mắt</div>
+          </div>
+          <div class="setting-slider-group">
+            <input type="range" id="threeDfxOpacitySlider" min="0.1" max="1.0" step="0.05" value="0.75" class="styled-range">
+            <span id="threeDfxOpacityValue" class="slider-badge">75%</span>
+          </div>
+        </div>
+
         <div class="setting-group-header">🔊 Âm Thanh & Sự Kiện</div>
 
         <div class="setting-row">
@@ -469,7 +595,12 @@
     <div class="modal-card">
       <div class="modal-header">
         <h2 class="modal-title">
-          <span>🎯</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
           <span>Sự Kiện & Đếm Ngược (Milestones)</span>
         </h2>
         <button class="modal-close-btn" id="eventModalCloseBtn" title="Đóng (Esc)">&times;</button>
@@ -506,6 +637,103 @@
     </div>
   </div>
 
+  <!-- WALLPAPER SWITCHER & CUSTOM UPLOAD MODAL -->
+  <div class="modal-overlay" id="wallpaperModal">
+    <div class="modal-card wallpaper-modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Hình Nền & Không Gian</span>
+        </h2>
+        <button class="modal-close-btn" id="wallpaperModalCloseBtn" title="Đóng (Esc)">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 1. Quick Actions: Random 4K & Bing Daily -->
+        <div class="wallpaper-quick-grid">
+          <button type="button" class="wallpaper-quick-btn" id="quickRandomWallpaperBtn" title="Tải ngay một ảnh 4K ngẫu nhiên mới từ Picsum">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            <div class="quick-btn-info">
+              <strong>Đổi ảnh 4K ngẫu nhiên</strong>
+              <span>Picsum Photos nghệ thuật</span>
+            </div>
+          </button>
+
+          <button type="button" class="wallpaper-quick-btn" id="quickBingWallpaperBtn" title="Xem ảnh phong cảnh hàng ngày chính thức từ Microsoft Bing 4K">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <div class="quick-btn-info">
+              <strong>Ảnh Bing 4K hôm nay</strong>
+              <span>Phong cảnh thế giới tự động</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- 2. Custom Upload Box -->
+        <div class="setting-block wallpaper-upload-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Tải lên ảnh của bạn <span class="setting-sub">(Lưu trên máy)</span></div>
+            <div class="setting-desc">Tải ảnh từ máy tính hoặc điện thoại, lưu an toàn vào trình duyệt offline</div>
+          </div>
+
+          <div class="wallpaper-dropzone" id="wallpaperDropzone">
+            <input type="file" id="modalWallpaperFileInput" accept="image/*" style="display: none;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <div class="dropzone-text">
+              <strong>Nhấp để chọn ảnh hoặc kéo thả vào đây</strong>
+              <span>Hỗ trợ JPG, PNG, WEBP, ảnh chụp 4K</span>
+            </div>
+          </div>
+
+          <div class="custom-wallpaper-preview-bar" id="customWallpaperPreviewBar" style="display: none;">
+            <img id="customWallpaperThumb" src="" alt="Thumbnail" class="custom-thumb">
+            <div class="custom-thumb-info">
+              <span id="customThumbName">Ảnh cá nhân</span>
+              <span class="custom-thumb-status">Đang áp dụng</span>
+            </div>
+            <button type="button" class="btn-remove-custom" id="removeCustomWallpaperBtn" title="Xóa ảnh cá nhân và quay về ảnh mặc định">Xóa ảnh</button>
+          </div>
+        </div>
+
+        <!-- 3. Curated Presets Grid -->
+        <div class="setting-block">
+          <div class="setting-block-header">
+            <div class="setting-label">Bộ sưu tập phong cảnh chọn lọc <span class="setting-sub">(4K UHD)</span></div>
+          </div>
+          <div class="wallpaper-presets-grid" id="wallpaperPresetsGrid">
+            <!-- Dynamically populated from PHOTO_PRESETS -->
+          </div>
+        </div>
+
+        <!-- 4. Sliders (Dimmer & Blur) -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Độ tối khung cảnh <span class="setting-sub">(Dimmer)</span></div>
+            <div class="setting-desc">Làm tối nền để chữ số đồng hồ nổi bật</div>
+          </div>
+          <div class="setting-slider-group">
+            <input type="range" id="modalDimmerSlider" min="0" max="0.9" step="0.05" value="0.30" class="styled-range">
+            <span id="modalDimmerValue" class="slider-badge">30%</span>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Độ mờ nghệ thuật <span class="setting-sub">(Blur)</span></div>
+            <div class="setting-desc">Làm mờ ảnh nền phong cảnh</div>
+          </div>
+          <div class="setting-slider-group">
+            <input type="range" id="modalBlurSlider" min="0" max="25" step="1" value="0" class="styled-range">
+            <span id="modalBlurValue" class="slider-badge">0px</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Specialized Feature Modules -->
   <script type="module" src="js/night-mode.js"></script>
   <script type="module" src="js/weather.js"></script>
@@ -513,13 +741,14 @@
   <script type="module" src="js/task-scratchpad.js"></script>
 
   <!-- Main ES Module Application Script -->
-  <script type="module" src="js/app.js?v=13"></script>
+  <script type="module" src="js/three-scene.js"></script>
+  <script type="module" src="js/app.js?v=18"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=13')
+        navigator.serviceWorker.register('./sw.js?v=18')
           .then(reg => {
             // Force check for updates immediately
             reg.update();

@@ -14,9 +14,11 @@
 export class NightModeManager {
   constructor(options = {}) {
     // Load persisted settings or apply defaults
-    this.enabled = localStorage.getItem('zd_night_mode_active') === 'true';
+    // Explicit user preference takes absolute priority
+    const savedActive = localStorage.getItem('zd_night_mode_active');
+    this.enabled = savedActive === 'true';
     this.color = localStorage.getItem('zd_night_mode_color') || 'red'; // 'red' | 'amber'
-    this.autoSchedule = localStorage.getItem('zd_night_mode_auto') !== 'false'; // default true
+    this.autoSchedule = localStorage.getItem('zd_night_mode_auto') === 'true'; // default false to prevent unexpected hijacking
     this.startHour = parseInt(localStorage.getItem('zd_night_mode_start') || '22', 10); // 22:00 (10 PM)
     this.endHour = parseInt(localStorage.getItem('zd_night_mode_end') || '6', 10);     // 06:00 (6 AM)
     this.soundFeedback = options.soundFeedback !== undefined ? options.soundFeedback : true;
@@ -41,11 +43,20 @@ export class NightModeManager {
     this._bindKeyboard();
     this._startScheduleMonitor();
 
-    // Check schedule on launch
+    // Always strictly respect saved user preference
+    const savedActive = localStorage.getItem('zd_night_mode_active');
+    if (savedActive !== null) {
+      this.enabled = savedActive === 'true';
+      this._applyDOMState(this.enabled, false);
+      return;
+    }
+
+    // Only if user has never manually toggled night mode AND autoSchedule is explicitly true
     if (this.autoSchedule) {
       this._checkSchedule();
-    } else if (this.enabled) {
-      this._applyDOMState(true, false);
+    } else {
+      this.enabled = false;
+      this._applyDOMState(false, false);
     }
   }
 
@@ -65,14 +76,14 @@ export class NightModeManager {
       }
 
       if (showToast) {
-        const colorName = this.color === 'amber' ? 'Cam Hổ Phách' : 'Đỏ Monochromatic';
-        this.showToast(`🌙 Apple StandBy [${colorName}] Kích Hoạt`, 'N');
+        const colorName = this.color === 'amber' ? 'Hổ Phách' : 'Đỏ Monochromatic';
+        this.showToast(`StandBy: ${colorName}`, 'N');
       }
     } else {
       body.classList.remove('apple-standby-active', 'standby-color-amber');
 
       if (showToast) {
-        this.showToast('☀️ Apple StandBy Đã Tắt', 'N');
+        this.showToast('StandBy: Đã Tắt', 'N');
       }
     }
 
@@ -90,22 +101,23 @@ export class NightModeManager {
      ======================================================== */
   toggle(triggerToast = true) {
     this.enabled = !this.enabled;
-    localStorage.setItem('zd_night_mode_active', this.enabled);
+    localStorage.setItem('zd_night_mode_active', this.enabled ? 'true' : 'false');
+    localStorage.setItem('zd_night_mode_manual_override', 'true');
     this._applyDOMState(this.enabled, triggerToast);
     return this.enabled;
   }
 
   enable(triggerToast = true) {
-    if (this.enabled) return;
     this.enabled = true;
     localStorage.setItem('zd_night_mode_active', 'true');
+    localStorage.setItem('zd_night_mode_manual_override', 'true');
     this._applyDOMState(true, triggerToast);
   }
 
   disable(triggerToast = true) {
-    if (!this.enabled) return;
     this.enabled = false;
     localStorage.setItem('zd_night_mode_active', 'false');
+    localStorage.setItem('zd_night_mode_manual_override', 'true');
     this._applyDOMState(false, triggerToast);
   }
 
@@ -145,18 +157,32 @@ export class NightModeManager {
 
   /**
    * Register state change callback
-   * @param {Function} callback ({ enabled: boolean, color: string })
+   * @param {Function} callback (enabled, color, state)
    */
+  onStateChange(callback) {
+    this.onChange(callback);
+  }
+
   onChange(callback) {
     if (typeof callback === 'function') {
       this.listeners.push(callback);
+      // Immediately notify caller of current active state
+      try {
+        callback(this.enabled, this.color, { enabled: this.enabled, color: this.color });
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 
   _notifyListeners() {
     const state = { enabled: this.enabled, color: this.color };
     this.listeners.forEach(fn => {
-      try { fn(state); } catch (e) { console.error(e); }
+      try {
+        fn(this.enabled, this.color, state);
+      } catch (e) {
+        console.error(e);
+      }
     });
 
     // Also dispatch a window CustomEvent for cross-module communication
@@ -176,23 +202,25 @@ export class NightModeManager {
   }
 
   _checkSchedule() {
+    // If user has ever manually set or toggled night mode, NEVER override their choice!
+    if (localStorage.getItem('zd_night_mode_manual_override') === 'true' || localStorage.getItem('zd_night_mode_active') !== null) {
+      return;
+    }
+
     const now = new Date();
     const currentHour = now.getHours();
 
-    // Determine if current time falls into night schedule (e.g. 22:00 -> 06:00)
     let isNightTime = false;
     if (this.startHour > this.endHour) {
-      // Over midnight: e.g. 22 to 6
       isNightTime = (currentHour >= this.startHour || currentHour < this.endHour);
     } else {
-      // Same day: e.g. 20 to 23
       isNightTime = (currentHour >= this.startHour && currentHour < this.endHour);
     }
 
     if (isNightTime && !this.enabled) {
-      this.enable(true);
-    } else if (!isNightTime && this.enabled && localStorage.getItem('zd_night_mode_manual_override') !== 'true') {
-      this.disable(true);
+      this.enable(false);
+    } else if (!isNightTime && this.enabled) {
+      this.disable(false);
     }
   }
 

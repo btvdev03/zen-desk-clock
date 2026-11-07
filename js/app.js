@@ -17,6 +17,8 @@ import { SeasonalParticleEngine } from './particle-engine.js';
 import { eventCountdownManager } from './event-countdown.js';
 import { SceneryEngine, PHOTO_PRESETS } from './scenery-engine.js';
 import { wallpaperDB } from './wallpaper-db.js';
+import { NixieRenderer } from './nixie-renderer.js';
+import { nightModeManager } from './night-mode.js';
 
 class ZenApp {
   constructor() {
@@ -27,6 +29,7 @@ class ZenApp {
       'theme-matrix',
       'theme-aura',
       'theme-swiss',
+      'theme-nixie',
       'theme-winter',
       'theme-spring',
       'theme-summer',
@@ -38,6 +41,7 @@ class ZenApp {
       'theme-matrix': 'Matrix CRT',
       'theme-aura': 'Hoàng Hôn Aura',
       'theme-swiss': 'Kim Thụy Sĩ',
+      'theme-nixie': '🔥 Đèn Nixie',
       'theme-winter': '❄️ Mùa Đông',
       'theme-spring': '🌸 Mùa Xuân',
       'theme-summer': '🌊 Mùa Hạ',
@@ -53,6 +57,7 @@ class ZenApp {
 
     this.flipUnits = {};
     this.analogRenderer = null;
+    this.nixieRenderer = null;
     this.particleEngine = null;
     this.sceneryEngine = null;
 
@@ -65,6 +70,8 @@ class ZenApp {
     this._initParticles();
     this._initFlipClock();
     this._initAnalogClock();
+    this._initNixieClock();
+    this._initNightMode();
     this._initPomodoro();
     this._initTimeEngine();
     this._initPiP();
@@ -81,6 +88,7 @@ class ZenApp {
     this.flipClockView = document.getElementById('flipClockView');
     this.digitalClockView = document.getElementById('digitalClockView');
     this.analogClockView = document.getElementById('analogClockView');
+    this.nixieClockView = document.getElementById('nixieClockView');
     this.pomodoroView = document.getElementById('pomodoroView');
 
     // Scenery & Particle Canvas
@@ -103,6 +111,9 @@ class ZenApp {
     this.topDateDisplay = document.getElementById('topDateDisplay');
     this.topDateShortDisplay = document.getElementById('topDateShortDisplay');
     this.topWeekDisplay = document.getElementById('topWeekDisplay');
+    this.nightModeBtn = document.getElementById('nightModeBtn');
+    this.nightModeDot = document.getElementById('nightModeDot');
+    this.nightModeText = document.getElementById('nightModeText');
     this.wakeLockBtn = document.getElementById('wakeLockBtn');
     this.wakeLockDot = document.getElementById('wakeLockDot');
     this.wakeLockText = document.getElementById('wakeLockText');
@@ -189,6 +200,32 @@ class ZenApp {
     this.analogRenderer = new AnalogRenderer(this.analogClockView);
   }
 
+  _initNixieClock() {
+    if (this.nixieClockView) {
+      this.nixieRenderer = new NixieRenderer(this.nixieClockView);
+    }
+  }
+
+  _initNightMode() {
+    if (this.nightModeBtn) {
+      this.nightModeBtn.addEventListener('click', () => {
+        nightModeManager.toggle(true);
+      });
+    }
+
+    nightModeManager.onStateChange((enabled, color) => {
+      if (this.nightModeBtn) {
+        this.nightModeBtn.classList.toggle('active', enabled);
+      }
+      if (this.nightModeDot) {
+        this.nightModeDot.classList.toggle('inactive', !enabled);
+      }
+      if (this.nightModeText) {
+        this.nightModeText.textContent = enabled ? 'Đang bật StandBy' : 'Chế độ đêm';
+      }
+    });
+  }
+
   _initPomodoro() {
     pomodoroEngine.onUpdate((data) => {
       this.pomoTimeDisplay.textContent = data.formattedTime;
@@ -246,7 +283,11 @@ class ZenApp {
       }
 
       // Render clock faces
-      if (currentTheme === 'theme-flip' || currentTheme.startsWith('theme-winter') || currentTheme.startsWith('theme-spring') || currentTheme.startsWith('theme-summer') || currentTheme.startsWith('theme-autumn')) {
+      if (currentTheme === 'theme-nixie') {
+        if (this.nixieRenderer) {
+          this.nixieRenderer.update(timeData, isNewSecond);
+        }
+      } else if (currentTheme === 'theme-flip' || currentTheme.startsWith('theme-winter') || currentTheme.startsWith('theme-spring') || currentTheme.startsWith('theme-summer') || currentTheme.startsWith('theme-autumn')) {
         this.flipUnits.hours.flipTo(timeData.hoursStr, isNewSecond);
         this.flipUnits.minutes.flipTo(timeData.minutesStr, isNewSecond);
         this.flipUnits.seconds.flipTo(timeData.secondsStr, false);
@@ -415,6 +456,9 @@ class ZenApp {
       document.getElementById('flipSeconds').style.display = show ? '' : 'none';
       document.getElementById('flipSecSep').style.display = show ? '' : 'none';
       this.digitalSeconds.style.display = show ? '' : 'none';
+      if (this.nixieRenderer && typeof this.nixieRenderer.setShowSeconds === 'function') {
+        this.nixieRenderer.setShowSeconds(show);
+      }
       localStorage.setItem('zd_show_seconds', show);
     });
 
@@ -588,6 +632,8 @@ class ZenApp {
         this.cycleTheme();
       } else if (key === 'm') {
         this.cycleSound();
+      } else if (key === 'n') {
+        nightModeManager.toggle(true);
       } else if (key === 'p') {
         pipController.toggle();
       } else if (key === 'h') {
@@ -615,6 +661,7 @@ class ZenApp {
       this.flipClockView.classList.add('hidden');
       this.digitalClockView.classList.add('hidden');
       this.analogClockView.classList.add('hidden');
+      if (this.nixieClockView) this.nixieClockView.classList.add('hidden');
       this.pomodoroView.classList.remove('hidden');
     }
   }
@@ -645,9 +692,12 @@ class ZenApp {
     this.flipClockView.classList.add('hidden');
     this.digitalClockView.classList.add('hidden');
     this.analogClockView.classList.add('hidden');
+    if (this.nixieClockView) this.nixieClockView.classList.add('hidden');
 
     if (currentTheme === 'theme-swiss') {
       this.analogClockView.classList.remove('hidden');
+    } else if (currentTheme === 'theme-nixie') {
+      if (this.nixieClockView) this.nixieClockView.classList.remove('hidden');
     } else if (currentTheme === 'theme-oled' || currentTheme === 'theme-matrix' || currentTheme === 'theme-aura') {
       this.digitalClockView.classList.remove('hidden');
     } else {

@@ -1,0 +1,732 @@
+/**
+ * ZenDesk Clock - Real-Time Weather Widget Stylesheet
+ * High-End Glassmorphism, Responsive iOS/Apple-Style Design Tokens
+ * Open-Meteo Integration (No API Key Required)
+ */
+
+/* ========================================================
+   TOP BAR CHIP: WEATHER
+   ======================================================== */
+.weather-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.85rem;
+  background: rgba(22, 26, 36, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.83rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #ffffff !important;
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28), inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  outline: none;
+}
+
+.weather-chip:hover {
+  background: rgba(35, 42, 58, 0.88);
+  border-color: rgba(56, 189, 248, 0.45);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.42), 0 0 12px rgba(56, 189, 248, 0.25), inset 0 1px 0.5px rgba(255, 255, 255, 0.45);
+}
+
+.weather-chip:active {
+  transform: scale(0.96);
+  transition-duration: 0.08s;
+}
+
+.weather-chip-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.weather-chip:hover .weather-chip-icon {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.weather-chip-temp {
+  font-family: "JetBrains Mono", var(--font-mono, monospace);
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.weather-chip-city {
+  color: rgba(248, 250, 252, 0.88);
+  font-weight: 600;
+  max-width: 82px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Loading & Pulse State */
+.weather-chip.is-loading .weather-chip-icon {
+  animation: weatherIconPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes weatherIconPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.22);
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+  }
+}
+
+/* ========================================================
+   MODAL OVERLAY & CARD
+   ======================================================== */
+.weather-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(5, 7, 12, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 110;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weather-modal-overlay.open {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.weather-modal-card {
+  background: rgba(16, 21, 30, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  width: 95%;
+  max-width: 580px;
+  max-height: 88vh;
+  max-height: 88dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.6rem 1.7rem;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.75), 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  color: #f8fafc;
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  box-sizing: border-box;
+  overflow: hidden;
+  transform: scale(0.96) translateY(12px);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.26s ease;
+  animation: weatherModalEnter 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes weatherModalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ========================================================
+   MODAL HEADER
+   ======================================================== */
+.weather-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.weather-modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.weather-modal-title-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+.weather-modal-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.weather-modal-subtitle {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.weather-location-badge {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.weather-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weather-action-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.weather-action-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.weather-action-btn:active {
+  transform: scale(0.92);
+}
+
+.weather-refresh-btn svg {
+  transition: transform 0.4s ease;
+}
+
+.weather-refresh-btn.spinning svg {
+  animation: weatherSpin 0.8s linear infinite;
+}
+
+@keyframes weatherSpin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.weather-close-btn {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+/* ========================================================
+   MODAL SCROLLABLE BODY
+   ======================================================== */
+.weather-modal-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding-top: 0.9rem;
+  padding-right: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.weather-modal-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.weather-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.weather-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+
+/* ========================================================
+   HERO WEATHER DISPLAY
+   ======================================================== */
+.weather-hero-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.75) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.weather-hero-card::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.weather-hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 1;
+}
+
+.weather-hero-temp-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+.weather-hero-temp {
+  font-family: "JetBrains Mono", var(--font-mono, monospace);
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+}
+
+.weather-hero-unit {
+  font-family: "JetBrains Mono", var(--font-mono, monospace);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.weather-hero-condition {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.weather-hero-range {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.2rem;
+}
+
+.weather-range-high {
+  color: #f87171;
+}
+
+.weather-range-low {
+  color: #60a5fa;
+}
+
+.weather-hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.weather-hero-big-icon {
+  font-size: 4.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+  animation: weatherFloatingIcon 3.5s ease-in-out infinite;
+}
+
+@keyframes weatherFloatingIcon {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ========================================================
+   KEY METRICS GRID (Feels like, Humidity, Wind, Code)
+   ======================================================== */
+.weather-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.65rem;
+}
+
+.weather-metric-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weather-metric-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1.5px);
+}
+
+.weather-metric-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.weather-metric-value {
+  font-family: "JetBrains Mono", var(--font-mono, monospace);
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.weather-metric-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========================================================
+   5-DAY FORECAST SECTION
+   ======================================================== */
+.weather-forecast-container {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  padding: 0.95rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.weather-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.weather-forecast-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.weather-forecast-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.84rem;
+  gap: 0.5rem;
+}
+
+.weather-forecast-item:last-child {
+  border-bottom: none;
+}
+
+.weather-forecast-day {
+  font-weight: 600;
+  color: #e2e8f0;
+  width: 75px;
+  flex-shrink: 0;
+}
+
+.weather-forecast-cond {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  color: #cbd5e1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.weather-forecast-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  width: 24px;
+  text-align: center;
+}
+
+.weather-forecast-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1.2;
+}
+
+.weather-temp-min {
+  font-family: "JetBrains Mono", var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.weather-temp-bar-bg {
+  flex: 1;
+  height: 4.5px;
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.weather-temp-bar-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #38bdf8 0%, #fb923c 100%);
+}
+
+.weather-temp-max {
+  font-family: "JetBrains Mono", var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  width: 28px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+/* ========================================================
+   QUICK CITY SELECTOR
+   ======================================================== */
+.weather-city-selector-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.weather-city-chips-scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding-bottom: 0.3rem;
+  scrollbar-width: none;
+}
+
+.weather-city-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.weather-city-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.34rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.weather-city-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.weather-city-chip.active {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+}
+
+/* ========================================================
+   FOOTER ATTRIBUTION
+   ======================================================== */
+.weather-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.73rem;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.weather-footer-link {
+  color: #38bdf8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.weather-footer-link:hover {
+  text-decoration: underline;
+}
+
+/* ========================================================
+   RESPONSIVE DESIGN (PC, IPAD, PHONE)
+   ======================================================== */
+/* Tablet & Small Desktop (<= 768px) */
+@media (max-width: 768px) {
+  .weather-modal-card {
+    max-width: 520px;
+    padding: 1.4rem 1.4rem;
+  }
+
+  .weather-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .weather-hero-temp {
+    font-size: 2.8rem;
+  }
+
+  .weather-hero-big-icon {
+    font-size: 3.5rem;
+  }
+}
+
+/* Mobile Devices (<= 480px) */
+@media (max-width: 480px) {
+  .weather-chip {
+    padding: 0.38rem 0.65rem;
+    gap: 0.35rem;
+  }
+
+  .weather-chip-city {
+    max-width: 60px;
+    font-size: 0.78rem;
+  }
+
+  .weather-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .weather-modal-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    max-height: 90vh;
+    max-height: 90dvh;
+    padding: 1.3rem 1.15rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    animation: weatherModalEnterBottom 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes weatherModalEnterBottom {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .weather-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .weather-hero-card {
+    padding: 1.1rem 1.1rem;
+  }
+
+  .weather-hero-temp {
+    font-size: 2.5rem;
+  }
+
+  .weather-hero-big-icon {
+    font-size: 3.2rem;
+  }
+
+  .weather-forecast-day {
+    width: 68px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Ultra Small screens (<= 360px) */
+@media (max-width: 360px) {
+  .weather-chip-city {
+    display: none;
+  }
+}

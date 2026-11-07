@@ -26,6 +26,8 @@ ZenDesk Clock transforms any spare display, old iPad, or secondary monitor into 
 | **Cyberpunk Matrix CRT** | Retro Terminal / Phosphor Green | Phosphor glow, scanlines overlay, vignette curve |
 | **Sunset Aura Gradient** | Lofi Girl & Scandinavian Warmth | Floating blurred mesh gradients, soft breathing aura |
 | **Bauhaus Swiss Analog** | Swiss Railway Clock (Mondaine) | Continuous sweeping red second hand with iconic circular indicator |
+| **🔥 Vintage Nixie Tube** | IN-12 / IN-14 Soviet Cold Cathode | Glowing neon plasma filaments, wire anode mesh, slot-machine roulette anti-poisoning cycle |
+| **🌙 Apple StandBy Night** | Apple Watch Ultra / iOS StandBy | Monochromatic red (`#ff2a2a`) on OLED true black, circadian rhythm friendly, zero blue light |
 | **❄️ Winter Noel** | Real Snowy Lake Cabin & Frost | 4K Emerald Lake timber cabin, 6-arm crystal snowflake DoF, fireplace |
 | **🌸 Spring Tết** | Real Peach & Golden Mai Blossom | 4K blooming blossoms, authentic fluttering petals, spring birds |
 | **🌊 Summer Coast** | Real Tropical Sunset Beach | 4K golden sunset palms, wave reflections, summer fireflies |
@@ -35,6 +37,23 @@ ZenDesk Clock transforms any spare display, old iPad, or secondary monitor into 
 
 ## 🚀 Killer Features
 
+- 🌤️ **Real-Time Live Weather Widget (Open-Meteo API):**
+  - **Zero API Key & 100% Free:** Automated geolocation via browser GPS with seamless fallback to IP-based location and reverse geocoding.
+  - **Detailed Weather Popup:** Current temperature, apparent feels-like temp, humidity %, wind speed km/h, and 5-day forecast.
+  - **15-Minute Local Cache:** High responsiveness and zero API rate-limiting issues.
+- 🎧 **Multi-Track Ambient Sound Mixer & Stereo Binaural Beats:**
+  - **Multi-Track Simultaneous Audio:** Mix Rain, Fireplace, Ocean Waves, Crickets, Morning Birds, Cozy Cafe Murmur, Gentle Wind, and Thunder simultaneously with independent volume faders.
+  - **True Stereo Binaural Beats (`ChannelMergerNode`):** Alpha Beats (10Hz - Flow State Focus), Theta Beats (6Hz - Deep Calm & Meditation), and Gamma Beats (40Hz - Intensive Cognition).
+  - **Sleep Timer:** Smooth auto fade-out countdown (15m, 30m, 45m, 60m).
+- 🔥 **Vintage Nixie Tube Clock (IN-12 / IN-14 Soviet Cold Cathode):**
+  - **Authentic Physics:** Realistic glass envelope reflection, wire anode mesh, glowing neon plasma filaments, gas discharge halos, and relay click synthesis.
+  - **Slot-Machine Anti-Cathode-Poisoning Cycle:** High-speed digit cycling with staggered settling on demand or interval.
+- 🌙 **Apple StandBy Red Night Mode:**
+  - **Circadian Rhythm Friendly:** Monochromatic deep red (`#ff2a2a`) or warm amber (`#ff7700`) on OLED true black (`#000000`).
+  - **Auto-Schedule:** Automatically activates between 22:00 - 06:00 or toggle manually anytime with <kbd>N</kbd>.
+- 📝 **Daily Focus Tasks (Ivy Lee MIT) & Zen Quick Scratchpad:**
+  - **Task-Integrated Pomodoro:** Pin your Most Important Task (MIT) with real-time `+1 🍅` auto-increment upon session completion.
+  - **Distraction-Free Scratchpad:** Slide-out drawer with live word/char counters, debounced auto-save to `localStorage`, and instant clipboard copy (<kbd>Q</kbd>).
 - 📸 **Real 4K/HD Photography & Custom Local Wallpaper:**
   - **Curated 4K Real Nature Photos:** Stunning photography presets (Winter Lake Cabin, Spring Peach Blossom, Tết Golden Mai Blossom, Tropical Sunset Beach, Autumn Maple Forest, Cozy Study Cafe).
   - **Upload Your Own Photos (IndexedDB):** Seamlessly upload any wallpaper from your computer! Stored safely as binary Blobs in browser IndexedDB (zero quota-exceeded limit) and persists across restarts.
@@ -104,12 +123,15 @@ cd zen-desk-clock
 | :---: | :--- | :--- |
 | <kbd>Space</kbd> | **Start / Pause Timer** | Toggles Pomodoro focus or flow timer |
 | <kbd>F</kbd> | **Toggle Fullscreen** | Expands to immersive borderless full screen |
-| <kbd>T</kbd> | **Cycle Themes** | Flip ➔ OLED ➔ Matrix ➔ Aura ➔ Swiss Analog |
-| <kbd>M</kbd> | **Cycle Ambient Sound** | Rain ➔ Brown Noise ➔ Pink ➔ White ➔ Mute |
+| <kbd>T</kbd> | **Cycle Themes** | Flip ➔ OLED ➔ Matrix ➔ Aura ➔ Swiss Analog ➔ Nixie |
+| <kbd>M</kbd> | **Sound Mixer & Waves** | Opens multi-track ambient sound mixer & binaural beats |
+| <kbd>N</kbd> | **StandBy Night Mode** | Toggles Apple StandBy OLED monochromatic red night mode |
+| <kbd>Q</kbd> | **Zen Quick Scratchpad** | Slides out distraction-free notepad drawer |
+| <kbd>V</kbd> | **Daily Focus Tasks** | Opens Ivy Lee Most Important Task (MIT) manager |
 | <kbd>P</kbd> | **Toggle PiP Widget** | Floats mini always-on-top clock window |
 | <kbd>H</kbd> | **Zen Pure Mode** | Instantly hides all UI & docks |
 | <kbd>S</kbd> | **Open Settings** | Toggle 12/24h format, seconds, sound volume |
-| <kbd>Esc</kbd> | **Close Modal** | Closes active preferences overlay |
+| <kbd>Esc</kbd> | **Close Modal** | Closes active preferences overlay or drawer |
 
 ---
 
@@ -126,14 +148,25 @@ zen-desk-clock/
 │   ├── main.css            # Layout, typography, dock, auto-idle animation
 │   ├── flip.css            # 3D mechanical split-flap CSS transform engine
 │   ├── analog.css          # Bauhaus Swiss Railway dial and continuous sweeping hand
-│   └── themes.css          # 5 visual themes, CRT scanlines, animated aura mesh
+│   ├── nixie.css           # Vintage Cold Cathode IN-12/14 glass vacuum tube styling
+│   ├── night-mode.css      # Apple StandBy monochromatic red OLED night theme
+│   ├── weather.css         # Glassmorphism live weather widget & 5-day forecast
+│   ├── sound-mixer.css     # Multi-track audio mixer console & equalizer animations
+│   ├── task-scratchpad.css # Ivy Lee MIT task cards & distraction-free scratchpad drawer
+│   ├── themes.css          # Visual themes, CRT scanlines, animated aura mesh
+│   └── scenery.css         # 2.5D multi-layer seasonal vector scenery
 ├── js/
-│   ├── app.js              # Application coordinator & keyboard handler
+│   ├── app.js              # Master application coordinator & keyboard handlers
 │   ├── clock.js            # Time engine (12/24h, ISO week, year progress)
 │   ├── flip-renderer.js    # Split-flap DOM 3D transition controller
 │   ├── analog-renderer.js  # 60fps continuous sweep analog clock
+│   ├── nixie-renderer.js   # Cold cathode nixie tube engine & slot-machine cycle
+│   ├── night-mode.js       # Apple StandBy red night mode & circadian scheduler
+│   ├── weather.js          # Open-Meteo live weather client & geolocation fallback
+│   ├── sound-mixer.js      # Multi-track ambient audio controller & preset manager
+│   ├── task-scratchpad.js  # Daily MIT focus tasks & Zen scratchpad drawer
 │   ├── pomodoro.js         # Focus timer, break cycles, SVG ring progress
-│   ├── audio-synth.js      # Procedural Web Audio API soundscape generator
+│   ├── audio-synth.js      # Procedural Web Audio API soundscape & binaural synthesizer
 │   ├── pip-controller.js   # Document PiP & Canvas Stream Video PiP engine
 │   ├── wakelock.js         # Screen Wake Lock API manager
 │   └── quotes.js           # Curated Stoic & Deep Work motivational quotes

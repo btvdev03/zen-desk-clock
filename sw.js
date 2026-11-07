@@ -2,7 +2,7 @@
  * ZenDesk Clock - Offline Service Worker
  */
 
-const CACHE_NAME = 'zendesk-clock-v12';
+const CACHE_NAME = 'zendesk-clock-v13';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -12,10 +12,20 @@ const ASSETS_TO_CACHE = [
   './css/analog.css',
   './css/themes.css',
   './css/scenery.css',
+  './css/weather.css',
+  './css/sound-mixer.css',
+  './css/nixie.css',
+  './css/night-mode.css',
+  './css/task-scratchpad.css',
   './js/app.js',
   './js/clock.js',
   './js/flip-renderer.js',
   './js/analog-renderer.js',
+  './js/nixie-renderer.js',
+  './js/night-mode.js',
+  './js/weather.js',
+  './js/sound-mixer.js',
+  './js/task-scratchpad.js',
   './js/pomodoro.js',
   './js/audio-synth.js',
   './js/pip-controller.js',

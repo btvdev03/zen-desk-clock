@@ -1,0 +1,972 @@
+/**
+ * ZenDesk Clock - Mini Focus Task & Zen Scratchpad Stylesheet
+ * High-Retention Minimalist Productivity Widgets
+ * Option D: Daily MIT (Ivy Lee Method) & Distraction-Free Flow Scratchpad
+ */
+
+/* ========================================================
+   1. POMODORO FOCUS PILL (Inside #pomodoroView)
+   ======================================================== */
+.zen-pomo-focus-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  padding: 0.5rem 1.15rem;
+  background: rgba(22, 27, 38, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: min(88vw, 420px);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  animation: zenPillFadeIn 0.4s ease-out;
+}
+
+.zen-pomo-focus-pill:hover {
+  background: rgba(35, 43, 62, 0.9);
+  border-color: rgba(56, 189, 248, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 0 15px rgba(56, 189, 248, 0.25);
+}
+
+.zen-pomo-focus-pill:active {
+  transform: scale(0.97);
+}
+
+.zen-pill-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zen-pill-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.zen-pill-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--accent-color, #38bdf8);
+  white-space: nowrap;
+}
+
+.zen-pill-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.zen-pill-pomos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.55rem;
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fca5a5;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.zen-pill-empty {
+  font-size: 0.84rem;
+  color: var(--text-dim, #94a3b8);
+  font-style: italic;
+}
+
+/* ========================================================
+   2. TOP BAR MIT CHIP (.top-bar-chip)
+   ======================================================== */
+.zen-mit-chip {
+  cursor: pointer;
+}
+
+.zen-mit-chip:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+.zen-dot-active {
+  background: #38bdf8 !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.9) !important;
+  animation: zenPulseDot 2s infinite ease-in-out;
+}
+
+.zen-dot-completed {
+  background: #22c55e !important;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.8) !important;
+}
+
+.zen-mit-text {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-mit-badge {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.2);
+  color: var(--accent-color, #38bdf8);
+  font-weight: 700;
+  margin-left: 0.2rem;
+}
+
+/* ========================================================
+   3. FOCUS TASKS MODAL & MANAGEMENT DIALOG
+   ======================================================== */
+.zen-tasks-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  animation: zenModalOverlayFade 0.25s ease-out;
+}
+
+.zen-tasks-modal.open {
+  display: flex;
+}
+
+.zen-tasks-card {
+  background: rgba(18, 22, 33, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.6rem 1.8rem;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  animation: zenModalCardPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.zen-tasks-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.zen-tasks-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.zen-tasks-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.zen-tasks-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-dim, #94a3b8);
+  line-height: 1.4;
+}
+
+.zen-tasks-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  font-size: 1.3rem;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zen-tasks-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  transform: rotate(90deg);
+}
+
+/* Ivy Lee & Daily Progress Banner */
+.zen-tasks-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.65rem 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.zen-stats-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.zen-stats-progress-ring {
+  width: 28px;
+  height: 28px;
+  transform: rotate(-90deg);
+}
+
+.zen-stats-right {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f87171;
+}
+
+/* Add Task Input Form */
+.zen-task-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.1rem;
+}
+
+.zen-task-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.zen-task-input {
+  flex: 1;
+  background: rgba(13, 17, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 0.65rem 0.95rem;
+  color: #ffffff;
+  font-size: 0.92rem;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: var(--font-sans);
+}
+
+.zen-task-input:focus {
+  border-color: var(--accent-color, #38bdf8);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+  background: rgba(15, 21, 33, 0.95);
+}
+
+.zen-task-input::placeholder {
+  color: #64748b;
+  font-size: 0.86rem;
+}
+
+.zen-task-add-btn {
+  background: var(--accent-color, #38bdf8);
+  color: #0b1120;
+  border: none;
+  border-radius: 12px;
+  padding: 0.65rem 1.15rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.zen-task-add-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
+}
+
+.zen-task-add-btn:active {
+  transform: scale(0.96);
+}
+
+.zen-task-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-dim, #94a3b8);
+}
+
+.zen-mit-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.zen-mit-checkbox-label input[type="checkbox"] {
+  accent-color: #f59e0b;
+  cursor: pointer;
+}
+
+/* Task List Items */
+.zen-tasks-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 48vh;
+  padding-right: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.zen-tasks-scroll-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.zen-tasks-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+
+.zen-task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: rgba(24, 30, 44, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 0.75rem 0.95rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.zen-task-item:hover {
+  background: rgba(32, 40, 58, 0.85);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(2px);
+}
+
+/* MIT Highlighted Item */
+.zen-task-item.is-mit {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(24, 30, 44, 0.75) 100%);
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.08);
+}
+
+.zen-task-item.is-mit::before {
+  content: '⭐ MIT';
+  position: absolute;
+  top: -8px;
+  left: 14px;
+  background: #f59e0b;
+  color: #000000;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  letter-spacing: 0.5px;
+}
+
+/* In-Progress (Current Pomodoro Focus) Item */
+.zen-task-item.is-active-focus {
+  border-color: rgba(56, 189, 248, 0.65);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+}
+
+/* Completed Item */
+.zen-task-item.is-done {
+  opacity: 0.55;
+  background: rgba(18, 22, 32, 0.4);
+}
+
+.zen-task-item.is-done .zen-task-text {
+  text-decoration: line-through;
+  color: #64748b;
+}
+
+.zen-task-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Custom Checkbox */
+.zen-task-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.zen-task-checkbox:checked {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.zen-task-checkbox:checked::after {
+  content: '✓';
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.zen-task-text {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.zen-task-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Tomato Counters on Task */
+.zen-task-pomos-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 9999px;
+  padding: 0.18rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fca5a5;
+}
+
+.zen-pomo-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0 0.15rem;
+  transition: color 0.15s ease;
+}
+
+.zen-pomo-btn:hover {
+  color: #ffffff;
+}
+
+/* Focus Action Button */
+.zen-task-focus-btn {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--accent-color, #38bdf8);
+  border-radius: 8px;
+  padding: 0.28rem 0.6rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.zen-task-focus-btn:hover {
+  background: var(--accent-color, #38bdf8);
+  color: #0f172a;
+}
+
+.zen-task-item.is-active-focus .zen-task-focus-btn {
+  background: var(--accent-color, #38bdf8);
+  color: #0f172a;
+  border-color: var(--accent-color, #38bdf8);
+}
+
+.zen-task-delete-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zen-task-delete-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* Empty Tasks View */
+.zen-tasks-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.2rem 1.5rem;
+  color: var(--text-dim, #94a3b8);
+  gap: 0.5rem;
+}
+
+.zen-tasks-empty-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.zen-tasks-empty-quote {
+  font-size: 0.82rem;
+  max-width: 380px;
+  line-height: 1.5;
+  font-style: italic;
+  color: #64748b;
+}
+
+/* Modal Footer */
+.zen-tasks-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
+}
+
+.zen-tasks-footer-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zen-tasks-footer-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.zen-tasks-footer-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #ef4444;
+}
+
+/* ========================================================
+   4. ZEN SCRATCHPAD (SLIDE-OUT DRAWER)
+   ======================================================== */
+.zen-scratchpad-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(460px, 92vw);
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(14, 18, 27, 0.88);
+  backdrop-filter: blur(36px) saturate(210%);
+  -webkit-backdrop-filter: blur(36px) saturate(210%);
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.7), inset 1px 0 0 rgba(255, 255, 255, 0.1);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(105%);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  pointer-events: auto;
+  user-select: auto;
+  color: #f1f5f9;
+}
+
+.zen-scratchpad-drawer.open {
+  transform: translateX(0);
+}
+
+/* Subtle backdrop overlay for mobile / focus */
+.zen-scratchpad-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 115;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.zen-scratchpad-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.zen-scratchpad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.zen-scratchpad-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.zen-scratchpad-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.zen-scratchpad-save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.zen-save-dot {
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+  transition: all 0.2s ease;
+}
+
+.zen-save-dot.saving {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+  animation: zenPulseDot 0.8s infinite alternate;
+}
+
+.zen-scratchpad-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.zen-scratchpad-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  border-radius: 9px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zen-scratchpad-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.zen-scratchpad-btn:active {
+  transform: scale(0.96);
+}
+
+.zen-scratchpad-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.zen-scratchpad-close-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+  margin-left: 0.25rem;
+}
+
+.zen-scratchpad-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: rotate(90deg);
+}
+
+/* Distraction-Free Textarea */
+.zen-scratchpad-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.4rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.zen-scratchpad-textarea {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #f8fafc;
+  font-family: var(--font-sans);
+  font-size: 0.96rem;
+  line-height: 1.75;
+  resize: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  tab-size: 2;
+  box-sizing: border-box;
+}
+
+.zen-scratchpad-textarea::placeholder {
+  color: #475569;
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.zen-scratchpad-textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+.zen-scratchpad-textarea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+/* Scratchpad Footer: Counters & Shortcuts */
+.zen-scratchpad-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+.zen-scratchpad-counts {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.zen-scratchpad-hint {
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.zen-scratchpad-kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #e2e8f0;
+}
+
+/* ========================================================
+   5. TOAST NOTIFICATIONS (.zen-toast-container)
+   ======================================================== */
+.zen-toast-container {
+  position: fixed;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.zen-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 1.15rem;
+  background: rgba(20, 26, 38, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #ffffff;
+  pointer-events: auto;
+  animation: zenToastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.zen-toast.hiding {
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+}
+
+/* ========================================================
+   6. AUTO-IDLE INTEGRATION (3.5s Mouse Idle Tranquility)
+   ======================================================== */
+body.idle .zen-pomo-focus-pill,
+body.idle .zen-mit-chip {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-8px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* When scratchpad drawer is open, we do NOT auto-hide if typing */
+body.idle .zen-scratchpad-drawer:not(.typing-active) {
+  opacity: 0.25;
+  transition: opacity 0.5s ease;
+}
+
+/* ========================================================
+   7. KEYFRAME ANIMATIONS
+   ======================================================== */
+@keyframes zenPulseDot {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+@keyframes zenPillFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zenModalOverlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zenModalCardPop {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes zenToastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ========================================================
+   8. MOBILE RESPONSIVE ADAPTATION
+   ======================================================== */
+@media (max-width: 640px) {
+  .zen-tasks-modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .zen-tasks-card {
+    max-width: 100%;
+    max-height: 88vh;
+    max-height: 88dvh;
+    border-radius: 24px 24px 0 0;
+    padding: 1.3rem 1.1rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .zen-scratchpad-drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .zen-mit-text {
+    max-width: 100px;
+  }
+
+  .zen-pomo-focus-pill {
+    padding: 0.42rem 0.95rem;
+    font-size: 0.8rem;
+  }
+}

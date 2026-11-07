@@ -1,0 +1,678 @@
+/**
+ * ZenDesk Clock - Vintage Nixie Tube (IN-12 / IN-14) Stylesheet
+ * 
+ * Hyper-realistic cold cathode vacuum tube display with:
+ * - Cylindrical vacuum glass envelopes with optical specular highlights
+ * - Hexagonal anode wire mesh grid
+ * - Stacked cathode filaments with realistic unlit wire depth
+ * - Multi-tier neon plasma halo glow (#fff9e6 -> #ffaa00 -> #ff5500 -> #ff2200)
+ * - Micro-plasma flicker and cathode-poisoning prevention cycle (roulette spin)
+ * - Turned brass & bakelite tube sockets with mahogany/brushed plinth chassis
+ * - Responsive 6-tube (HH:MM:SS) and 4-tube (HH:MM) layouts
+ */
+
+/* ========================================================
+   ROOT THEME VARIABLES FOR NIXIE TUBE
+   ======================================================== */
+:root {
+  --nixie-tube-width: clamp(75px, 9.5vw, 135px);
+  --nixie-tube-height: clamp(150px, 19vw, 270px);
+  --nixie-colon-width: clamp(34px, 4.2vw, 60px);
+  --nixie-font-size: clamp(80px, 10.5vw, 150px);
+  --nixie-colon-size: clamp(22px, 2.8vw, 40px);
+
+  /* Neon Plasma Color Palette - Classic Neon Amber (IN-14) */
+  --nixie-filament-core: #fff9ea;
+  --nixie-plasma-inner: #ffbb33;
+  --nixie-plasma-mid: #ff6600;
+  --nixie-plasma-outer: #ff2a00;
+  --nixie-plasma-halo: rgba(255, 77, 0, 0.45);
+  --nixie-glass-reflection: rgba(255, 255, 255, 0.18);
+  --nixie-socket-rim: #242220;
+  --nixie-brass-accent: #c59b27;
+  --nixie-chassis-bg: linear-gradient(180deg, #181512 0%, #0d0c0a 100%);
+}
+
+/* Color Variant: Crimson Night (Soviet Red / StandBy) */
+.nixie-color-crimson {
+  --nixie-filament-core: #ffebee;
+  --nixie-plasma-inner: #ff4d4d;
+  --nixie-plasma-mid: #ff1a1a;
+  --nixie-plasma-outer: #d90429;
+  --nixie-plasma-halo: rgba(255, 26, 26, 0.55);
+}
+
+/* Color Variant: Cyan Arc Plasma */
+.nixie-color-cyan {
+  --nixie-filament-core: #f0fdff;
+  --nixie-plasma-inner: #38bdf8;
+  --nixie-plasma-mid: #0284c7;
+  --nixie-plasma-outer: #0369a1;
+  --nixie-plasma-halo: rgba(56, 189, 248, 0.5);
+}
+
+/* ========================================================
+   CONTAINER & CHASSIS
+   ======================================================== */
+.nixie-clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  user-select: none;
+  perspective: 1000px;
+  animation: nixieWarmup 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes nixieWarmup {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+    filter: brightness(0.4);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+}
+
+.nixie-tubes-rack {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(6px, 1.2vw, 18px);
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(8px, 2vw, 24px);
+}
+
+/* ========================================================
+   TUBE STRUCTURE (CYLINDRICAL VACUUM GLASS)
+   ======================================================== */
+.nixie-tube {
+  position: relative;
+  width: var(--nixie-tube-width);
+  height: var(--nixie-tube-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nixie-tube:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.nixie-tube.nixie-seconds-tube.hidden {
+  display: none !important;
+}
+
+/* 1. Vacuum Glass Dome & Cylinder */
+.nixie-glass-envelope {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 22px; /* space for socket base */
+  border-radius: 46px 46px 12px 12px;
+  background: radial-gradient(
+    ellipse at 50% 25%,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(20, 18, 16, 0.35) 60%,
+    rgba(10, 8, 7, 0.85) 100%
+  );
+  box-shadow:
+    inset 0 0 15px rgba(0, 0, 0, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.25),
+    0 10px 25px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Curvature Optical Glare & Specular Highlights */
+.nixie-glass-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 5;
+}
+
+/* Left bright specular vertical streak */
+.nixie-glass-glare::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 9%;
+  width: 14%;
+  height: 82%;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(255, 255, 255, 0.12) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  filter: blur(1.5px);
+  transform: skewX(-2.5deg);
+}
+
+/* Right softer edge highlight */
+.nixie-glass-glare::after {
+  content: "";
+  position: absolute;
+  top: 12%;
+  right: 8%;
+  width: 6%;
+  height: 76%;
+  border-radius: 10px;
+  background: linear-gradient(
+    270deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  filter: blur(1px);
+}
+
+/* Top Dome Lens Sheen */
+.nixie-glass-dome-sheen {
+  position: absolute;
+  top: 4px;
+  left: 20%;
+  right: 20%;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%
+  );
+  filter: blur(0.8px);
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* 2. Anode Honeycomb / Crosshatch Wire Mesh Grid */
+.nixie-anode-mesh {
+  position: absolute;
+  inset: 8px 6px 4px 6px;
+  border-radius: 38px 38px 8px 8px;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(to right, rgba(200, 200, 200, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(200, 200, 200, 0.04) 1px, transparent 1px);
+  background-size: 5px 5px, 5px 5px, 5px 5px;
+  background-position: 0 0, 2.5px 2.5px, 2.5px 2.5px;
+  opacity: 0.65;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Back Ceramic / Metal Mica Support Post inside tube */
+.nixie-anode-mesh::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #5c554e 0%, #2b2724 100%);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+  opacity: 0.5;
+}
+
+/* 3. Internal Gas Discharge Plasma Glow (Back Halo) */
+.nixie-plasma-glow {
+  position: absolute;
+  inset: 15% 10% 15% 10%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    var(--nixie-plasma-halo) 0%,
+    rgba(255, 80, 0, 0.15) 50%,
+    transparent 80%
+  );
+  opacity: 0.85;
+  filter: blur(14px);
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  animation: nixieMicroFlicker 4s infinite alternate ease-in-out;
+}
+
+/* ========================================================
+   CATHODE DIGITS STACK (REALISTIC WIRE FILAMENTS)
+   ======================================================== */
+.nixie-digits-stack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.nixie-digit {
+  position: absolute;
+  font-family: 'JetBrains Mono', 'Oswald', 'Bebas Neue', monospace, sans-serif;
+  font-weight: 700;
+  font-size: var(--nixie-font-size);
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.15s ease-out, filter 0.15s ease-out, text-shadow 0.15s ease-out;
+  transform: translateY(-2px);
+}
+
+/* Inactive Cathodes (Unlit bent wires visible in vacuum) */
+.nixie-digit.unlit {
+  color: rgba(90, 75, 65, 0.14);
+  text-shadow: 
+    0 1px 1px rgba(0, 0, 0, 0.9),
+    0 -1px 1px rgba(255, 255, 255, 0.04);
+  opacity: 0.55;
+  z-index: 2;
+  filter: blur(0.3px);
+}
+
+/* Active Glowing Cathode (Ionized Neon Discharge) */
+.nixie-digit.active {
+  color: var(--nixie-filament-core);
+  opacity: 1;
+  z-index: 4;
+  filter: drop-shadow(0 0 1px #fff);
+  text-shadow:
+    0 0 2px #ffffff,
+    0 0 6px var(--nixie-plasma-inner),
+    0 0 16px var(--nixie-plasma-mid),
+    0 0 32px var(--nixie-plasma-outer),
+    0 0 60px var(--nixie-plasma-halo),
+    0 0 90px var(--nixie-plasma-halo);
+  animation: nixieFilamentPulse 3s infinite ease-in-out alternate;
+}
+
+/* Extra Bright "Nuclear" Glow Mode */
+.nixie-glow-turbo .nixie-digit.active {
+  text-shadow:
+    0 0 2px #ffffff,
+    0 0 8px var(--nixie-plasma-inner),
+    0 0 22px var(--nixie-plasma-mid),
+    0 0 45px var(--nixie-plasma-outer),
+    0 0 85px var(--nixie-plasma-halo),
+    0 0 130px var(--nixie-plasma-halo);
+}
+
+/* Dim / Night Subtle Glow Mode */
+.nixie-glow-dim .nixie-digit.active {
+  text-shadow:
+    0 0 2px #fff8ee,
+    0 0 5px var(--nixie-plasma-inner),
+    0 0 12px var(--nixie-plasma-mid),
+    0 0 24px var(--nixie-plasma-outer);
+}
+
+/* Subtle Organic Plasma Shimmer & Micro-flicker */
+@keyframes nixieFilamentPulse {
+  0% {
+    filter: drop-shadow(0 0 1px #fff) brightness(1);
+    transform: translateY(-2px) scale(1);
+  }
+  30% {
+    filter: drop-shadow(0 0 1.2px #fff) brightness(1.04);
+    transform: translateY(-2px) scale(1.002);
+  }
+  70% {
+    filter: drop-shadow(0 0 0.9px #fff) brightness(0.97);
+    transform: translateY(-2px) scale(0.999);
+  }
+  100% {
+    filter: drop-shadow(0 0 1.1px #fff) brightness(1.02);
+    transform: translateY(-2px) scale(1.001);
+  }
+}
+
+@keyframes nixieMicroFlicker {
+  0%, 100% { opacity: 0.82; transform: scale(1); }
+  25% { opacity: 0.88; transform: scale(1.02); }
+  52% { opacity: 0.79; transform: scale(0.98); }
+  78% { opacity: 0.85; transform: scale(1.01); }
+}
+
+/* ========================================================
+   ANTI-CATHODE-POISONING ROULETTE / SLOT MACHINE CYCLE
+   ======================================================== */
+.nixie-tube.spinning .nixie-digit.active {
+  animation: nixieSlotSpin 0.08s infinite linear alternate !important;
+}
+
+.nixie-tube.spinning .nixie-plasma-glow {
+  opacity: 1;
+  filter: blur(18px);
+  transform: scale(1.1);
+}
+
+@keyframes nixieSlotSpin {
+  0% {
+    filter: brightness(1.25) drop-shadow(0 0 3px #fff);
+  }
+  100% {
+    filter: brightness(0.85) drop-shadow(0 0 1px #fff);
+  }
+}
+
+/* Strike-in Ignition Burst (settle flash) */
+.nixie-digit.ignite {
+  animation: nixieIgniteFlash 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+@keyframes nixieIgniteFlash {
+  0% {
+    filter: brightness(2.2) drop-shadow(0 0 8px #ffffff);
+    transform: translateY(-2px) scale(1.06);
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 4px #ffffff);
+  }
+  100% {
+    filter: brightness(1) drop-shadow(0 0 1px #ffffff);
+    transform: translateY(-2px) scale(1);
+  }
+}
+
+/* ========================================================
+   COLON TUBES (MINIATURE INS-1 NEON DOTS)
+   ======================================================== */
+.nixie-tube.nixie-colon-tube {
+  width: var(--nixie-colon-width);
+  height: var(--nixie-tube-height);
+  padding-bottom: 22px;
+}
+
+.nixie-tube.nixie-colon-tube .nixie-glass-envelope {
+  border-radius: 24px 24px 8px 8px;
+}
+
+.nixie-colon-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(24px, 3.5vw, 55px);
+  z-index: 3;
+}
+
+.nixie-dot {
+  width: var(--nixie-colon-size);
+  height: var(--nixie-colon-size);
+  border-radius: 50%;
+  background: var(--nixie-filament-core);
+  box-shadow:
+    0 0 2px #ffffff,
+    0 0 6px var(--nixie-plasma-inner),
+    0 0 15px var(--nixie-plasma-mid),
+    0 0 28px var(--nixie-plasma-outer),
+    0 0 45px var(--nixie-plasma-halo);
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+  transform: scale(1);
+}
+
+.nixie-dot.dot-dim {
+  opacity: 0.18;
+  transform: scale(0.85);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+/* ========================================================
+   BAKELITE & BRASS SOCKET / PIN COLLAR
+   ======================================================== */
+.nixie-socket-base {
+  position: absolute;
+  bottom: 0;
+  left: 3px;
+  right: 3px;
+  height: 25px;
+  border-radius: 6px 6px 3px 3px;
+  background: linear-gradient(
+    180deg,
+    #3b3632 0%,
+    #24211e 25%,
+    #151312 70%,
+    #0c0b0a 100%
+  );
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8);
+  border: 1px solid #1a1715;
+  z-index: 4;
+}
+
+/* Brass mounting ring collar */
+.nixie-socket-base::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 6px;
+  right: 6px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    #5e4710 0%,
+    #c49a2c 25%,
+    #f3d267 50%,
+    #c49a2c 75%,
+    #5e4710 100%
+  );
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Socket screw pins */
+.nixie-socket-base::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
+}
+
+/* ========================================================
+   VINTAGE WOODEN & BRASS PLINTH CHASSIS
+   ======================================================== */
+.nixie-chassis-deck {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin-top: -6px;
+  z-index: 1;
+}
+
+/* Warm neon light puddle reflection onto wooden plinth */
+.nixie-chassis-reflection {
+  position: absolute;
+  top: -8px;
+  left: 4%;
+  right: 4%;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    var(--nixie-plasma-halo) 0%,
+    rgba(255, 80, 0, 0.12) 60%,
+    transparent 85%
+  );
+  filter: blur(8px);
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* Solid Hardwood / Dark Anodized Plinth */
+.nixie-plinth {
+  position: relative;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px 8px 12px 12px;
+  background: linear-gradient(
+    180deg,
+    #2c1f17 0%,
+    #1d140e 30%,
+    #120d09 70%,
+    #090604 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 200, 150, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.9),
+    0 18px 35px rgba(0, 0, 0, 0.85),
+    0 4px 10px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(80, 55, 40, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(16px, 3vw, 36px);
+  box-sizing: border-box;
+}
+
+/* Brass Inlay Badge */
+.nixie-brass-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(9px, 1.1vw, 11px);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #c59b27;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(180deg, #d8ab32 0%, #997316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nixie-brass-badge::before,
+.nixie-brass-badge::after {
+  content: "•";
+  color: #c59b27;
+  font-size: 8px;
+  -webkit-text-fill-color: #c59b27;
+}
+
+/* Rubber foot pad under plinth */
+.nixie-plinth::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 8%;
+  right: 8%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 2px;
+  filter: blur(2px);
+}
+
+/* ========================================================
+   INTERACTIVE NIXIE CONTROL PILL
+   ======================================================== */
+.nixie-control-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 6px 14px;
+  background: rgba(18, 15, 13, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 170, 50, 0.18);
+  border-radius: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.nixie-pill-btn {
+  background: transparent;
+  border: none;
+  color: #d1b18a;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nixie-pill-btn:hover {
+  background: rgba(255, 136, 0, 0.15);
+  color: #ffaa33;
+}
+
+.nixie-pill-btn.active {
+  background: rgba(255, 136, 0, 0.25);
+  color: #ffbb44;
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+}
+
+.nixie-pill-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ========================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ======================================================== */
+@media (max-width: 768px) {
+  .nixie-tubes-rack {
+    gap: 4px;
+    padding: 0 4px;
+  }
+  
+  .nixie-plinth {
+    height: 30px;
+    padding: 0 12px;
+  }
+
+  .nixie-control-pill {
+    margin-top: 12px;
+    padding: 4px 8px;
+    transform: scale(0.92);
+  }
+}
+
+@media (max-width: 480px) {
+  /* On very small screens, hide seconds tubes by default unless forced */
+  .nixie-tube.nixie-seconds-tube,
+  .nixie-tube.nixie-colon-tube:last-of-type {
+    display: none;
+  }
+}

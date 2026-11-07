@@ -1,21 +1,69 @@
 /**
- * ZenDesk Clock - Web Audio API Procedural Sound Engine
- * Zero external audio files, 100% offline, zero latency, seamless infinite ambient sound.
- * Includes Seasonal Soundscapes: Rain, Fireplace Crackle, Ocean Waves, Summer Crickets, Spring Birds.
+ * ZenDesk Clock - Advanced Web Audio Procedural Multi-Track Sound Engine & Binaural Beats
+ * Zero external audio files, 100% offline, zero latency, seamless infinite ambient soundscapes.
+ *
+ * Supported Multi-Track Ambient Sounds:
+ *  - Rain: Mưa rào êm dịu, giọt nước rơi
+ *  - Fire: Lửa trại bập bùng, tiếng nổ lép bép
+ *  - Ocean: Sóng biển hoàng hôn, chu kỳ thở 10s
+ *  - Crickets: Tiếng dế đêm mùa hạ
+ *  - Birds: Tiếng chim rừng ban sớm
+ *  - Cafe: Quán cà phê ấm cúng (muffled chatter + tiếng lách cách tách trà + espresso hiss)
+ *  - White Noise: Tiếng ồn trắng tĩnh tâm
+ *  - Pink Noise: Tiếng ồn hồng êm dịu
+ *  - Brown Noise: Tiếng ồn nâu trầm sâu
+ *  - Binaural Beats: True stereo sóng não (Alpha 10Hz, Theta 6Hz, Gamma 40Hz) via ChannelMergerNode
+ *
+ * Backward-compatible with single-sound ZenDesk Clock API.
  */
 
-class AudioSynthesizer {
+export class AudioSynthesizer {
   constructor() {
     this.ctx = null;
-    this.currentSound = 'none'; // 'none', 'rain', 'fire', 'ocean', 'crickets', 'birds', 'brown', 'pink', 'white'
+    this.masterGainNode = null;
+    this.currentSound = 'none'; // Legacy compatibility: 'none', 'rain', 'fire', etc.
+    this.volume = 0.5; // Master volume (0 to 1)
+    this.isMuted = false;
+
+    // Multi-track state management
+    this.activeTracks = {}; // map of trackId -> { id, gainNode, nodes, intervals, cleanup }
+    this.trackVolumes = {
+      rain: 0.6,
+      fire: 0.5,
+      ocean: 0.6,
+      crickets: 0.4,
+      birds: 0.35,
+      cafe: 0.45,
+      brown: 0.5,
+      pink: 0.4,
+      white: 0.3,
+      binaural: 0.35
+    };
+
+    // Binaural Beats configuration
+    this.binauralMode = 'alpha'; // 'alpha' (10Hz), 'theta' (6Hz), 'gamma' (40Hz), 'custom'
+    this.binauralBaseFreq = 200; // Carrier base frequency (Hz)
+    this.binauralBeatFreq = 10;  // Offset frequency (Hz)
+    this.binauralNodes = null;   // Active oscillators reference for dynamic frequency shifts
+
+    // Sleep Timer
+    this.sleepTimerInterval = null;
+    this.sleepTimerSecondsTotal = 0;
+    this.sleepTimerSecondsRemaining = 0;
+    this.sleepTimerTickCallbacks = new Set();
+    this.sleepTimerCompleteCallbacks = new Set();
+    this.isSleepTimerFading = false;
+
+    // Legacy single-sound support references
     this.sourceNode = null;
-    this.gainNode = null;
+    this.gainNode = null; // points to masterGainNode
     this.lfoNode = null;
     this.auxInterval = null;
-    this.volume = 0.5; // 0 to 1
-    this.isMuted = false;
   }
 
+  /**
+   * Initialize or resume the Web Audio context and master gain bus
+   */
   initContext() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -24,112 +72,482 @@ class AudioSynthesizer {
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
+    if (!this.masterGainNode) {
+      this.masterGainNode = this.ctx.createGain();
+      this.masterGainNode.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
+      this.masterGainNode.connect(this.ctx.destination);
+      this.gainNode = this.masterGainNode; // legacy alias
+    }
   }
+
+  // =========================================================================
+  // MASTER CONTROLS
+  // =========================================================================
 
   setVolume(vol) {
     this.volume = Math.max(0, Math.min(1, vol));
-    if (this.gainNode && !this.isMuted) {
-      this.gainNode.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.05);
+    if (this.masterGainNode && !this.isMuted && !this.isSleepTimerFading) {
+      this.masterGainNode.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.05);
     }
+  }
+
+  getVolume() {
+    return this.volume;
   }
 
   toggleMute() {
     this.isMuted = !this.isMuted;
-    if (this.gainNode) {
+    if (this.masterGainNode) {
       const targetGain = this.isMuted ? 0 : this.volume;
-      this.gainNode.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.05);
+      this.masterGainNode.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.05);
     }
     return this.isMuted;
   }
 
-  stopAmbient() {
-    if (this.sourceNode) {
-      try {
-        this.sourceNode.stop();
-        this.sourceNode.disconnect();
-      } catch (e) {
-        // Ignored
+  getMuted() {
+    return this.isMuted;
+  }
+
+  // =========================================================================
+  // MULTI-TRACK AMBIENT MIXER API
+  // =========================================================================
+
+  /**
+   * Start an individual sound track concurrently with other active tracks.
+   * @param {string} trackId - 'rain', 'fire', 'ocean', 'crickets', 'birds', 'cafe', 'brown', 'pink', 'white', 'binaural'
+   * @param {number} [volume] - Optional track volume (0-1). Defaults to trackVolumes[trackId] or 0.5.
+   */
+  startTrack(trackId, volume = null) {
+    this.initContext();
+
+    if (volume !== null) {
+      this.trackVolumes[trackId] = Math.max(0, Math.min(1, volume));
+    }
+    const trackVol = this.trackVolumes[trackId] ?? 0.5;
+
+    // If track is already playing, just update volume smoothly
+    if (this.activeTracks[trackId]) {
+      this.setTrackVolume(trackId, trackVol);
+      return;
+    }
+
+    // Create a dedicated GainNode for this track
+    const trackGain = this.ctx.createGain();
+    const now = this.ctx.currentTime;
+    trackGain.gain.setValueAtTime(0.001, now);
+    trackGain.gain.linearRampToValueAtTime(trackVol, now + 0.08);
+    trackGain.connect(this.masterGainNode);
+
+    const trackObj = {
+      id: trackId,
+      gainNode: trackGain,
+      nodes: [],
+      intervals: [],
+      cleanup: null
+    };
+
+    switch (trackId) {
+      case 'white':
+        this._buildNoiseTrack(trackObj, 'white');
+        break;
+      case 'pink':
+        this._buildNoiseTrack(trackObj, 'pink');
+        break;
+      case 'brown':
+        this._buildNoiseTrack(trackObj, 'brown');
+        break;
+      case 'rain':
+        this._buildRainTrack(trackObj);
+        break;
+      case 'fire':
+        this._buildFireTrack(trackObj);
+        break;
+      case 'ocean':
+        this._buildOceanTrack(trackObj);
+        break;
+      case 'crickets':
+        this._buildCricketsTrack(trackObj);
+        break;
+      case 'birds':
+        this._buildBirdsTrack(trackObj);
+        break;
+      case 'cafe':
+        this._buildCafeTrack(trackObj);
+        break;
+      case 'binaural':
+        this._buildBinauralTrack(trackObj);
+        break;
+      default:
+        console.warn(`[AudioSynthesizer] Unknown track ID: ${trackId}`);
+        trackGain.disconnect();
+        return;
+    }
+
+    this.activeTracks[trackId] = trackObj;
+    this.currentSound = trackId; // Reflect last triggered sound
+  }
+
+  /**
+   * Stop an individual track with smooth fade-out.
+   * @param {string} trackId
+   * @param {number} [fadeDuration=0.08]
+   */
+  stopTrack(trackId, fadeDuration = 0.08) {
+    const track = this.activeTracks[trackId];
+    if (!track) return;
+
+    const now = this.ctx ? this.ctx.currentTime : 0;
+    if (track.gainNode && this.ctx) {
+      track.gainNode.gain.cancelScheduledValues(now);
+      track.gainNode.gain.setValueAtTime(track.gainNode.gain.value, now);
+      track.gainNode.gain.linearRampToValueAtTime(0.0001, now + fadeDuration);
+    }
+
+    setTimeout(() => {
+      // Clear all intervals
+      if (track.intervals) {
+        track.intervals.forEach(id => clearInterval(id));
       }
-      this.sourceNode = null;
-    }
-    if (this.lfoNode) {
-      try {
-        this.lfoNode.stop();
-        this.lfoNode.disconnect();
-      } catch (e) {
-        // Ignored
+      // Stop and disconnect all nodes
+      if (track.nodes) {
+        track.nodes.forEach(node => {
+          try {
+            if (typeof node.stop === 'function') node.stop();
+            node.disconnect();
+          } catch (e) {
+            // Ignored
+          }
+        });
       }
-      this.lfoNode = null;
+      if (track.cleanup) {
+        try { track.cleanup(); } catch (e) { /* Ignored */ }
+      }
+      if (track.gainNode) {
+        try { track.gainNode.disconnect(); } catch (e) { /* Ignored */ }
+      }
+      if (trackId === 'binaural') {
+        this.binauralNodes = null;
+      }
+      delete this.activeTracks[trackId];
+
+      // Update currentSound if all stopped
+      if (Object.keys(this.activeTracks).length === 0) {
+        this.currentSound = 'none';
+      }
+    }, fadeDuration * 1000 + 20);
+  }
+
+  /**
+   * Toggle track playing status
+   */
+  toggleTrack(trackId) {
+    if (this.isTrackPlaying(trackId)) {
+      this.stopTrack(trackId);
+      return false;
+    } else {
+      this.startTrack(trackId);
+      return true;
     }
-    if (this.auxInterval) {
-      clearInterval(this.auxInterval);
-      this.auxInterval = null;
+  }
+
+  /**
+   * Set volume of a specific track smoothly
+   */
+  setTrackVolume(trackId, volume) {
+    const vol = Math.max(0, Math.min(1, volume));
+    this.trackVolumes[trackId] = vol;
+    const track = this.activeTracks[trackId];
+    if (track && track.gainNode && this.ctx) {
+      track.gainNode.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.04);
     }
+  }
+
+  getTrackVolume(trackId) {
+    return this.trackVolumes[trackId] ?? 0.5;
+  }
+
+  isTrackPlaying(trackId) {
+    return Boolean(this.activeTracks[trackId]);
+  }
+
+  getActiveTracks() {
+    return Object.keys(this.activeTracks);
+  }
+
+  /**
+   * Stop all active ambient tracks
+   */
+  stopAllTracks() {
+    const active = Object.keys(this.activeTracks);
+    active.forEach(id => this.stopTrack(id, 0.05));
     this.currentSound = 'none';
   }
 
-  playAmbient(type) {
-    this.initContext();
-    this.stopAmbient();
+  // =========================================================================
+  // BINAURAL BEATS STEREO GENERATOR
+  // =========================================================================
 
-    if (type === 'none') return;
+  /**
+   * Configure Binaural Beats frequencies
+   * @param {string|number} modeOrBase - 'alpha' (10Hz), 'theta' (6Hz), 'gamma' (40Hz), or custom base frequency
+   * @param {number} [customBeatFreq] - beat frequency if modeOrBase is custom number
+   */
+  setBinauralBeat(modeOrBase, customBeatFreq = null) {
+    if (typeof modeOrBase === 'string') {
+      const mode = modeOrBase.toLowerCase();
+      this.binauralMode = mode;
+      this.binauralBaseFreq = 200; // Optimal carrier frequency for human binaural perception
 
-    this.currentSound = type;
-    const bufferSize = this.ctx.sampleRate * 4; // 4-second loopable buffer
+      switch (mode) {
+        case 'alpha':
+          // 10Hz: Relaxed alertness, deep focus, flow state
+          this.binauralBeatFreq = 10;
+          break;
+        case 'theta':
+          // 6Hz: Deep meditation, visualization, creativity & insight
+          this.binauralBeatFreq = 6;
+          break;
+        case 'gamma':
+          // 40Hz: Peak concentration, high-level cognitive processing
+          this.binauralBeatFreq = 40;
+          break;
+        default:
+          this.binauralBeatFreq = 10;
+          break;
+      }
+    } else if (typeof modeOrBase === 'number') {
+      this.binauralMode = 'custom';
+      this.binauralBaseFreq = Math.max(80, Math.min(500, modeOrBase));
+      this.binauralBeatFreq = Math.max(0.5, Math.min(60, customBeatFreq || 10));
+    }
+
+    // If binaural track is currently playing, transition smoothly in real-time
+    if (this.binauralNodes && this.ctx) {
+      const now = this.ctx.currentTime;
+      const leftTarget = this.binauralBaseFreq;
+      const rightTarget = this.binauralBaseFreq + this.binauralBeatFreq;
+
+      this.binauralNodes.oscL.frequency.setTargetAtTime(leftTarget, now, 0.4);
+      this.binauralNodes.oscR.frequency.setTargetAtTime(rightTarget, now, 0.4);
+    }
+  }
+
+  getBinauralConfig() {
+    return {
+      mode: this.binauralMode,
+      baseFreq: this.binauralBaseFreq,
+      beatFreq: this.binauralBeatFreq
+    };
+  }
+
+  /**
+   * Build Binaural Beats using a true stereo ChannelMergerNode:
+   * Left Ear: baseFreq (e.g., 200 Hz)
+   * Right Ear: baseFreq + beatFreq (e.g., 210 Hz for 10 Hz Alpha)
+   */
+  _buildBinauralTrack(trackObj) {
+    const merger = this.ctx.createChannelMerger(2);
+
+    const oscL = this.ctx.createOscillator();
+    const oscR = this.ctx.createOscillator();
+
+    oscL.type = 'sine';
+    oscR.type = 'sine';
+
+    const now = this.ctx.currentTime;
+    oscL.frequency.setValueAtTime(this.binauralBaseFreq, now);
+    oscR.frequency.setValueAtTime(this.binauralBaseFreq + this.binauralBeatFreq, now);
+
+    // Subtle gain scaling for pure sine comfort
+    const gainL = this.ctx.createGain();
+    const gainR = this.ctx.createGain();
+    gainL.gain.setValueAtTime(0.35, now);
+    gainR.gain.setValueAtTime(0.35, now);
+
+    oscL.connect(gainL);
+    gainL.connect(merger, 0, 0); // Input 0 = Left Audio Channel
+
+    oscR.connect(gainR);
+    gainR.connect(merger, 0, 1); // Input 1 = Right Audio Channel
+
+    merger.connect(trackObj.gainNode);
+
+    oscL.start();
+    oscR.start();
+
+    trackObj.nodes.push(oscL, oscR, gainL, gainR, merger);
+    this.binauralNodes = { oscL, oscR, gainL, gainR, merger };
+  }
+
+  // =========================================================================
+  // CAFE AMBIANCE PROCEDURAL GENERATOR
+  // =========================================================================
+
+  /**
+   * Cozy Cafe Atmosphere:
+   * 1. Layer 1: Muffled conversation murmur (formant-filtered pink noise loop with slow breathing)
+   * 2. Layer 2: Occasional ceramic cups and cutlery clinking
+   * 3. Layer 3: Soft espresso machine steam hiss
+   */
+  _buildCafeTrack(trackObj) {
+    const bufferSize = this.ctx.sampleRate * 4;
+    const buffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
+    this._generatePinkNoise(buffer.getChannelData(0), buffer.getChannelData(1), bufferSize);
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+
+    // Formant filters to mimic human speech murmur spectrum without distinct words
+    const filter1 = this.ctx.createBiquadFilter();
+    filter1.type = 'peaking';
+    filter1.frequency.setValueAtTime(320, this.ctx.currentTime); // Vocal chest resonance
+    filter1.Q.setValueAtTime(2.8, this.ctx.currentTime);
+    filter1.gain.setValueAtTime(6.0, this.ctx.currentTime);
+
+    const filter2 = this.ctx.createBiquadFilter();
+    filter2.type = 'peaking';
+    filter2.frequency.setValueAtTime(880, this.ctx.currentTime); // First vowel formant
+    filter2.Q.setValueAtTime(2.2, this.ctx.currentTime);
+    filter2.gain.setValueAtTime(4.0, this.ctx.currentTime);
+
+    const lowpass = this.ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.setValueAtTime(1600, this.ctx.currentTime); // Muffled distance cut
+
+    // Slow ambient breathing LFO
+    const lfo = this.ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.18, this.ctx.currentTime);
+
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.setValueAtTime(280, this.ctx.currentTime);
+
+    lfo.connect(lfoGain);
+    lfoGain.connect(lowpass.frequency);
+
+    source.connect(filter1);
+    filter1.connect(filter2);
+    filter2.connect(lowpass);
+    lowpass.connect(trackObj.gainNode);
+
+    lfo.start();
+    source.start();
+
+    trackObj.nodes.push(source, filter1, filter2, lowpass, lfo, lfoGain);
+
+    // Layer 2: Random ceramic cup & teaspoon clinks
+    const clinkInterval = setInterval(() => {
+      if (!this.isTrackPlaying('cafe') || this.isMuted) return;
+      if (Math.random() < 0.45) {
+        this._triggerCupClink(trackObj.gainNode);
+      }
+    }, 3600);
+    trackObj.intervals.push(clinkInterval);
+
+    // Layer 3: Occasional espresso steam hiss
+    const steamInterval = setInterval(() => {
+      if (!this.isTrackPlaying('cafe') || this.isMuted) return;
+      if (Math.random() < 0.35) {
+        this._triggerEspressoSteam(trackObj.gainNode);
+      }
+    }, 18000);
+    trackObj.intervals.push(steamInterval);
+  }
+
+  _triggerCupClink(destinationGain) {
+    const now = this.ctx.currentTime;
+    const dur = 0.12;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+
+    // High crystalline porcelain resonance frequency
+    const freq = 3200 + Math.random() * 800;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(freq, now);
+    filter.Q.setValueAtTime(18, now);
+
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.045, now + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(destinationGain);
+
+    osc.start(now);
+    osc.stop(now + dur + 0.01);
+  }
+
+  _triggerEspressoSteam(destinationGain) {
+    const now = this.ctx.currentTime;
+    const dur = 1.4;
+    const bufSize = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+
+    for (let i = 0; i < bufSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(3200, now);
+    filter.Q.setValueAtTime(1.4, now);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.035, now + 0.35);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(destinationGain);
+
+    src.start(now);
+    src.stop(now + dur + 0.02);
+  }
+
+  // =========================================================================
+  // OTHER PROCEDURAL SOUND BUILDERS
+  // =========================================================================
+
+  _buildNoiseTrack(trackObj, type) {
+    const bufferSize = this.ctx.sampleRate * 4;
     const buffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
     const left = buffer.getChannelData(0);
     const right = buffer.getChannelData(1);
 
-    if (!this.gainNode) {
-      this.gainNode = this.ctx.createGain();
-      this.gainNode.connect(this.ctx.destination);
+    if (type === 'white') {
+      this._generateWhiteNoise(left, right, bufferSize);
+    } else if (type === 'pink') {
+      this._generatePinkNoise(left, right, bufferSize);
+    } else if (type === 'brown') {
+      this._generateBrownNoise(left, right, bufferSize);
     }
-    this.gainNode.gain.setValueAtTime(this.isMuted ? 0 : this.volume, this.ctx.currentTime);
 
-    switch (type) {
-      case 'white':
-        this._generateWhiteNoise(left, right, bufferSize);
-        this._startSimpleLoop(buffer);
-        break;
-      case 'pink':
-        this._generatePinkNoise(left, right, bufferSize);
-        this._startSimpleLoop(buffer);
-        break;
-      case 'brown':
-        this._generateBrownNoise(left, right, bufferSize);
-        this._startSimpleLoop(buffer);
-        break;
-      case 'rain':
-        this._generateRainNoise(left, right, bufferSize);
-        this._startRainLoop(buffer);
-        break;
-      case 'fire':
-        this._startFireplace();
-        break;
-      case 'ocean':
-        this._startOcean();
-        break;
-      case 'crickets':
-        this._startCrickets();
-        break;
-      case 'birds':
-        this._startBirds();
-        break;
-      default:
-        return;
-    }
-  }
-
-  _startSimpleLoop(buffer) {
     const source = this.ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = true;
-    source.connect(this.gainNode);
+    source.connect(trackObj.gainNode);
     source.start();
-    this.sourceNode = source;
+
+    trackObj.nodes.push(source);
   }
 
-  _startRainLoop(buffer) {
+  _buildRainTrack(trackObj) {
+    const bufferSize = this.ctx.sampleRate * 4;
+    const buffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
+    this._generateRainNoise(buffer.getChannelData(0), buffer.getChannelData(1), bufferSize);
+
     const source = this.ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = true;
@@ -144,14 +562,13 @@ class AudioSynthesizer {
 
     source.connect(highpass);
     highpass.connect(filter);
-    filter.connect(this.gainNode);
+    filter.connect(trackObj.gainNode);
 
     source.start();
-    this.sourceNode = source;
+    trackObj.nodes.push(source, highpass, filter);
   }
 
-  _startFireplace() {
-    // 1. Warm background low roar
+  _buildFireTrack(trackObj) {
     const bufferSize = this.ctx.sampleRate * 3;
     const buffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
     this._generateBrownNoise(buffer.getChannelData(0), buffer.getChannelData(1), bufferSize);
@@ -169,20 +586,22 @@ class AudioSynthesizer {
 
     source.connect(lowpass);
     lowpass.connect(rumbleGain);
-    rumbleGain.connect(this.gainNode);
+    rumbleGain.connect(trackObj.gainNode);
     source.start();
-    this.sourceNode = source;
 
-    // 2. Periodic Poisson crackle & pops
-    this.auxInterval = setInterval(() => {
-      if (this.currentSound !== 'fire' || this.isMuted) return;
+    trackObj.nodes.push(source, lowpass, rumbleGain);
+
+    const crackleInterval = setInterval(() => {
+      if (!this.isTrackPlaying('fire') || this.isMuted) return;
       if (Math.random() < 0.65) {
-        this._triggerFireCrackle();
+        this._triggerFireCrackleTo(trackObj.gainNode);
       }
     }, 180);
+
+    trackObj.intervals.push(crackleInterval);
   }
 
-  _triggerFireCrackle() {
+  _triggerFireCrackleTo(destinationGain) {
     const now = this.ctx.currentTime;
     const isBigPop = Math.random() < 0.18;
     const dur = isBigPop ? 0.04 : 0.012;
@@ -212,14 +631,13 @@ class AudioSynthesizer {
 
     src.connect(filter);
     filter.connect(crackleGain);
-    crackleGain.connect(this.gainNode);
+    crackleGain.connect(destinationGain);
 
     src.start(now);
     src.stop(now + dur + 0.005);
   }
 
-  _startOcean() {
-    // Pink noise base modulated by a slow 0.1 Hz LFO sine wave
+  _buildOceanTrack(trackObj) {
     const bufferSize = this.ctx.sampleRate * 4;
     const buffer = this.ctx.createBuffer(2, bufferSize, this.ctx.sampleRate);
     this._generatePinkNoise(buffer.getChannelData(0), buffer.getChannelData(1), bufferSize);
@@ -232,38 +650,37 @@ class AudioSynthesizer {
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(600, this.ctx.currentTime);
 
-    // LFO Oscillator modulating the filter frequency (breathing waves)
     const lfo = this.ctx.createOscillator();
     lfo.type = 'sine';
-    lfo.frequency.setValueAtTime(0.1, this.ctx.currentTime); // ~10 second ocean wave cycle
+    lfo.frequency.setValueAtTime(0.1, this.ctx.currentTime); // 10s ocean wave breath
 
     const lfoGain = this.ctx.createGain();
-    lfoGain.gain.setValueAtTime(450, this.ctx.currentTime); // Filter sweeps from 150Hz to 1050Hz
+    lfoGain.gain.setValueAtTime(450, this.ctx.currentTime);
 
     lfo.connect(lfoGain);
     lfoGain.connect(filter.frequency);
 
     source.connect(filter);
-    filter.connect(this.gainNode);
+    filter.connect(trackObj.gainNode);
 
     lfo.start();
     source.start();
 
-    this.sourceNode = source;
-    this.lfoNode = lfo;
+    trackObj.nodes.push(source, filter, lfo, lfoGain);
   }
 
-  _startCrickets() {
-    // Summer night gentle crickets
-    this.auxInterval = setInterval(() => {
-      if (this.currentSound !== 'crickets' || this.isMuted) return;
+  _buildCricketsTrack(trackObj) {
+    const chirpInterval = setInterval(() => {
+      if (!this.isTrackPlaying('crickets') || this.isMuted) return;
       if (Math.random() < 0.7) {
-        this._triggerCricketChirp();
+        this._triggerCricketChirpTo(trackObj.gainNode);
       }
     }, 900);
+
+    trackObj.intervals.push(chirpInterval);
   }
 
-  _triggerCricketChirp() {
+  _triggerCricketChirpTo(destinationGain) {
     const now = this.ctx.currentTime;
     const pulses = 3;
     const pDur = 0.015;
@@ -282,24 +699,25 @@ class AudioSynthesizer {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + pDur);
 
       osc.connect(gain);
-      gain.connect(this.gainNode);
+      gain.connect(destinationGain);
 
       osc.start(t);
       osc.stop(t + pDur + 0.002);
     }
   }
 
-  _startBirds() {
-    // Spring morning gentle birds
-    this.auxInterval = setInterval(() => {
-      if (this.currentSound !== 'birds' || this.isMuted) return;
+  _buildBirdsTrack(trackObj) {
+    const birdInterval = setInterval(() => {
+      if (!this.isTrackPlaying('birds') || this.isMuted) return;
       if (Math.random() < 0.45) {
-        this._triggerBirdChirp();
+        this._triggerBirdChirpTo(trackObj.gainNode);
       }
     }, 2500);
+
+    trackObj.intervals.push(birdInterval);
   }
 
-  _triggerBirdChirp() {
+  _triggerBirdChirpTo(destinationGain) {
     const now = this.ctx.currentTime;
     const notes = 2 + Math.floor(Math.random() * 3);
 
@@ -320,12 +738,16 @@ class AudioSynthesizer {
       gain.gain.exponentialRampToValueAtTime(0.0001, startT + dur);
 
       osc.connect(gain);
-      gain.connect(this.gainNode);
+      gain.connect(destinationGain);
 
       osc.start(startT);
       osc.stop(startT + dur + 0.01);
     }
   }
+
+  // =========================================================================
+  // NOISE GENERATOR ALGORITHMS
+  // =========================================================================
 
   _generateWhiteNoise(left, right, size) {
     for (let i = 0; i < size; i++) {
@@ -389,6 +811,100 @@ class AudioSynthesizer {
     }
   }
 
+  // =========================================================================
+  // SLEEP TIMER WITH GENTLE FADE OUT
+  // =========================================================================
+
+  /**
+   * Start a sleep timer with gradual fade out in final 30 seconds
+   * @param {number} minutes - 15, 30, 45, 60 or 0 to turn off
+   * @param {Function} [onTick] - (remainingSec, totalSec) => {}
+   * @param {Function} [onComplete] - () => {}
+   */
+  startSleepTimer(minutes, onTick = null, onComplete = null) {
+    this.cancelSleepTimer();
+
+    if (onTick) this.sleepTimerTickCallbacks.add(onTick);
+    if (onComplete) this.sleepTimerCompleteCallbacks.add(onComplete);
+
+    if (minutes <= 0) return;
+
+    this.sleepTimerSecondsTotal = Math.round(minutes * 60);
+    this.sleepTimerSecondsRemaining = this.sleepTimerSecondsTotal;
+    this.isSleepTimerFading = false;
+
+    // Trigger initial tick
+    this._notifySleepTimerTick();
+
+    this.sleepTimerInterval = setInterval(() => {
+      this.sleepTimerSecondsRemaining--;
+
+      // Gentle fade out in final 30 seconds
+      if (this.sleepTimerSecondsRemaining <= 30 && this.sleepTimerSecondsRemaining > 0) {
+        this.isSleepTimerFading = true;
+        if (this.masterGainNode && this.ctx && !this.isMuted) {
+          const fadeProgress = this.sleepTimerSecondsRemaining / 30;
+          const targetGain = this.volume * fadeProgress;
+          this.masterGainNode.gain.setValueAtTime(targetGain, this.ctx.currentTime);
+        }
+      }
+
+      this._notifySleepTimerTick();
+
+      if (this.sleepTimerSecondsRemaining <= 0) {
+        this._handleSleepTimerFinished();
+      }
+    }, 1000);
+  }
+
+  cancelSleepTimer() {
+    if (this.sleepTimerInterval) {
+      clearInterval(this.sleepTimerInterval);
+      this.sleepTimerInterval = null;
+    }
+    this.sleepTimerSecondsTotal = 0;
+    this.sleepTimerSecondsRemaining = 0;
+
+    // Restore master volume if we were in the middle of fading
+    if (this.isSleepTimerFading) {
+      this.isSleepTimerFading = false;
+      if (this.masterGainNode && this.ctx && !this.isMuted) {
+        this.masterGainNode.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.1);
+      }
+    }
+    this._notifySleepTimerTick();
+  }
+
+  getSleepTimerRemaining() {
+    return this.sleepTimerSecondsRemaining;
+  }
+
+  _notifySleepTimerTick() {
+    const rem = this.sleepTimerSecondsRemaining;
+    const tot = this.sleepTimerSecondsTotal;
+    this.sleepTimerTickCallbacks.forEach(cb => {
+      try { cb(rem, tot); } catch (e) { console.error(e); }
+    });
+  }
+
+  _handleSleepTimerFinished() {
+    this.cancelSleepTimer();
+    this.stopAllTracks();
+
+    // Restore master volume for next use
+    if (this.masterGainNode && this.ctx && !this.isMuted) {
+      this.masterGainNode.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+    }
+
+    this.sleepTimerCompleteCallbacks.forEach(cb => {
+      try { cb(); } catch (e) { console.error(e); }
+    });
+  }
+
+  // =========================================================================
+  // ONE-SHOT SOUND EFFECTS (Chimes & Mechanical Flip Click)
+  // =========================================================================
+
   playChime() {
     this.initContext();
     const now = this.ctx.currentTime;
@@ -434,6 +950,30 @@ class AudioSynthesizer {
 
     osc.start(now);
     osc.stop(now + 0.045);
+  }
+
+  // =========================================================================
+  // 100% BACKWARD COMPATIBILITY FOR SINGLE AMBIENT PLAYBACK
+  // =========================================================================
+
+  /**
+   * Legacy method used by app.js: soundEngine.playAmbient(sound)
+   */
+  playAmbient(type) {
+    if (type === 'none') {
+      this.stopAllTracks();
+      return;
+    }
+    // Stop other active tracks and trigger single sound
+    this.stopAllTracks();
+    this.startTrack(type);
+  }
+
+  /**
+   * Legacy method used by app.js: soundEngine.stopAmbient()
+   */
+  stopAmbient() {
+    this.stopAllTracks();
   }
 }
 

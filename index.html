@@ -24,6 +24,11 @@
   <link rel="stylesheet" href="css/analog.css?v=12">
   <link rel="stylesheet" href="css/themes.css?v=12">
   <link rel="stylesheet" href="css/scenery.css?v=12">
+  <link rel="stylesheet" href="css/weather.css?v=12">
+  <link rel="stylesheet" href="css/sound-mixer.css?v=12">
+  <link rel="stylesheet" href="css/nixie.css?v=12">
+  <link rel="stylesheet" href="css/night-mode.css?v=12">
+  <link rel="stylesheet" href="css/task-scratchpad.css?v=12">
 </head>
 <body class="theme-flip">
 
@@ -55,6 +60,11 @@
         <div class="top-bar-chip week-chip">
           <span id="topWeekDisplay">Tuần 45</span>
         </div>
+        <button class="top-bar-chip weather-chip" id="weatherChip" title="Xem dự báo thời tiết & nhiệt độ thời gian thực">
+          <span class="weather-chip-icon" id="weatherChipIcon">🌤️</span>
+          <span class="weather-chip-temp" id="weatherChipTemp">--°C</span>
+          <span class="weather-chip-city" id="weatherChipCity">Hà Nội</span>
+        </button>
         <button class="top-bar-chip event-countdown-chip" id="eventCountdownChip" title="Xem và thêm sự kiện đếm ngược (Tết, Noel, Sinh nhật, Deadline...)">
           <span class="event-text-full" id="eventCountdownText">🧧 Tết: Đang tải...</span>
           <span class="event-text-compact" id="eventCountdownCompactText">🧧 51n</span>
@@ -62,6 +72,10 @@
       </div>
 
       <div class="top-bar-right">
+        <button class="top-bar-chip night-mode-chip" id="nightModeBtn" title="Chế độ đêm Apple StandBy (Phím N)">
+          <span class="chip-status-dot night-dot" id="nightModeDot"></span>
+          <span class="night-mode-label" id="nightModeText">Chế độ đêm</span>
+        </button>
         <button class="top-bar-chip wake-lock-chip" id="wakeLockBtn" title="Giữ màn hình luôn sáng (Không để màn hình tắt khi làm việc)">
           <span class="chip-status-dot" id="wakeLockDot"></span>
           <span class="wake-lock-label" id="wakeLockText">Màn hình luôn sáng</span>
@@ -99,7 +113,10 @@
         <!-- Rendered by AnalogRenderer -->
       </section>
 
-      <!-- 4. POMODORO FOCUS TIMER VIEW -->
+      <!-- 4. VINTAGE NIXIE TUBE VACUUM CLOCK VIEW -->
+      <section class="nixie-clock-container hidden" id="nixieClockView" aria-label="Đồng hồ bóng đèn điện tử Nixie"></section>
+
+      <!-- 5. POMODORO FOCUS TIMER VIEW -->
       <section class="pomodoro-container hidden" id="pomodoroView" aria-label="Đồng hồ Pomodoro">
         <div class="pomodoro-ring-wrapper">
           <svg class="pomodoro-svg" viewBox="0 0 200 200">
@@ -175,6 +192,18 @@
         <button class="control-btn" id="pipBtn" title="Cửa sổ nổi thu nhỏ Picture-in-Picture (Phím P)">
           <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="11" y="9" width="9" height="6" rx="1" fill="currentColor"/></svg>
           <span>Cửa sổ nổi</span>
+        </button>
+
+        <!-- Focus Tasks (Ivy Lee MIT) -->
+        <button class="control-btn" id="taskWidgetBtn" title="Mục tiêu tập trung hôm nay (Phím V hoặc Alt+T)">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Nhiệm vụ</span>
+        </button>
+
+        <!-- Zen Scratchpad -->
+        <button class="control-btn" id="scratchpadBtn" title="Sổ nháp nhanh không phân tâm (Phím Q)">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none"/><line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/><line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Sổ nháp</span>
         </button>
 
         <div class="dock-separator"></div>
@@ -418,10 +447,13 @@
         <div class="setting-group-header">⌨️ Phím Tắt Tiện Ích</div>
 
         <div class="shortcuts-grid">
-          <div class="shortcut-item"><span class="kbd-badge">Space</span> Bật / Dừng đếm giờ</div>
+          <div class="shortcut-item"><span class="kbd-badge">Space</span> Bật / Dừng Pomodoro</div>
           <div class="shortcut-item"><span class="kbd-badge">F</span> Toàn màn hình</div>
           <div class="shortcut-item"><span class="kbd-badge">T</span> Đổi giao diện theme</div>
-          <div class="shortcut-item"><span class="kbd-badge">M</span> Đổi tiếng thiên nhiên</div>
+          <div class="shortcut-item"><span class="kbd-badge">M</span> Trình trộn âm thanh & Sóng não</div>
+          <div class="shortcut-item"><span class="kbd-badge">N</span> Apple StandBy Red Night Mode</div>
+          <div class="shortcut-item"><span class="kbd-badge">Q</span> Sổ nháp nhanh Zen Scratchpad</div>
+          <div class="shortcut-item"><span class="kbd-badge">V</span> Mục tiêu ngày Focus Task (MIT)</div>
           <div class="shortcut-item"><span class="kbd-badge">P</span> Thu nhỏ cửa sổ PiP</div>
           <div class="shortcut-item"><span class="kbd-badge">H</span> Chế độ Zen (Ẩn toàn bộ)</div>
           <div class="shortcut-item"><span class="kbd-badge">S</span> Mở bảng cài đặt này</div>
@@ -474,8 +506,14 @@
     </div>
   </div>
 
-  <!-- Main ES Module Script -->
-  <script type="module" src="js/app.js?v=11"></script>
+  <!-- Specialized Feature Modules -->
+  <script type="module" src="js/night-mode.js"></script>
+  <script type="module" src="js/weather.js"></script>
+  <script type="module" src="js/sound-mixer.js"></script>
+  <script type="module" src="js/task-scratchpad.js"></script>
+
+  <!-- Main ES Module Application Script -->
+  <script type="module" src="js/app.js?v=13"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>

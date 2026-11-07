@@ -519,8 +519,22 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('ZenDesk Clock ServiceWorker registered: ', reg.scope))
+        navigator.serviceWorker.register('./sw.js?v=13')
+          .then(reg => {
+            // Force check for updates immediately
+            reg.update();
+            reg.onupdatefound = () => {
+              const installingWorker = reg.installing;
+              if (installingWorker) {
+                installingWorker.onstatechange = () => {
+                  if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('ZenDesk Clock: Phát hiện phiên bản mới, tự động làm mới...');
+                    window.location.reload();
+                  }
+                };
+              }
+            };
+          })
           .catch(err => console.log('ServiceWorker registration failed: ', err));
       });
     }

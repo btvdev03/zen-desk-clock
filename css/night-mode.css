@@ -695,3 +695,20 @@ body.apple-standby-active .btn-author-donate {
   border-color: var(--standby-red-border) !important;
   color: var(--standby-red-bright) !important;
 }
+
+
+body.apple-standby-active .donate-qr-frame {
+  box-shadow: 0 0 20px rgba(255, 42, 42, 0.4) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .btn-download-qr {
+  background: rgba(40, 5, 5, 0.7) !important;
+  border-color: var(--standby-red-border) !important;
+  color: var(--standby-red-dim) !important;
+}
+
+body.apple-standby-active .btn-download-qr:hover {
+  background: rgba(60, 10, 10, 0.9) !important;
+  color: var(--standby-red-bright) !important;
+}

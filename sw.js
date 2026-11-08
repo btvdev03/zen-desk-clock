@@ -2,7 +2,7 @@
  * ZenDesk Clock - Offline Service Worker
  */
 
-const CACHE_NAME = 'zendesk-clock-v19';
+const CACHE_NAME = 'zendesk-clock-v20';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -38,7 +38,8 @@ const ASSETS_TO_CACHE = [
   './js/scenery-engine.js',
   './js/wallpaper-db.js',
   './assets/icons/icon-192.svg',
-  './assets/icons/icon-512.svg'
+  './assets/icons/icon-512.svg',
+  './assets/bidv-vietqr.svg'
 ];
 
 self.addEventListener('install', (event) => {

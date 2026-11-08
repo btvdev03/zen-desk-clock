@@ -862,31 +862,46 @@
         <!-- Donate Channels -->
         <div class="author-section-heading">☕ MỜI TÁC GIẢ LY CÀ PHÊ</div>
         <div class="donate-methods-container">
-          <!-- MoMo / Bank Transfer Card -->
+          <!-- BIDV VietQR Official Bank Transfer Card -->
           <div class="donate-card">
             <div class="donate-card-header">
-              <div class="donate-card-badge">Chuyển Khoản & MoMo (VietQR)</div>
+              <div class="donate-card-badge">BIDV • VietQR Chuyển Nhanh 24/7</div>
               <div class="donate-coffee-icon">☕</div>
             </div>
             <div class="donate-card-body">
               <p class="donate-card-text">
-                Ủng hộ tác giả qua MoMo hoặc Chuyển khoản ngân hàng 24/7 (quét mã hoặc sao chép nhanh):
+                Quét mã VietQR bằng ứng dụng ngân hàng bất kỳ (BIDV, VCB, MB, Techcombank, MoMo...) hoặc sao chép STK:
               </p>
-              
+
+              <!-- Official VietQR Image Frame -->
+              <div class="donate-qr-wrapper">
+                <div class="donate-qr-frame">
+                  <img src="assets/bidv-vietqr.svg" alt="Mã VietQR BIDV - VO TAN BAN - 8897570296" class="donate-qr-img" loading="lazy">
+                </div>
+                <div class="donate-qr-actions">
+                  <span class="donate-qr-tip">📸 Mở app ngân hàng quét mã • Nhận tiền tức thì</span>
+                  <a href="assets/bidv-vietqr.svg" download="VietQR_BIDV_VoTanBan.svg" class="btn-download-qr" title="Tải mã QR VietQR về máy">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    <span>Tải mã QR</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Bank Account Copy Box -->
               <div class="donate-copy-box">
                 <div class="donate-copy-info">
-                  <span class="donate-copy-label">Số MoMo / Chuyển khoản:</span>
-                  <strong class="donate-copy-val" id="donateAccNumber">btv.dev03@gmail.com</strong>
+                  <span class="donate-copy-label">Ngân hàng BIDV • Số tài khoản:</span>
+                  <strong class="donate-copy-val" id="donateAccNumber">8897570296</strong>
                 </div>
-                <button type="button" class="donate-copy-btn" id="copyDonateBtn" title="Sao chép thông tin ủng hộ">
+                <button type="button" class="donate-copy-btn" id="copyDonateBtn" title="Sao chép số tài khoản BIDV">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  <span id="copyDonateBtnText">Sao chép</span>
+                  <span id="copyDonateBtnText">Sao chép STK</span>
                 </button>
               </div>
 
               <div class="donate-meta-row">
-                <span>Chủ tài khoản: <strong>VÕ TẤN BẢN</strong></span>
-                <span>Lời nhắn: <strong>Zen Desk Clock</strong></span>
+                <span>Chủ tài khoản: <strong>VO TAN BAN (Võ Tấn Bản)</strong></span>
+                <span>Lời nhắn: <strong>ZenDeskClock</strong></span>
               </div>
             </div>
           </div>
@@ -913,7 +928,7 @@
 
   <!-- Main ES Module Application Script -->
   <script type="module" src="js/three-scene.js"></script>
-  <script type="module" src="js/app.js?v=19"></script>
+  <script type="module" src="js/app.js?v=20"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>

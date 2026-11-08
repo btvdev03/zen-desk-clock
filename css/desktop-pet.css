@@ -1,5 +1,5 @@
 /**
- * ZenDesk Clock - Interactive Desktop Pet Companion Stylesheet
+ * ZenDesk Clock - Interactive Desktop Pet Companion Stylesheet (Premium Chibi Kawaii)
  * High-End Vector SVG Pet with 60fps GPU Animations & Touch/Mouse Drag-and-Drop
  */
 
@@ -10,15 +10,15 @@
   position: fixed;
   bottom: 82px;
   left: 15%;
-  width: 72px;
-  height: 72px;
+  width: 84px;
+  height: 84px;
   z-index: 99;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
-  transition: transform 0.12s ease-out;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.42));
+  transition: transform 0.15s ease-out;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
 }
 
 .desktop-pet-container.hidden {
@@ -32,7 +32,7 @@
 
 .desktop-pet-container.is-dragging {
   transition: none !important;
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
+  filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.7));
 }
 
 /* Floor shadow underneath pet */
@@ -41,9 +41,9 @@
   bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 52px;
-  height: 10px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
+  width: 60px;
+  height: 12px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.45) 0%, transparent 72%);
   border-radius: 50%;
   pointer-events: none;
   transition: transform 0.25s ease, opacity 0.25s ease;
@@ -51,13 +51,19 @@
 
 .desktop-pet-container.is-jumping .pet-shadow,
 .desktop-pet-container.is-dragging .pet-shadow {
-  transform: translateX(-50%) scale(0.65);
-  opacity: 0.3;
+  transform: translateX(-50%) scale(0.6);
+  opacity: 0.25;
 }
 
 /* ========================================================
    PET SVG BODY & ANIMATIONS
    ======================================================== */
+.pet-svg-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 .pet-svg {
   width: 100%;
   height: 100%;
@@ -73,71 +79,92 @@
 
 @keyframes petBreathe {
   0%, 100% { transform: scale(1, 1); }
-  50% { transform: scale(1.02, 0.97); }
+  50% { transform: scale(1.025, 0.965); }
 }
 
 /* Walking Waddle */
 .desktop-pet-container.state-walk .pet-svg {
-  animation: petWalkWaddle 0.45s ease-in-out infinite alternate;
+  animation: petWalkWaddle 0.42s ease-in-out infinite alternate;
 }
 
 @keyframes petWalkWaddle {
-  0% { transform: translateY(0) rotate(-3.5deg); }
-  100% { transform: translateY(-3px) rotate(3.5deg); }
+  0% { transform: translateY(0) rotate(-4.5deg); }
+  100% { transform: translateY(-4px) rotate(4.5deg); }
 }
 
 /* Happy Jump on Click */
 .desktop-pet-container.is-jumping .pet-svg {
-  animation: petHappyJump 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: petHappyJump 0.58s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes petHappyJump {
-  0% { transform: scale(1.15, 0.85); }
-  35% { transform: translateY(-24px) scale(0.92, 1.15); }
-  65% { transform: translateY(-16px) scale(1.05, 0.95); }
+  0% { transform: scale(1.18, 0.82); }
+  35% { transform: translateY(-28px) scale(0.9, 1.18); }
+  65% { transform: translateY(-16px) scale(1.06, 0.94); }
   85% { transform: translateY(2px) scale(1.08, 0.92); }
   100% { transform: translateY(0) scale(1, 1); }
 }
 
 /* Sleeping State */
 .desktop-pet-container.state-sleep .pet-svg {
-  animation: petSleepBreathing 3.5s ease-in-out infinite;
+  animation: petSleepBreathing 3.6s ease-in-out infinite;
 }
 
 @keyframes petSleepBreathing {
-  0%, 100% { transform: scale(1.04, 0.94); }
+  0%, 100% { transform: scale(1.05, 0.93); }
   50% { transform: scale(1.01, 0.98); }
+}
+
+/* Petting Purr Vibration */
+.desktop-pet-container.is-purring .pet-svg {
+  animation: petPurrVibe 0.12s ease-in-out infinite alternate;
+}
+
+@keyframes petPurrVibe {
+  0% { transform: scale(1.04, 0.96) rotate(-1deg); }
+  100% { transform: scale(1.04, 0.96) rotate(1deg); }
 }
 
 /* Tail Wagging */
 .pet-tail {
   transform-origin: 20% 80%;
-  animation: petTailWag 2.5s ease-in-out infinite alternate;
+  animation: petTailWag 2.4s ease-in-out infinite alternate;
 }
 
 @keyframes petTailWag {
-  0% { transform: rotate(-8deg); }
-  100% { transform: rotate(14deg); }
+  0% { transform: rotate(-10deg); }
+  100% { transform: rotate(16deg); }
 }
 
 .desktop-pet-container.state-walk .pet-tail {
-  animation-duration: 0.5s;
+  animation-duration: 0.42s;
 }
 
 /* Ear Twitch */
 .pet-ear-left, .pet-ear-right {
   transform-origin: bottom center;
-  animation: earTwitch 4s ease-in-out infinite;
+  animation: earTwitch 3.8s ease-in-out infinite;
 }
 
 .pet-ear-right {
-  animation-delay: 2s;
+  animation-delay: 1.9s;
 }
 
 @keyframes earTwitch {
-  0%, 92%, 100% { transform: rotate(0); }
-  94% { transform: rotate(-8deg); }
-  96% { transform: rotate(4deg); }
+  0%, 90%, 100% { transform: rotate(0); }
+  92% { transform: rotate(-9deg); }
+  95% { transform: rotate(5deg); }
+}
+
+/* Bell Jingle */
+.pet-bell {
+  transform-origin: top center;
+  animation: bellJingle 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes bellJingle {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(8deg); }
 }
 
 /* ========================================================
@@ -145,27 +172,27 @@
    ======================================================== */
 .pet-speech-bubble {
   position: absolute;
-  bottom: 82px;
+  bottom: 92px;
   left: 50%;
   transform: translateX(-50%) translateY(8px) scale(0.9);
-  min-width: 130px;
-  max-width: 220px;
-  padding: 0.55rem 0.85rem;
-  background: rgba(22, 26, 36, 0.88);
+  min-width: 140px;
+  max-width: 230px;
+  padding: 0.58rem 0.9rem;
+  background: rgba(20, 24, 33, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 14px;
+  border-radius: 16px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #ffffff;
-  line-height: 1.35;
+  line-height: 1.38;
   text-align: center;
   pointer-events: none;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0.5px rgba(255, 255, 255, 0.35);
   opacity: 0;
-  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 105;
 }
 
@@ -175,9 +202,9 @@
   bottom: -6px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
-  width: 10px;
-  height: 10px;
-  background: rgba(22, 26, 36, 0.88);
+  width: 11px;
+  height: 11px;
+  background: rgba(20, 24, 33, 0.9);
   border-right: 1px solid rgba(255, 255, 255, 0.22);
   border-bottom: 1px solid rgba(255, 255, 255, 0.22);
 }
@@ -190,10 +217,11 @@
 /* Floating Heart particles */
 .pet-floating-heart {
   position: absolute;
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   pointer-events: none;
   z-index: 106;
-  animation: floatHeart 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+  animation: floatHeart 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes floatHeart {
@@ -202,11 +230,11 @@
     transform: translate(0, 0) scale(0.6);
   }
   50% {
-    transform: translate(var(--tx, 10px), -28px) scale(1.2);
+    transform: translate(var(--tx, 12px), -32px) scale(1.25);
   }
   100% {
     opacity: 0;
-    transform: translate(var(--tx, 15px), -50px) scale(0.9);
+    transform: translate(var(--tx, 18px), -58px) scale(0.85);
   }
 }
 
@@ -215,10 +243,11 @@
   position: absolute;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 800;
-  color: #a78bfa;
+  color: #c084fc;
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.6);
   pointer-events: none;
   z-index: 106;
-  animation: floatZzz 2.2s ease-out forwards;
+  animation: floatZzz 2.4s ease-out forwards;
 }
 
 @keyframes floatZzz {
@@ -226,13 +255,67 @@
     opacity: 0;
     transform: translate(0, 0) scale(0.5);
   }
-  30% {
+  25% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translate(18px, -42px) scale(1.15);
+    transform: translate(22px, -46px) scale(1.2);
   }
+}
+
+/* Snack Drop Animation */
+.pet-snack-drop {
+  position: absolute;
+  font-size: 1.5rem;
+  z-index: 107;
+  pointer-events: none;
+  animation: dropSnack 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropSnack {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.5) rotate(-20deg);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(0) scale(1.2) rotate(10deg);
+  }
+  75% {
+    transform: translateY(6px) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.3);
+  }
+}
+
+/* Friendship Mood Mini Badge */
+.pet-mood-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.15rem 0.45rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(251, 113, 133, 0.4);
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fecdd3;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.desktop-pet-container:hover .pet-mood-badge,
+.desktop-pet-container.is-jumping .pet-mood-badge {
+  opacity: 1;
 }
 
 /* ========================================================
@@ -257,12 +340,12 @@ body.apple-standby-active .pet-speech-bubble::after {
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .desktop-pet-container {
-    width: 60px;
-    height: 60px;
+    width: 68px;
+    height: 68px;
     bottom: 74px;
   }
   .pet-speech-bubble {
-    font-size: 0.72rem;
-    max-width: 180px;
+    font-size: 0.74rem;
+    max-width: 190px;
   }
 }

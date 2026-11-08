@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="css/nixie.css?v=18">
   <link rel="stylesheet" href="css/night-mode.css?v=18">
   <link rel="stylesheet" href="css/task-scratchpad.css?v=18">
-  <link rel="stylesheet" href="css/seasonal-frame.css?v=21">
-  <link rel="stylesheet" href="css/desktop-pet.css?v=21">
+  <link rel="stylesheet" href="css/seasonal-frame.css?v=23">
+  <link rel="stylesheet" href="css/desktop-pet.css?v=23">
 </head>
 <body class="theme-flip">
 
@@ -1010,13 +1010,13 @@
 
   <!-- Main ES Module Application Script -->
   <script type="module" src="js/three-scene.js"></script>
-  <script type="module" src="js/app.js?v=22"></script>
+  <script type="module" src="js/app.js?v=23"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=22')
+        navigator.serviceWorker.register('./sw.js?v=23')
           .then(reg => {
             // Force check for updates immediately
             reg.update();

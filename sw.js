@@ -2,7 +2,7 @@
  * ZenDesk Clock - Offline Service Worker
  */
 
-const CACHE_NAME = 'zendesk-clock-v22';
+const CACHE_NAME = 'zendesk-clock-v23';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

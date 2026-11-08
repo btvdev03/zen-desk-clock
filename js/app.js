@@ -21,6 +21,8 @@ import { NixieRenderer } from './nixie-renderer.js';
 import { nightModeManager } from './night-mode.js';
 import { soundMixer } from './sound-mixer.js';
 import { zenThreeScene } from './three-scene.js';
+import { seasonalFrameManager } from './seasonal-frame.js';
+import { desktopPetManager } from './desktop-pet.js';
 
 // Central Modal & Drawer Layering Coordinator
 if (!window.zenModalManager) {
@@ -123,6 +125,8 @@ class ZenApp {
     this._initEventListeners();
     this._initWallpaperModal();
     this._initQuotes();
+    this._initSeasonalFrame();
+    this._initDesktopPet();
     this._loadSavedPreferences();
     if (typeof soundMixer !== 'undefined' && soundMixer.updateDockStatus) {
       soundMixer.updateDockStatus();
@@ -197,6 +201,13 @@ class ZenApp {
     this.threeDfxOpacityValue = document.getElementById('threeDfxOpacityValue');
     this.donateBtn = document.getElementById('donateBtn');
     this.donateModal = document.getElementById('donateModal');
+    this.petToggleBtn = document.getElementById('petToggleBtn');
+    this.petBtnLabel = document.getElementById('petBtnLabel');
+    this.clockBorderToggle = document.getElementById('clockBorderToggle');
+    this.clockBorderSeasonSelect = document.getElementById('clockBorderSeasonSelect');
+    this.desktopPetToggle = document.getElementById('desktopPetToggle');
+    this.desktopPetTypeSelect = document.getElementById('desktopPetTypeSelect');
+    this.desktopPetSoundToggle = document.getElementById('desktopPetSoundToggle');
     this.donateModalCloseBtn = document.getElementById('donateModalCloseBtn');
     this.copyDonateBtn = document.getElementById('copyDonateBtn');
     this.copyDonateBtnText = document.getElementById('copyDonateBtnText');
@@ -627,6 +638,67 @@ class ZenApp {
     }
   }
 
+  _syncPetDockButton() {
+    if (this.petToggleBtn) {
+      this.petToggleBtn.classList.toggle('active', desktopPetManager.enabled);
+    }
+  }
+
+  _initSeasonalFrame() {
+    seasonalFrameManager.init('flipClockView');
+
+    if (this.clockBorderToggle) {
+      this.clockBorderToggle.checked = seasonalFrameManager.enabled;
+      this.clockBorderToggle.addEventListener('change', (e) => {
+        seasonalFrameManager.setEnabled(e.target.checked);
+      });
+    }
+
+    if (this.clockBorderSeasonSelect) {
+      this.clockBorderSeasonSelect.value = seasonalFrameManager.selectedSeason;
+      this.clockBorderSeasonSelect.addEventListener('change', (e) => {
+        seasonalFrameManager.setSeason(e.target.value);
+      });
+    }
+  }
+
+  _initDesktopPet() {
+    desktopPetManager.init();
+    this._syncPetDockButton();
+
+    if (this.desktopPetToggle) {
+      this.desktopPetToggle.checked = desktopPetManager.enabled;
+      this.desktopPetToggle.addEventListener('change', (e) => {
+        desktopPetManager.setEnabled(e.target.checked);
+        this._syncPetDockButton();
+      });
+    }
+
+    if (this.desktopPetTypeSelect) {
+      this.desktopPetTypeSelect.value = desktopPetManager.petType;
+      this.desktopPetTypeSelect.addEventListener('change', (e) => {
+        desktopPetManager.setPetType(e.target.value);
+      });
+    }
+
+    if (this.desktopPetSoundToggle) {
+      this.desktopPetSoundToggle.checked = desktopPetManager.soundEnabled;
+      this.desktopPetSoundToggle.addEventListener('change', (e) => {
+        desktopPetManager.soundEnabled = e.target.checked;
+        localStorage.setItem('zd_pet_sound', e.target.checked ? 'true' : 'false');
+      });
+    }
+
+    if (this.petToggleBtn) {
+      this.petToggleBtn.addEventListener('click', () => {
+        const isEnabled = desktopPetManager.toggle();
+        this._syncPetDockButton();
+        if (this.desktopPetToggle) this.desktopPetToggle.checked = isEnabled;
+        this._showToast(`Thú cưng: ${isEnabled ? 'Bật 🐾' : 'Tắt'}`);
+      });
+    }
+  }
+
   _initQuotes() {
     const updateQuote = () => {
       const q = getRandomQuote();
@@ -961,6 +1033,11 @@ class ZenApp {
         const isEnabled = zenThreeScene.toggle();
         this._syncThreeControls();
         this._showToast(`Hiệu ứng 3D: ${isEnabled ? 'Bật' : 'Tắt'}`);
+      } else if (key === 'o') {
+        const isEnabled = desktopPetManager.toggle();
+        this._syncPetDockButton();
+        if (this.desktopPetToggle) this.desktopPetToggle.checked = isEnabled;
+        this._showToast(`Thú cưng: ${isEnabled ? 'Bật 🐾' : 'Tắt'}`);
       } else if (key === 'd') {
         this.openModal(this.donateModal);
       } else if (key === 'm') {
@@ -1013,6 +1090,9 @@ class ZenApp {
   _applyTheme(themeName) {
     this.themes.forEach(t => document.body.classList.remove(t));
     document.body.classList.add(themeName);
+    if (typeof seasonalFrameManager !== 'undefined') {
+      seasonalFrameManager.render();
+    }
 
     this.themeNameLabel.textContent = this.themeLabels[themeName] || 'Theme';
     this.currentThemeIndex = this.themes.indexOf(themeName);

@@ -1,0 +1,268 @@
+/**
+ * ZenDesk Clock - Interactive Desktop Pet Companion Stylesheet
+ * High-End Vector SVG Pet with 60fps GPU Animations & Touch/Mouse Drag-and-Drop
+ */
+
+/* ========================================================
+   PET CONTAINER & STAGE
+   ======================================================== */
+.desktop-pet-container {
+  position: fixed;
+  bottom: 82px;
+  left: 15%;
+  width: 72px;
+  height: 72px;
+  z-index: 99;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  transition: transform 0.12s ease-out;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.42));
+}
+
+.desktop-pet-container.hidden {
+  display: none !important;
+  pointer-events: none;
+}
+
+.desktop-pet-container:active {
+  cursor: grabbing;
+}
+
+.desktop-pet-container.is-dragging {
+  transition: none !important;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
+}
+
+/* Floor shadow underneath pet */
+.pet-shadow {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 10px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.desktop-pet-container.is-jumping .pet-shadow,
+.desktop-pet-container.is-dragging .pet-shadow {
+  transform: translateX(-50%) scale(0.65);
+  opacity: 0.3;
+}
+
+/* ========================================================
+   PET SVG BODY & ANIMATIONS
+   ======================================================== */
+.pet-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transition: transform 0.25s ease;
+  transform-origin: bottom center;
+}
+
+/* Idle Breathing */
+.desktop-pet-container.state-idle .pet-svg {
+  animation: petBreathe 3s ease-in-out infinite;
+}
+
+@keyframes petBreathe {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.02, 0.97); }
+}
+
+/* Walking Waddle */
+.desktop-pet-container.state-walk .pet-svg {
+  animation: petWalkWaddle 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes petWalkWaddle {
+  0% { transform: translateY(0) rotate(-3.5deg); }
+  100% { transform: translateY(-3px) rotate(3.5deg); }
+}
+
+/* Happy Jump on Click */
+.desktop-pet-container.is-jumping .pet-svg {
+  animation: petHappyJump 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes petHappyJump {
+  0% { transform: scale(1.15, 0.85); }
+  35% { transform: translateY(-24px) scale(0.92, 1.15); }
+  65% { transform: translateY(-16px) scale(1.05, 0.95); }
+  85% { transform: translateY(2px) scale(1.08, 0.92); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
+/* Sleeping State */
+.desktop-pet-container.state-sleep .pet-svg {
+  animation: petSleepBreathing 3.5s ease-in-out infinite;
+}
+
+@keyframes petSleepBreathing {
+  0%, 100% { transform: scale(1.04, 0.94); }
+  50% { transform: scale(1.01, 0.98); }
+}
+
+/* Tail Wagging */
+.pet-tail {
+  transform-origin: 20% 80%;
+  animation: petTailWag 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes petTailWag {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(14deg); }
+}
+
+.desktop-pet-container.state-walk .pet-tail {
+  animation-duration: 0.5s;
+}
+
+/* Ear Twitch */
+.pet-ear-left, .pet-ear-right {
+  transform-origin: bottom center;
+  animation: earTwitch 4s ease-in-out infinite;
+}
+
+.pet-ear-right {
+  animation-delay: 2s;
+}
+
+@keyframes earTwitch {
+  0%, 92%, 100% { transform: rotate(0); }
+  94% { transform: rotate(-8deg); }
+  96% { transform: rotate(4deg); }
+}
+
+/* ========================================================
+   SPEECH BUBBLE & FLOATING HEARTS
+   ======================================================== */
+.pet-speech-bubble {
+  position: absolute;
+  bottom: 82px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px) scale(0.9);
+  min-width: 130px;
+  max-width: 220px;
+  padding: 0.55rem 0.85rem;
+  background: rgba(22, 26, 36, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.35;
+  text-align: center;
+  pointer-events: none;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 105;
+}
+
+.pet-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: rgba(22, 26, 36, 0.88);
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.pet-speech-bubble.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* Floating Heart particles */
+.pet-floating-heart {
+  position: absolute;
+  font-size: 1.15rem;
+  pointer-events: none;
+  z-index: 106;
+  animation: floatHeart 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes floatHeart {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.6);
+  }
+  50% {
+    transform: translate(var(--tx, 10px), -28px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx, 15px), -50px) scale(0.9);
+  }
+}
+
+/* Zzz Floating Sleep Bubbles */
+.pet-sleep-bubble {
+  position: absolute;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  color: #a78bfa;
+  pointer-events: none;
+  z-index: 106;
+  animation: floatZzz 2.2s ease-out forwards;
+}
+
+@keyframes floatZzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(18px, -42px) scale(1.15);
+  }
+}
+
+/* ========================================================
+   STANDBY NIGHT MODE COMPATIBILITY
+   ======================================================== */
+body.apple-standby-active .desktop-pet-container {
+  filter: grayscale(100%) sepia(100%) hue-rotate(-50deg) saturate(600%) brightness(0.65) !important;
+}
+
+body.apple-standby-active .pet-speech-bubble {
+  background: rgba(24, 0, 0, 0.9) !important;
+  border-color: rgba(255, 42, 42, 0.4) !important;
+  color: var(--standby-red-core) !important;
+  text-shadow: 0 0 6px rgba(255, 42, 42, 0.6);
+}
+
+body.apple-standby-active .pet-speech-bubble::after {
+  background: rgba(24, 0, 0, 0.9) !important;
+  border-color: rgba(255, 42, 42, 0.4) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .desktop-pet-container {
+    width: 60px;
+    height: 60px;
+    bottom: 74px;
+  }
+  .pet-speech-bubble {
+    font-size: 0.72rem;
+    max-width: 180px;
+  }
+}

@@ -29,6 +29,8 @@
   <link rel="stylesheet" href="css/nixie.css?v=18">
   <link rel="stylesheet" href="css/night-mode.css?v=18">
   <link rel="stylesheet" href="css/task-scratchpad.css?v=18">
+  <link rel="stylesheet" href="css/seasonal-frame.css?v=21">
+  <link rel="stylesheet" href="css/desktop-pet.css?v=21">
 </head>
 <body class="theme-flip">
 
@@ -118,6 +120,7 @@
         <div class="flip-card-unit" id="flipMinutes"></div>
         <div class="flip-separator" id="flipSecSep">:</div>
         <div class="flip-card-unit" id="flipSeconds"></div>
+        <div class="seasonal-clock-frame" id="seasonalClockFrame"></div>
       </section>
 
       <!-- 2. MINIMALIST OLED & MATRIX DIGITAL CLOCK VIEW -->
@@ -261,6 +264,17 @@
         <button class="control-btn" id="scratchpadBtn" title="Sổ nháp nhanh không phân tâm (Phím Q)">
           <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none"/><line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/><line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/></svg>
           <span>Sổ nháp</span>
+        </button>
+
+        <!-- Desktop Pet Companion Quick Toggle -->
+        <button class="control-btn" id="petToggleBtn" title="Thú cưng bàn làm việc tương tác (Phím O)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58 1.15 3.91-.4 5.74A8.7 8.7 0 0 1 21 12c0 5-4 9-9 9s-9-4-9-9a8.7 8.7 0 0 1 .98-3.26C2.43 6.91 2.18 3.58 3.58 3c1.39-.58 4.64.26 6.42 2.26.65-.17 1.33-.26 2-.26z"></path>
+            <circle cx="9" cy="13" r="1.5" fill="currentColor"></circle>
+            <circle cx="15" cy="13" r="1.5" fill="currentColor"></circle>
+            <path d="M10 16.5c1 .5 3 .5 4 0"></path>
+          </svg>
+          <span id="petBtnLabel">Thú cưng</span>
         </button>
 
         <div class="dock-separator"></div>
@@ -580,7 +594,75 @@
           </button>
         </div>
 
-        <!-- 5. TÁC GIẢ & ỦNG HỘ DỰ ÁN -->
+        <!-- 5. SEASONAL CLOCK FRAME & DESKTOP PET -->
+        <div class="setting-group-header">🌸 Viền Trang Trí & Thú Cưng Bàn Làm Việc</div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Viền trang trí đồng hồ theo mùa <span class="setting-sub">(Hiệu Ứng)</span></div>
+            <div class="setting-desc">Tuyết phủ & đèn Noel, hoa đào nở, lá phong thu bám trên viền thẻ lật</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="clockBorderToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Chủ đề mùa cho viền đồng hồ <span class="setting-sub">(Mùa)</span></div>
+            <div class="setting-desc">Tự động theo lịch thời gian thực hoặc chọn mùa bạn thích</div>
+          </div>
+          <div class="setting-control">
+            <select class="styled-select" id="clockBorderSeasonSelect">
+              <option value="auto">📍 Tự động theo mùa hiện tại</option>
+              <option value="winter">❄️ Mùa Đông / Giáng Sinh (Tuyết & Dây thông, Đèn nhấp nháy)</option>
+              <option value="spring">🌸 Mùa Xuân (Hoa anh đào Sakura & Lộc biếc)</option>
+              <option value="summer">☀️ Mùa Hè (Tia nắng vàng & Tán lá nhiệt đới)</option>
+              <option value="autumn">🍁 Mùa Thu (Lá phong đỏ vàng & Quả thông)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Thú cưng bàn làm việc tương tác <span class="setting-sub">(Desktop Pet)</span></div>
+            <div class="setting-desc">Bạn đồng hành mini đi dạo, leo trèo, ngủ ngoan và động viên tập trung</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="desktopPetToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Chọn nhân vật thú cưng <span class="setting-sub">(Nhân Vật)</span></div>
+            <div class="setting-desc">Nhấp hoặc kéo thả thú cưng đi khắp màn hình bất cứ lúc nào</div>
+          </div>
+          <div class="setting-control">
+            <select class="styled-select" id="desktopPetTypeSelect">
+              <option value="cat">🐱 Mèo Mimi lười biếng (Chonky Cat)</option>
+              <option value="dog">🐶 Cún Shiba vui vẻ (Happy Doge)</option>
+              <option value="penguin">🐧 Cánh cụt tuyết Pingu (Snowy Penguin)</option>
+              <option value="bunny">🐰 Thỏ Usagi tinh nghịch (Cute Bunny)</option>
+              <option value="dragon">🐉 Rồng con may mắn (Lucky Baby Dragon)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Âm thanh tiếng kêu thú cưng <span class="setting-sub">(Hiệu Ứng)</span></div>
+            <div class="setting-desc">Tiếng kêu vui vẻ meow/woof nhỏ nhẹ khi nhấp vào thú cưng</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="desktopPetSoundToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 6. TÁC GIẢ & ỦNG HỘ DỰ ÁN -->
         <div class="setting-group-header">☕ Tác Giả & Ủng Hộ (btvdev03)</div>
 
         <div class="setting-block author-settings-card">
@@ -620,6 +702,7 @@
           <div class="shortcut-item"><span class="kbd-badge">P</span> Thu nhỏ cửa sổ PiP</div>
           <div class="shortcut-item"><span class="kbd-badge">H</span> Chế độ Zen (Ẩn toàn bộ)</div>
           <div class="shortcut-item"><span class="kbd-badge">S</span> Mở bảng cài đặt này</div>
+          <div class="shortcut-item"><span class="kbd-badge">O</span> Bật / Tắt Thú cưng bàn làm việc</div>
           <div class="shortcut-item"><span class="kbd-badge">D</span> Tác giả & Ủng hộ cà phê</div>
           <div class="shortcut-item"><span class="kbd-badge">Esc</span> Đóng mọi hộp thoại</div>
         </div>
@@ -927,13 +1010,13 @@
 
   <!-- Main ES Module Application Script -->
   <script type="module" src="js/three-scene.js"></script>
-  <script type="module" src="js/app.js?v=21"></script>
+  <script type="module" src="js/app.js?v=22"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=21')
+        navigator.serviceWorker.register('./sw.js?v=22')
           .then(reg => {
             // Force check for updates immediately
             reg.update();

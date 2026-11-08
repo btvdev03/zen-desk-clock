@@ -1,0 +1,386 @@
+/**
+ * ZenDesk Clock - Seasonal Clock Border & Festive Frame Stylesheet
+ * High-End Vector Ornaments framing the Flip Clock Cards
+ * Seasons:
+ * - Winter & Christmas: Soft snow caps, evergreen pine garland & twinkling fairy lights
+ * - Spring: Blooming cherry blossoms (sakura / hoa đào), fresh green buds & soft aura
+ * - Summer: Tropical palm accents & warm golden sunbeam glow
+ * - Autumn: Rich maple leaves garland, pinecones & warm harvest embers
+ */
+
+/* ========================================================
+   FRAME CONTAINER
+   ======================================================== */
+.seasonal-clock-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s ease;
+  overflow: visible;
+}
+
+.seasonal-clock-frame.hidden {
+  display: none !important;
+  opacity: 0;
+}
+
+/* Base Card Accent Glow */
+.flip-clock-container.has-seasonal-frame .flip-card-unit {
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+/* ========================================================
+   1. WINTER & CHRISTMAS FRAME (Tuyết phủ & Dây thông Noel)
+   ======================================================== */
+.seasonal-frame-winter {
+  --snow-white: #ffffff;
+  --snow-shadow: rgba(186, 230, 253, 0.65);
+  --pine-green: #15803d;
+}
+
+/* Snow Cap on top of each flip card */
+.flip-card-unit .snow-cap-layer {
+  position: absolute;
+  top: -8px;
+  left: -4px;
+  right: -4px;
+  height: 24px;
+  z-index: 20;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35));
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.snow-cap-svg {
+  width: 100%;
+  height: 100%;
+  fill: #f8fafc;
+  stroke: rgba(224, 242, 254, 0.85);
+  stroke-width: 0.5px;
+}
+
+/* Christmas Pine Garland spanning across the top */
+.winter-pine-garland {
+  position: absolute;
+  top: -24px;
+  left: -12px;
+  right: -12px;
+  height: 38px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 25;
+}
+
+/* Fairy Lights string */
+.fairy-lights-string {
+  position: absolute;
+  top: -10px;
+  left: 5%;
+  width: 90%;
+  display: flex;
+  justify-content: space-around;
+  z-index: 26;
+  pointer-events: none;
+}
+
+.fairy-bulb {
+  width: 9px;
+  height: 13px;
+  border-radius: 50% 50% 40% 40%;
+  position: relative;
+  animation: bulbFlicker 1.8s infinite ease-in-out alternate;
+}
+
+.fairy-bulb::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 3px;
+  background: #334155;
+  border-radius: 1px;
+}
+
+.fairy-bulb.color-gold {
+  background: #facc15;
+  box-shadow: 0 0 10px #facc15, 0 0 18px rgba(250, 204, 21, 0.6);
+  animation-delay: 0s;
+}
+
+.fairy-bulb.color-red {
+  background: #ef4444;
+  box-shadow: 0 0 10px #ef4444, 0 0 18px rgba(239, 68, 68, 0.6);
+  animation-delay: 0.4s;
+}
+
+.fairy-bulb.color-green {
+  background: #22c55e;
+  box-shadow: 0 0 10px #22c55e, 0 0 18px rgba(34, 197, 94, 0.6);
+  animation-delay: 0.8s;
+}
+
+.fairy-bulb.color-blue {
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8, 0 0 18px rgba(56, 189, 248, 0.6);
+  animation-delay: 1.2s;
+}
+
+@keyframes bulbFlicker {
+  0% {
+    opacity: 0.7;
+    filter: brightness(0.9);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.35);
+  }
+  100% {
+    opacity: 0.85;
+    filter: brightness(1.1);
+  }
+}
+
+.winter-corner-bell {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+  animation: gentleBellSway 3s ease-in-out infinite;
+}
+
+@keyframes gentleBellSway {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+
+/* ========================================================
+   2. SPRING SAKURA FRAME (Hoa Anh Đào & Lộc Biếc)
+   ======================================================== */
+.seasonal-frame-spring {
+  --sakura-pink: #f472b6;
+  --sakura-aura: rgba(244, 114, 182, 0.35);
+}
+
+.spring-branch-layer {
+  position: absolute;
+  top: -26px;
+  left: -20px;
+  right: -20px;
+  bottom: -15px;
+  pointer-events: none;
+  z-index: 22;
+}
+
+.spring-corner-blossom {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  filter: drop-shadow(0 2px 6px rgba(244, 114, 182, 0.5));
+  animation: petalBreeze 4s ease-in-out infinite alternate;
+}
+
+.spring-corner-blossom.top-left {
+  top: -12px;
+  left: -12px;
+}
+
+.spring-corner-blossom.top-right {
+  top: -12px;
+  right: -12px;
+  transform: scaleX(-1);
+}
+
+.spring-vine-top {
+  position: absolute;
+  top: -14px;
+  left: 10%;
+  right: 10%;
+  height: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.spring-petal-dot {
+  width: 11px;
+  height: 11px;
+  background: radial-gradient(circle, #fbcfe8 30%, #f472b6 90%);
+  border-radius: 50% 0 50% 50%;
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px rgba(244, 114, 182, 0.6);
+  animation: petalSway 3s infinite ease-in-out alternate;
+}
+
+@keyframes petalSway {
+  0% { transform: rotate(35deg) translateY(0); }
+  100% { transform: rotate(55deg) translateY(-3px); }
+}
+
+@keyframes petalBreeze {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(6deg) scale(1.05); }
+}
+
+/* ========================================================
+   3. SUMMER TROPICAL SUN FRAME (Nắng Vàng & Tán Lá Nhiệt Đới)
+   ======================================================== */
+.seasonal-frame-summer {
+  --summer-gold: #f59e0b;
+  --summer-emerald: #10b981;
+}
+
+.summer-accent-layer {
+  position: absolute;
+  top: -22px;
+  left: -18px;
+  right: -18px;
+  bottom: -15px;
+  pointer-events: none;
+  z-index: 22;
+}
+
+.summer-corner-leaf {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.45));
+  animation: leafWave 3.5s infinite ease-in-out alternate;
+}
+
+.summer-corner-leaf.top-left {
+  top: -14px;
+  left: -14px;
+}
+
+.summer-corner-leaf.top-right {
+  top: -14px;
+  right: -14px;
+  transform: scaleX(-1);
+}
+
+.summer-sun-glow {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 24px;
+  background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.45) 0%, transparent 70%);
+  filter: blur(4px);
+  animation: sunGlowPulse 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes sunGlowPulse {
+  0% { transform: translateX(-50%) scale(0.95); opacity: 0.6; }
+  100% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+}
+
+@keyframes leafWave {
+  0% { transform: rotate(-5deg); }
+  100% { transform: rotate(5deg); }
+}
+
+/* ========================================================
+   4. AUTUMN MAPLE HARVEST FRAME (Lá Phong Đỏ & Quả Thông)
+   ======================================================== */
+.seasonal-frame-autumn {
+  --maple-red: #ea580c;
+  --maple-gold: #eab308;
+}
+
+.autumn-garland-layer {
+  position: absolute;
+  top: -24px;
+  left: -18px;
+  right: -18px;
+  bottom: -12px;
+  pointer-events: none;
+  z-index: 22;
+}
+
+.autumn-corner-maple {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 2px 6px rgba(234, 88, 12, 0.45));
+  animation: mapleRustle 3s ease-in-out infinite alternate;
+}
+
+.autumn-corner-maple.top-left {
+  top: -12px;
+  left: -12px;
+}
+
+.autumn-corner-maple.top-right {
+  top: -12px;
+  right: -12px;
+  transform: scaleX(-1);
+}
+
+.autumn-leaf-string {
+  position: absolute;
+  top: -12px;
+  left: 12%;
+  right: 12%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.mini-maple-leaf {
+  width: 14px;
+  height: 14px;
+  fill: #f97316;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  animation: leafFlutter 2.8s ease-in-out infinite alternate;
+}
+
+.mini-maple-leaf:nth-child(2) {
+  fill: #eab308;
+  animation-delay: 0.5s;
+}
+
+.mini-maple-leaf:nth-child(3) {
+  fill: #dc2626;
+  animation-delay: 1s;
+}
+
+@keyframes mapleRustle {
+  0% { transform: rotate(-4deg); }
+  100% { transform: rotate(6deg); }
+}
+
+@keyframes leafFlutter {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-3px) rotate(8deg); }
+}
+
+/* ========================================================
+   STANDBY NIGHT MODE COMPATIBILITY
+   ======================================================== */
+body.apple-standby-active .seasonal-clock-frame {
+  filter: grayscale(100%) sepia(100%) hue-rotate(-50deg) saturate(600%) brightness(0.65) !important;
+  opacity: 0.55 !important;
+}
+
+body.apple-standby-active .fairy-bulb {
+  box-shadow: 0 0 8px rgba(255, 42, 42, 0.8) !important;
+  background: var(--standby-red-core) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .winter-pine-garland, .autumn-garland-layer, .spring-branch-layer, .summer-accent-layer {
+    transform: scale(0.85);
+    transform-origin: top center;
+  }
+  .fairy-bulb {
+    width: 7px;
+    height: 10px;
+  }
+}

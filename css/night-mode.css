@@ -337,11 +337,21 @@ body.apple-standby-active #topWeekDisplay {
 
 body.apple-standby-active .weather-chip {
   color: var(--standby-red-core) !important;
+  border-color: rgba(255, 42, 42, 0.4) !important;
+  background: rgba(26, 0, 0, 0.65) !important;
 }
 
 body.apple-standby-active #weatherChipTemp,
-body.apple-standby-active #weatherChipCity {
+body.apple-standby-active #weatherChipCondition,
+body.apple-standby-active #weatherChipCity,
+body.apple-standby-active .weather-chip-sep {
   color: var(--standby-red-core) !important;
+  text-shadow: 0 0 8px rgba(255, 42, 42, 0.6) !important;
+}
+
+body.apple-standby-active .weather-chip-svg {
+  stroke: var(--standby-red-core) !important;
+  filter: drop-shadow(0 0 6px rgba(255, 42, 42, 0.8)) !important;
 }
 
 body.apple-standby-active #weatherChipIcon {
@@ -350,11 +360,27 @@ body.apple-standby-active #weatherChipIcon {
 
 body.apple-standby-active .event-countdown-chip {
   color: var(--standby-red-core) !important;
+  border-color: rgba(255, 42, 42, 0.45) !important;
+  background: rgba(26, 0, 0, 0.65) !important;
+  box-shadow: 0 0 16px rgba(255, 42, 42, 0.3) !important;
 }
 
+body.apple-standby-active #eventCountdownTitle,
+body.apple-standby-active #eventCountdownBadge,
 body.apple-standby-active #eventCountdownText,
-body.apple-standby-active #eventCountdownCompactText {
+body.apple-standby-active #eventCountdownCompactText,
+body.apple-standby-active .event-chip-sep {
   color: var(--standby-red-core) !important;
+  text-shadow: 0 0 8px rgba(255, 42, 42, 0.6) !important;
+}
+
+body.apple-standby-active .event-chip-badge {
+  background: rgba(255, 42, 42, 0.16) !important;
+  border-color: rgba(255, 42, 42, 0.4) !important;
+}
+
+body.apple-standby-active .event-chip-icon {
+  filter: grayscale(100%) sepia(100%) hue-rotate(-50deg) saturate(600%) !important;
 }
 
 body.apple-standby-active .wake-lock-label,

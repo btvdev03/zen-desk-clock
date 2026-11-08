@@ -33,7 +33,7 @@ export class EventCountdownManager {
       upcomingTet = tetDates[currentYear + 1];
     }
     if (!upcomingTet) {
-      upcomingTet = { date: `${currentYear + 1}-02-10T00:00:00`, name: `Tết ${currentYear + 1} 🧧` };
+      upcomingTet = { date: `${currentYear + 1}-02-10T00:00:00`, name: `Tết ${currentYear + 1}` };
     }
 
     // Christmas (Dec 25)
@@ -48,7 +48,7 @@ export class EventCountdownManager {
     return [
       {
         id: 'builtin-noel',
-        title: 'Giáng Sinh Noel',
+        title: 'Giáng Sinh',
         targetDate: noelDate.toISOString(),
         icon: '🎄',
         isBuiltIn: true
@@ -137,18 +137,34 @@ export class EventCountdownManager {
 
   getActiveCountdown() {
     if (this.events.length === 0) return null;
+
     const evt = this.events[this.activeEventIndex] || this.events[0];
     const now = new Date().getTime();
     const target = new Date(evt.targetDate).getTime();
     const diff = target - now;
 
+    // Clean up title: strip emojis if custom event title has any
+    const cleanTitle = (evt.title || '')
+      .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+      .trim();
+
+    const pad = (n) => String(n).padStart(2, '0');
+
     if (diff <= 0) {
       return {
         event: evt,
+        icon: evt.icon || '🎯',
+        title: cleanTitle,
+        countdownBadge: 'Hôm nay!',
+        compactBadge: 'Hôm nay',
         isReached: true,
-        formatted: `${evt.icon} ${evt.title}: Đã đến rồi! 🎉`,
-        shortFormatted: `${evt.icon} Hôm nay!`,
-        compactFormatted: `${evt.icon} Hôm nay`
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        formatted: `${evt.icon || '🎯'} ${cleanTitle}: Đã đến rồi! 🎉`,
+        shortFormatted: `${cleanTitle}: Hôm nay!`,
+        compactFormatted: `${cleanTitle}: Hôm nay`
       };
     }
 
@@ -157,25 +173,37 @@ export class EventCountdownManager {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    const pad = (n) => String(n).padStart(2, '0');
-
-    let formatted = '';
+    let countdownBadge = '';
+    let compactBadge = '';
     if (days > 0) {
-      formatted = `${evt.icon} ${evt.title}: còn ${days} ngày ${pad(hours)} giờ ${pad(minutes)} phút`;
+      countdownBadge = `Còn ${days} ngày`;
+      compactBadge = `${days}n`;
     } else {
-      formatted = `${evt.icon} ${evt.title}: còn ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      countdownBadge = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      compactBadge = `${pad(hours)}:${pad(minutes)}`;
+    }
+
+    let detailedFormatted = '';
+    if (days > 0) {
+      detailedFormatted = `${evt.icon || '🎯'} ${cleanTitle}: còn ${days} ngày ${pad(hours)} giờ ${pad(minutes)} phút`;
+    } else {
+      detailedFormatted = `${evt.icon || '🎯'} ${cleanTitle}: còn ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
     }
 
     return {
       event: evt,
+      icon: evt.icon || '🎯',
+      title: cleanTitle,
+      countdownBadge,
+      compactBadge,
       isReached: false,
       days,
       hours,
       minutes,
       seconds,
-      formatted,
-      shortFormatted: `${evt.icon} ${days > 0 ? days + ' ngày ' : ''}${pad(hours)}:${pad(minutes)}`,
-      compactFormatted: `${evt.icon} ${days > 0 ? days + 'n' : pad(hours) + ':' + pad(minutes)}`
+      formatted: detailedFormatted,
+      shortFormatted: `${cleanTitle}: ${countdownBadge}`,
+      compactFormatted: `${cleanTitle}: ${compactBadge}`
     };
   }
 

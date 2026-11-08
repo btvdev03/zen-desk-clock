@@ -165,6 +165,9 @@ class ZenApp {
     this.wakeLockText = document.getElementById('wakeLockText');
     this.fullscreenTopBtn = document.getElementById('fullscreenTopBtn');
     this.eventCountdownChip = document.getElementById('eventCountdownChip');
+    this.eventChipIcon = document.getElementById('eventChipIcon');
+    this.eventCountdownTitle = document.getElementById('eventCountdownTitle');
+    this.eventCountdownBadge = document.getElementById('eventCountdownBadge');
     this.eventCountdownText = document.getElementById('eventCountdownText');
     this.eventCountdownCompactText = document.getElementById('eventCountdownCompactText');
 
@@ -407,12 +410,7 @@ class ZenApp {
 
         // Update Event Countdown
         const countdownData = eventCountdownManager.getActiveCountdown();
-        if (countdownData) {
-          this.eventCountdownText.textContent = countdownData.shortFormatted;
-          if (this.eventCountdownCompactText) {
-            this.eventCountdownCompactText.textContent = countdownData.compactFormatted;
-          }
-        }
+        this._updateEventCountdownDisplay(countdownData);
 
         if (this.activeMode === 'clock') {
           document.title = `${timeData.hoursStr}:${timeData.minutesStr} — ZenDesk Clock`;
@@ -592,19 +590,41 @@ class ZenApp {
     resetIdle();
   }
 
+  _updateEventCountdownDisplay(data) {
+    if (!data) return;
+    if (this.eventChipIcon) {
+      this.eventChipIcon.textContent = data.icon || '🎯';
+    }
+    if (this.eventCountdownTitle) {
+      this.eventCountdownTitle.textContent = data.title || 'Sự kiện';
+    }
+    if (this.eventCountdownBadge) {
+      this.eventCountdownBadge.textContent = data.countdownBadge || '';
+    }
+    if (this.eventCountdownText) {
+      this.eventCountdownText.textContent = data.countdownBadge || data.shortFormatted || '';
+    }
+    if (this.eventCountdownCompactText) {
+      this.eventCountdownCompactText.textContent = data.compactBadge || data.compactFormatted || '';
+    }
+    if (this.eventCountdownChip) {
+      this.eventCountdownChip.title = `${data.title}: ${data.countdownBadge}. Nhấp để chuyển sự kiện tiếp theo (Cài đặt để quản lý).`;
+    }
+  }
+
   _initEventCountdown() {
     eventCountdownManager.onChange((data) => {
-      if (data && this.eventCountdownText) {
-        this.eventCountdownText.textContent = data.shortFormatted;
-        if (this.eventCountdownCompactText) {
-          this.eventCountdownCompactText.textContent = data.compactFormatted;
-        }
-      }
+      this._updateEventCountdownDisplay(data);
     });
 
-    this.eventCountdownChip.addEventListener('click', () => {
-      eventCountdownManager.cycleActiveEvent();
-    });
+    const initialData = eventCountdownManager.getActiveCountdown();
+    this._updateEventCountdownDisplay(initialData);
+
+    if (this.eventCountdownChip) {
+      this.eventCountdownChip.addEventListener('click', () => {
+        eventCountdownManager.cycleActiveEvent();
+      });
+    }
   }
 
   _initQuotes() {

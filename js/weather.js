@@ -141,6 +141,7 @@ export class WeatherWidget {
     this.chipEl = chip;
     this.chipIconEl = document.getElementById('weatherChipIcon') || chip.querySelector('.weather-chip-icon');
     this.chipTempEl = document.getElementById('weatherChipTemp') || chip.querySelector('.weather-chip-temp');
+    this.chipConditionEl = document.getElementById('weatherChipCondition') || chip.querySelector('.weather-chip-condition');
     this.chipCityEl = document.getElementById('weatherChipCity') || chip.querySelector('.weather-chip-city');
 
     // 2. Weather Details Modal Overlay
@@ -591,9 +592,15 @@ export class WeatherWidget {
       desc: 'Điều kiện thời tiết bình thường'
     };
 
+    let label = meta.label;
+    if (code === 0) {
+      label = isDay ? 'Nắng ráo' : 'Trời quang';
+    }
+
     const icon = (!isDay && meta.nightIcon) ? meta.nightIcon : meta.icon;
     return {
       ...meta,
+      label,
       icon
     };
   }
@@ -618,7 +625,8 @@ export class WeatherWidget {
     const isDay = current.is_day !== undefined ? current.is_day : 1;
     const meta = this.getWeatherMeta(current.weather_code, isDay);
     const tempRounded = Math.round(current.temperature_2m);
-    const city = this.currentLocation ? this.currentLocation.city : 'Hà Nội';
+    const rawCity = this.currentLocation ? this.currentLocation.city : 'Hà Nội';
+    const shortCity = rawCity.replace(/^Thành phố\s+/i, 'TP. ').replace(/Hồ Chí Minh/i, 'HCM');
 
     const svgEl = document.getElementById('weatherChipSvg');
     if (svgEl) {
@@ -627,9 +635,14 @@ export class WeatherWidget {
       this.chipIconEl.innerHTML = this.getWeatherSvg(current.weather_code, isDay, 15);
     }
     if (this.chipTempEl) this.chipTempEl.textContent = `${tempRounded}°C`;
-    if (this.chipCityEl) this.chipCityEl.textContent = city;
+    if (this.chipConditionEl) {
+      this.chipConditionEl.textContent = meta.label;
+    }
+    if (this.chipCityEl) {
+      this.chipCityEl.textContent = shortCity;
+    }
 
-    this.chipEl.title = `${city}: ${meta.label}, ${tempRounded}°C (Cảm nhận ${Math.round(current.apparent_temperature)}°C). Nhấp để xem dự báo chi tiết.`;
+    this.chipEl.title = `${rawCity}: ${meta.label}, ${tempRounded}°C (Cảm nhận ${Math.round(current.apparent_temperature)}°C). Nhấp để xem dự báo 5 ngày chi tiết.`;
   }
 
   /**

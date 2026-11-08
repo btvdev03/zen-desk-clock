@@ -136,6 +136,7 @@ cd zen-desk-clock
 | <kbd>V</kbd> | **Daily Focus Tasks** | Opens Ivy Lee Most Important Task (MIT) manager |
 | <kbd>P</kbd> | **Toggle PiP Widget** | Floats mini always-on-top clock window |
 | <kbd>H</kbd> | **Zen Pure Mode** | Instantly hides all UI & docks |
+| <kbd>D</kbd> | **Author & Donate** | Opens author profile, social channels & coffee donate |
 | <kbd>S</kbd> | **Open Settings** | Toggle 12/24h format, seconds, sound volume |
 | <kbd>Esc</kbd> | **Close Modal** | Closes active preferences overlay or drawer |
 
@@ -206,6 +207,20 @@ Contributions, suggestions, and theme ideas are warmly welcomed!
 3. Commit your Changes (`git commit -m 'Add CoolTheme'`).
 4. Push to the Branch (`git push origin feature/CoolTheme`).
 5. Open a Pull Request.
+
+---
+
+## ☕ Tác Giả & Ủng Hộ (Author & Donate)
+
+**Zen Desk Clock** được xây dựng và duy trì bởi **Võ Tấn Bản (@btvdev03)**:
+- 🌐 **Website / Portfolio**: [https://btvdev03.github.io/](https://btvdev03.github.io/)
+- 🐙 **GitHub**: [@btvdev03](https://github.com/btvdev03)
+- 📘 **Facebook**: [facebook.com/btvdev03](https://www.facebook.com/btvdev03)
+- 💼 **LinkedIn**: [linkedin.com/in/btvdev03](https://www.linkedin.com/in/btvdev03)
+- ✉️ **Email**: [btv.dev03@gmail.com](mailto:btv.dev03@gmail.com)
+- ☕ **Buy Me a Coffee**: [buymeacoffee.com/btvdev03](https://buymeacoffee.com/btvdev03)
+
+Nếu Zen Desk Clock giúp ích cho bạn trong không gian làm việc và học tập, hãy gửi tặng 1 ⭐ sao trên GitHub hoặc mời tác giả một ly cà phê ấm nhé! Cảm ơn bạn rất nhiều! ❤️
 
 ---
 

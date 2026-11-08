@@ -192,6 +192,13 @@ class ZenApp {
     this.threeDfxModeSelect = document.getElementById('threeDfxModeSelect');
     this.threeDfxOpacitySlider = document.getElementById('threeDfxOpacitySlider');
     this.threeDfxOpacityValue = document.getElementById('threeDfxOpacityValue');
+    this.donateBtn = document.getElementById('donateBtn');
+    this.donateModal = document.getElementById('donateModal');
+    this.donateModalCloseBtn = document.getElementById('donateModalCloseBtn');
+    this.copyDonateBtn = document.getElementById('copyDonateBtn');
+    this.copyDonateBtnText = document.getElementById('copyDonateBtnText');
+    this.donateAccNumber = document.getElementById('donateAccNumber');
+    this.openDonateFromSettingsBtn = document.getElementById('openDonateFromSettingsBtn');
     this.settingsBtn = document.getElementById('settingsBtn');
 
     // Settings Modal elements
@@ -659,6 +666,45 @@ class ZenApp {
     // Fullscreen Button
     this.fullscreenTopBtn.addEventListener('click', () => this.toggleFullscreen());
 
+    // Donate & Author Socials Modal
+    if (this.donateBtn) {
+      this.donateBtn.addEventListener('click', () => this.openModal(this.donateModal));
+    }
+    if (this.openDonateFromSettingsBtn) {
+      this.openDonateFromSettingsBtn.addEventListener('click', () => {
+        this.closeModal(this.settingsModal);
+        this.openModal(this.donateModal);
+      });
+    }
+    if (this.donateModalCloseBtn) {
+      this.donateModalCloseBtn.addEventListener('click', () => this.closeModal(this.donateModal));
+    }
+    if (this.donateModal) {
+      this.donateModal.addEventListener('click', (e) => {
+        if (e.target === this.donateModal) this.closeModal(this.donateModal);
+      });
+    }
+    if (this.copyDonateBtn) {
+      this.copyDonateBtn.addEventListener('click', () => {
+        const textToCopy = this.donateAccNumber ? this.donateAccNumber.textContent.trim() : 'btv.dev03@gmail.com';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            this._showToast('Đã sao chép thông tin ủng hộ! Cảm ơn bạn rất nhiều ❤️');
+            if (this.copyDonateBtnText) {
+              this.copyDonateBtnText.textContent = 'Đã chép!';
+              setTimeout(() => {
+                if (this.copyDonateBtnText) this.copyDonateBtnText.textContent = 'Sao chép';
+              }, 2000);
+            }
+          }).catch(() => {
+            this._showToast('Thông tin ủng hộ: ' + textToCopy);
+          });
+        } else {
+          this._showToast('Thông tin ủng hộ: ' + textToCopy);
+        }
+      });
+    }
+
     // Settings Modal
     this.settingsBtn.addEventListener('click', () => this.openModal(this.settingsModal));
     this.modalCloseBtn.addEventListener('click', () => this.closeModal(this.settingsModal));
@@ -895,6 +941,8 @@ class ZenApp {
         const isEnabled = zenThreeScene.toggle();
         this._syncThreeControls();
         this._showToast(`Hiệu ứng 3D: ${isEnabled ? 'Bật' : 'Tắt'}`);
+      } else if (key === 'd') {
+        this.openModal(this.donateModal);
       } else if (key === 'm') {
         soundMixer.open();
       } else if (key === 'n') {

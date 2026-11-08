@@ -608,3 +608,90 @@ body.apple-standby-active .standby-toggle-btn {
   font-weight: 700;
   color: #ffffff;
 }
+
+
+/* ========================================================
+   STANDBY NIGHT MODE: DONATE & AUTHOR SOCIALS INTEGRATION
+   ======================================================== */
+body.apple-standby-active #donateModal .modal-card {
+  background: rgba(14, 2, 2, 0.95) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .author-profile-card,
+body.apple-standby-active .author-settings-card {
+  background: rgba(40, 5, 5, 0.5) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .author-name,
+body.apple-standby-active .author-settings-name {
+  color: var(--standby-red-bright) !important;
+}
+
+body.apple-standby-active .author-tag,
+body.apple-standby-active .author-settings-tag {
+  background: rgba(255, 42, 42, 0.15) !important;
+  color: var(--standby-red-core) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .author-bio,
+body.apple-standby-active .author-desc,
+body.apple-standby-active .author-settings-role,
+body.apple-standby-active .author-settings-desc {
+  color: var(--standby-red-dim) !important;
+}
+
+body.apple-standby-active .portfolio-hero-btn {
+  background: rgba(40, 5, 5, 0.7) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .portfolio-icon-badge {
+  background: rgba(255, 42, 42, 0.2) !important;
+  color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .social-chip {
+  background: rgba(30, 5, 5, 0.6) !important;
+  border-color: var(--standby-red-border) !important;
+  color: var(--standby-red-dim) !important;
+}
+
+body.apple-standby-active .social-chip:hover {
+  background: rgba(60, 10, 10, 0.8) !important;
+  color: var(--standby-red-bright) !important;
+}
+
+body.apple-standby-active .donate-card,
+body.apple-standby-active .bmac-card {
+  background: rgba(30, 5, 5, 0.7) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .donate-card-badge {
+  background: rgba(255, 42, 42, 0.15) !important;
+  color: var(--standby-red-core) !important;
+}
+
+body.apple-standby-active .donate-copy-box {
+  background: rgba(10, 0, 0, 0.8) !important;
+  border-color: var(--standby-red-border) !important;
+}
+
+body.apple-standby-active .donate-copy-val {
+  color: var(--standby-red-bright) !important;
+}
+
+body.apple-standby-active .donate-copy-btn {
+  background: var(--standby-red-core) !important;
+  color: #ffffff !important;
+}
+
+body.apple-standby-active .btn-author-portfolio,
+body.apple-standby-active .btn-author-donate {
+  background: rgba(40, 5, 5, 0.7) !important;
+  border-color: var(--standby-red-border) !important;
+  color: var(--standby-red-bright) !important;
+}

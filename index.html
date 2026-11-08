@@ -266,6 +266,18 @@
 
         <div class="dock-separator"></div>
 
+        <!-- Author Socials & Donate Button -->
+        <button class="control-btn" id="donateBtn" title="Tác giả & Ủng hộ cà phê (Phím D)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+          <span>Ủng hộ</span>
+        </button>
+
         <!-- Settings & Shortcuts Modal -->
         <button class="control-btn" id="settingsBtn" title="Cài đặt & Phím tắt (Phím S)">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
@@ -569,6 +581,32 @@
           </button>
         </div>
 
+        <!-- 5. TÁC GIẢ & ỦNG HỘ DỰ ÁN -->
+        <div class="setting-group-header">☕ Tác Giả & Ủng Hộ (btvdev03)</div>
+
+        <div class="setting-block author-settings-card">
+          <div class="author-settings-header">
+            <div class="author-settings-avatar">VB</div>
+            <div class="author-settings-meta">
+              <div class="author-settings-name">Võ Tấn Bản <span class="author-settings-tag">@btvdev03</span></div>
+              <div class="author-settings-role">Kỹ sư Phần mềm • Tác giả Zen Desk Clock</div>
+            </div>
+          </div>
+          <p class="author-settings-desc">
+            Zen Desk Clock là dự án mã nguồn mở phi lợi nhuận. Nếu ứng dụng đem lại cảm giác tập trung và bình yên cho bạn, hãy ghé thăm portfolio hoặc gửi tặng một ly cà phê ấm tiếp thêm năng lượng nhé!
+          </p>
+          <div class="author-settings-actions">
+            <a href="https://btvdev03.github.io/" target="_blank" rel="noopener noreferrer" class="btn-author-portfolio" title="Truy cập btvdev03.github.io">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span>Portfolio Tác Giả</span>
+            </a>
+            <button type="button" class="btn-author-donate" id="openDonateFromSettingsBtn" title="Mở hộp thoại ủng hộ cà phê">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+              <span>Mời Ly Cà Phê</span>
+            </button>
+          </div>
+        </div>
+
         <!-- 4. PHÍM TẮT -->
         <div class="setting-group-header">⌨️ Phím Tắt Tiện Ích</div>
 
@@ -583,6 +621,7 @@
           <div class="shortcut-item"><span class="kbd-badge">P</span> Thu nhỏ cửa sổ PiP</div>
           <div class="shortcut-item"><span class="kbd-badge">H</span> Chế độ Zen (Ẩn toàn bộ)</div>
           <div class="shortcut-item"><span class="kbd-badge">S</span> Mở bảng cài đặt này</div>
+          <div class="shortcut-item"><span class="kbd-badge">D</span> Tác giả & Ủng hộ cà phê</div>
           <div class="shortcut-item"><span class="kbd-badge">Esc</span> Đóng mọi hộp thoại</div>
         </div>
 
@@ -734,6 +773,138 @@
     </div>
   </div>
 
+  <!-- DONATE & AUTHOR SOCIALS MODAL -->
+  <div class="modal-overlay" id="donateModal">
+    <div class="modal-card donate-modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+          <span>Tác Giả & Ủng Hộ (Donate)</span>
+        </h2>
+        <button class="modal-close-btn" id="donateModalCloseBtn" title="Đóng (Esc)">&times;</button>
+      </div>
+
+      <div class="modal-body donate-modal-body">
+        <!-- Author Profile Hero Card -->
+        <div class="author-profile-card">
+          <div class="author-avatar-wrap">
+            <div class="author-avatar-monogram">VB</div>
+            <span class="author-status-dot" title="Tác giả sẵn sàng kết nối"></span>
+          </div>
+          <div class="author-info-wrap">
+            <div class="author-name-row">
+              <h3 class="author-name">Võ Tấn Bản</h3>
+              <span class="author-tag">@btvdev03</span>
+            </div>
+            <p class="author-bio">Kỹ sư Phần mềm & Nhà phát triển Zen Desk Clock</p>
+            <p class="author-desc">
+              Cảm ơn bạn đã sử dụng Zen Desk Clock trong công việc và học tập hằng ngày! Nếu ứng dụng mang lại cảm hứng tập trung cho bạn, hãy ghé thăm trang cá nhân hoặc gửi tặng một ly cà phê ấm tiếp thêm năng lượng cho tác giả nhé.
+            </p>
+          </div>
+        </div>
+
+        <!-- Featured Portfolio Button -->
+        <a href="https://btvdev03.github.io/" target="_blank" rel="noopener noreferrer" class="portfolio-hero-btn" title="Truy cập Portfolio btvdev03.github.io">
+          <div class="portfolio-btn-left">
+            <div class="portfolio-icon-badge">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <div class="portfolio-btn-text">
+              <span class="portfolio-btn-title">Ghé Thăm Portfolio Của Tôi</span>
+              <span class="portfolio-btn-sub">btvdev03.github.io • Dự án & Hồ sơ năng lực</span>
+            </div>
+          </div>
+          <svg class="portfolio-btn-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+
+        <!-- Social Channels Grid -->
+        <div class="author-section-heading">🌐 KẾT NỐI MẠNG XÃ HỘI</div>
+        <div class="author-social-grid">
+          <a href="https://btvdev03.github.io/" target="_blank" rel="noopener noreferrer" class="social-chip social-portfolio" title="Portfolio cá nhân">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span>Portfolio</span>
+          </a>
+
+          <a href="https://github.com/btvdev03" target="_blank" rel="noopener noreferrer" class="social-chip social-github" title="Theo dõi GitHub @btvdev03">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            <span>GitHub</span>
+          </a>
+
+          <a href="https://www.facebook.com/btvdev03" target="_blank" rel="noopener noreferrer" class="social-chip social-facebook" title="Facebook cá nhân @btvdev03">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            <span>Facebook</span>
+          </a>
+
+          <a href="https://www.linkedin.com/in/btvdev03" target="_blank" rel="noopener noreferrer" class="social-chip social-linkedin" title="LinkedIn @btvdev03">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            <span>LinkedIn</span>
+          </a>
+
+          <a href="mailto:btv.dev03@gmail.com" class="social-chip social-email" title="Gửi email trao đổi: btv.dev03@gmail.com">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <span>Email</span>
+          </a>
+        </div>
+
+        <!-- Donate Channels -->
+        <div class="author-section-heading">☕ MỜI TÁC GIẢ LY CÀ PHÊ</div>
+        <div class="donate-methods-container">
+          <!-- MoMo / Bank Transfer Card -->
+          <div class="donate-card">
+            <div class="donate-card-header">
+              <div class="donate-card-badge">Chuyển Khoản & MoMo (VietQR)</div>
+              <div class="donate-coffee-icon">☕</div>
+            </div>
+            <div class="donate-card-body">
+              <p class="donate-card-text">
+                Ủng hộ tác giả qua MoMo hoặc Chuyển khoản ngân hàng 24/7 (quét mã hoặc sao chép nhanh):
+              </p>
+              
+              <div class="donate-copy-box">
+                <div class="donate-copy-info">
+                  <span class="donate-copy-label">Số MoMo / Chuyển khoản:</span>
+                  <strong class="donate-copy-val" id="donateAccNumber">btv.dev03@gmail.com</strong>
+                </div>
+                <button type="button" class="donate-copy-btn" id="copyDonateBtn" title="Sao chép thông tin ủng hộ">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span id="copyDonateBtnText">Sao chép</span>
+                </button>
+              </div>
+
+              <div class="donate-meta-row">
+                <span>Chủ tài khoản: <strong>VÕ TẤN BẢN</strong></span>
+                <span>Lời nhắn: <strong>Zen Desk Clock</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buy Me a Coffee / International Card -->
+          <a href="https://buymeacoffee.com/btvdev03" target="_blank" rel="noopener noreferrer" class="bmac-card" title="Ủng hộ qua Buy Me a Coffee">
+            <div class="bmac-icon">☕</div>
+            <div class="bmac-text">
+              <span class="bmac-title">Buy Me A Coffee</span>
+              <span class="bmac-desc">Ủng hộ qua thẻ quốc tế Visa / Mastercard / PayPal</span>
+            </div>
+            <svg class="bmac-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Specialized Feature Modules -->
   <script type="module" src="js/night-mode.js"></script>
   <script type="module" src="js/weather.js"></script>
@@ -742,7 +913,7 @@
 
   <!-- Main ES Module Application Script -->
   <script type="module" src="js/three-scene.js"></script>
-  <script type="module" src="js/app.js?v=18"></script>
+  <script type="module" src="js/app.js?v=19"></script>
 
   <!-- Service Worker Registration for PWA Offline Functionality -->
   <script>
